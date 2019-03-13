@@ -8,12 +8,21 @@ class XcodeProjectGraphGenerator():
     def __init__(self, xcode_project_reader):
         self.xcode_project = xcode_project_reader.xcode_project
     
-    def generate_targets_dependencies_graph(self, open_pdf=False, filepath=None, title=None, including_types=set()):
+    def generate_targets_dependencies_graph(self,
+                                            output_format='pdf',
+                                            preview=False,
+                                            display_graph_source=False,
+                                            filepath=None,
+                                            title=None,
+                                            including_types=set()):
         if not filepath or not title:
+            return False
+        
+        if output_format not in {'pdf', 'png'}:
             return False
 
         graph = Digraph(filename=filepath,
-                        format='pdf',
+                        format=output_format,
                         engine='dot',
                         graph_attr={
                             'fontname': 'Courier',
@@ -63,7 +72,9 @@ class XcodeProjectGraphGenerator():
 
                 graph.edge(xcode_target.name, dependency_target.name)
 
-        graph.render(cleanup=True, view=open_pdf)
-        # print(graph.source)
+        graph.render(cleanup=True, view=preview)
+
+        if display_graph_source:
+            print(graph.source)
 
         return True
