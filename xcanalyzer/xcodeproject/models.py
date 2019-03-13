@@ -29,6 +29,7 @@ class XcTarget():
             return False
         elif self.name != other.name:
             return False
+        return True
     
     def __hash__(self):
         return hash((self.type, self.name))

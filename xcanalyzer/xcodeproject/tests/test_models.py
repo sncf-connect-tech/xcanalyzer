@@ -68,6 +68,12 @@ class XcTargetTests(TestCase):
 
         self.assertFalse(xc_target_1 == xc_target_2)
     
+    def test_xc_targets_are_equal__when_same_name_and_type(self):
+        xc_target_1 = XcTarget(name="MyXcTarget", target_type=XcTarget.Type.UI_TEST)
+        xc_target_2 = XcTarget(name="MyXcTarget", target_type=XcTarget.Type.UI_TEST)
+
+        self.assertTrue(xc_target_1 == xc_target_2)
+    
     # __hash__
 
     def test_xc_targets_hashes_are_same__when_same_type_and_name(self):

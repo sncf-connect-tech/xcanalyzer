@@ -1,6 +1,7 @@
 import os
 
 from ..models import XcTarget, XcProject
+from ..parsers import XcProjectParser
 
 
 # Models
@@ -30,4 +31,15 @@ class SampleXcodeProjectFixture():
         """ Absolute path of the folder containing `.xcodeproj` of the Xcode project sample contained in this project. """
         return os.path.join(self.root_path, 'SampleiOSApp')
 
-        
+
+# Parsers
+
+class XcProjectParserFixture():
+
+    @property
+    def sample_xc_project_parser(self):
+        path = SampleXcodeProjectFixture().project_folder_path
+        project_parser = XcProjectParser(path)
+        project_parser.load()
+
+        return project_parser
