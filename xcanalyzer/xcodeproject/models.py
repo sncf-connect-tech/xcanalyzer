@@ -7,7 +7,7 @@ class XcProject():
         self.targets = targets
     
     def targets_of_type(self, target_type):
-        return [t for t in self.targets if t.type == target_type]
+        return set([t for t in self.targets if t.type == target_type])
 
 
 class XcTarget():
@@ -29,11 +29,9 @@ class XcTarget():
             return False
         elif self.name != other.name:
             return False
-        else:
-            return self.dependencies == other.dependencies
     
     def __hash__(self):
-        return hash(self.name)
+        return hash((self.type, self.name))
 
     def __repr__(self):
-        return "<XcodeTarget> {}".format(self.name)
+        return "<XcTarget> {}".format(self.name)
