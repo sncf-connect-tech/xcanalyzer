@@ -10,7 +10,7 @@ class XcodeProjectGraphGenerator():
     
     def generate_targets_dependencies_graph(self, open_pdf=False, filepath=None, title=None, including_types=set()):
         if not filepath or not title:
-            return
+            return False
 
         graph = Digraph(filename=filepath,
                         format='pdf',
@@ -65,3 +65,5 @@ class XcodeProjectGraphGenerator():
 
         graph.render(cleanup=True, view=open_pdf)
         # print(graph.source)
+
+        return True
