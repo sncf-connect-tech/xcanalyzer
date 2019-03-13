@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+mkdir build
+
 python3 -m venv venv
 ./venv/bin/pip install --upgrade pip
 

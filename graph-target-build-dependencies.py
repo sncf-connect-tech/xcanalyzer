@@ -2,7 +2,7 @@
 
 import argparse
 
-from xcanalyzer.xcodeproject.parsers import XcodeProjectReader
+from xcanalyzer.xcodeproject.parsers import XcProjectParser
 from xcanalyzer.xcodeproject.exceptions import XcodeProjectReadException
 from xcanalyzer.xcodeproject.generators import XcodeProjectGraphGenerator
 from xcanalyzer.xcodeproject.models import XcTarget
@@ -57,7 +57,7 @@ args = argument_parser.parse_args()
 xcode_project_path = args.path
 
 # Xcode code project reader
-xcode_project_reader = XcodeProjectReader(xcode_project_path)
+xcode_project_reader = XcProjectParser(xcode_project_path)
 
 # Output filepath
 if args.output_filepath:

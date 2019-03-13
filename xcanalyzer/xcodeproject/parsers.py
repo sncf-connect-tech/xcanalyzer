@@ -6,7 +6,7 @@ from .exceptions import XcodeProjectReadException
 from .models import XcTarget, XcProject
 
 
-class XcodeProjectReader():
+class XcProjectParser():
 
     def __init__(self, project_folder_path):
         self.project_folder_path = project_folder_path
