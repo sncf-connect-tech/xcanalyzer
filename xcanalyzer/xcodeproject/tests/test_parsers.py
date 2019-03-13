@@ -53,3 +53,15 @@ class XcProjectParserTests(TestCase):
         self.assertTrue(test_target in xcode_project.targets)
         self.assertTrue(ui_test_target in xcode_project.targets)
         self.assertTrue(framework_target in xcode_project.targets)
+    
+    def test_xc_project_parser__loaded__gives_dependencies_between_targets(self):
+        project_parser = self.fixture.sample_xc_project_parser
+        xcode_project = project_parser.xcode_project
+
+        core_target = [t for t in xcode_project.targets if t.name == 'SampleCore'][0]
+        ui_target = [t for t in xcode_project.targets if t.name == 'SampleUI'][0]
+        app_target = [t for t in xcode_project.targets if t.name == 'SampleiOSApp'][0]
+
+        self.assertTrue(core_target in ui_target.dependencies)
+        self.assertTrue(core_target in app_target.dependencies)
+        self.assertTrue(ui_target in app_target.dependencies)
