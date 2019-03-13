@@ -4,12 +4,22 @@ from ..models import XcTarget, XcProject
 from ..parsers import XcProjectParser
 
 
+# Absolute path of this project root folder.
+root_path = __file__
+for i in range(0, 4):
+    root_path = os.path.dirname(root_path)
+
+
 # Models
 
-class XcTargetFixture():
+class XcModelsFixture():
 
-    def any_target(self, target_type=XcTarget.Type.UI_TEST):
+    def any_target(self, target_type=XcTarget.Type.APPLICATION):
         return XcTarget(name="MyXcTarget", target_type=target_type)
+    
+    def any_project(self):
+        targets = set([self.any_target()])
+        return XcProject('MyXcProject', targets=targets)
 
 
 # Xcode sample project
@@ -17,19 +27,9 @@ class XcTargetFixture():
 class SampleXcodeProjectFixture():
 
     @property
-    def root_path(self):
-        """ Absolute path of this project root folder. """
-        result = __file__
-
-        for i in range(0, 4):
-            result = os.path.dirname(result)
-        
-        return result
-
-    @property
     def project_folder_path(self):
         """ Absolute path of the folder containing `.xcodeproj` of the Xcode project sample contained in this project. """
-        return os.path.join(self.root_path, 'SampleiOSApp')
+        return os.path.join(root_path, 'SampleiOSApp')
 
 
 # Parsers
@@ -43,3 +43,15 @@ class XcProjectParserFixture():
         project_parser.load()
 
         return project_parser
+
+
+# Generators
+
+class XcProjectGraphGeneratorFixture():
+
+    @property
+    def test_build_folder(self):
+        return os.path.join(root_path, 'build', 'test')
+
+    def any_graph_filepath(self, filename):
+        return os.path.join(self.test_build_folder, filename)

@@ -3,10 +3,10 @@ from graphviz import Digraph
 from .models import XcTarget
 
 
-class XcodeProjectGraphGenerator():
+class XcProjectGraphGenerator():
 
-    def __init__(self, xcode_project_reader):
-        self.xcode_project = xcode_project_reader.xcode_project
+    def __init__(self, xcode_project):
+        self.xcode_project = xcode_project
     
     def generate_targets_dependencies_graph(self,
                                             output_format='pdf',

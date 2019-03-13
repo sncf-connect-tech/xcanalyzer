@@ -2,12 +2,12 @@ from unittest import TestCase
 
 from ..models import XcTarget, XcProject
 
-from .fixtures import XcTargetFixture
+from .fixtures import XcModelsFixture
 
 
 class XcProjectTests(TestCase):
 
-    fixture = XcTargetFixture()
+    fixture = XcModelsFixture()
 
     # __init__
 

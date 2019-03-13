@@ -4,7 +4,7 @@ import argparse
 
 from xcanalyzer.xcodeproject.parsers import XcProjectParser
 from xcanalyzer.xcodeproject.exceptions import XcodeProjectReadException
-from xcanalyzer.xcodeproject.generators import XcodeProjectGraphGenerator
+from xcanalyzer.xcodeproject.generators import XcProjectGraphGenerator
 from xcanalyzer.xcodeproject.models import XcTarget
 
 
@@ -76,7 +76,7 @@ except XcodeProjectReadException as e:
     exit()
 
 # Generator
-graph_generator = XcodeProjectGraphGenerator(xcode_project_reader)
+graph_generator = XcProjectGraphGenerator(xcode_project_reader.xcode_project)
 
 # Generate graph
 if args.framework_only:
