@@ -35,6 +35,10 @@ ignored_folders = {
     '.git',
 } | ignored_folders
 
+# Ignored path and folders
+ignored_dirpaths = {f for f in ignored_folders if f.startswith(os.path.sep)}
+ignored_dirs = ignored_folders - ignored_dirpaths
+
 # Remove ending slashes to path
 path = args.path
 while path and path[-1] == os.path.sep:
@@ -44,10 +48,19 @@ while path and path[-1] == os.path.sep:
 for (dirpath, dirnames, filenames) in os.walk(path):
     relative_dirpath = dirpath[len(path):]
 
-    # Filter folders to ignore
-    folder_parts = set(relative_dirpath.split(os.path.sep))
-    if ignored_folders & folder_parts:
+    # Filter folder to ignore by path
+    continue_to_next_dirpath = False
+    for ignored_dirpath in ignored_dirpaths:
+        if relative_dirpath.startswith(ignored_dirpath):
+            continue_to_next_dirpath = True
+            break
+    if continue_to_next_dirpath:
         continue
         
+    # Filter folder to ignore by name
+    folder_parts = set(relative_dirpath.split(os.path.sep))
+    if ignored_dirs & folder_parts:
+        continue
+    
     if not dirnames and not filenames:
         print(relative_dirpath)
