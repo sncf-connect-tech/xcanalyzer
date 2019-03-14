@@ -35,11 +35,13 @@ argument_parser.add_argument('--framework-only',
 # Title only argument
 argument_parser.add_argument('--title',
                              dest='title',
+                             metavar='<title>',
                              help='Title for the generated graph.')
 
 # Output file argument
 argument_parser.add_argument('-o', '--output-file',
                              dest='output_filepath',
+                             metavar='<filepath>',
                              help='Filepath of the generated PDF file.')
 
 # Output format argument
