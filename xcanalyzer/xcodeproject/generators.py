@@ -93,22 +93,23 @@ class XcProjReporter():
             for target_name in target_names:
                 print(target_name)
         else:
-            targets_by_type = dict()
-            for target in self.xcode_project.targets:
-                if not target.type in targets_by_type:
-                    targets_by_type[target.type] = list()
-                
-                targets_by_type[target.type].append(target.name)
-            
-            target_types = list(targets_by_type.keys())
-            target_types.sort()
+            target_type_counts = dict()
 
-            for target_type in target_types:
+            for target_type in XcTarget.Type.AVAILABLES:
+                targets = self.xcode_project.targets_of_type(target_type)
+
                 # Target type
-                cprint('{}s:'.format(target_type.capitalize()), attrs=['bold'])
+                target_type_display = '{}s'.format(target_type.replace('_', ' ').capitalize())
+                cprint('{} ({}):'.format(target_type_display, len(targets)), attrs=['bold'])
 
                 # Targets
-                targets_by_type[target_type].sort()
-                for target in targets_by_type[target_type]:
-                    print('- {}'.format(target))
-
+                for target in targets:
+                    print('- {}'.format(target.name))
+                
+                target_type_counts[target_type] = (target_type_display, len(targets))
+                
+            print()
+            print('---')
+            for target_type in XcTarget.Type.AVAILABLES:
+                print('{:>2} {}'.format(target_type_counts[target_type][1], target_type_counts[target_type][0]))
+            cprint('{:>2} Targets in total'.format(len(self.xcode_project.targets)), attrs=['bold'])

@@ -36,7 +36,7 @@ class XcProjectTests(TestCase):
 
         targets = xc_project.targets_of_type(XcTarget.Type.UI_TEST)
 
-        self.assertEqual(targets, set([target_1]))
+        self.assertEqual(targets, [target_1])
 
 
 class XcTargetTests(TestCase):

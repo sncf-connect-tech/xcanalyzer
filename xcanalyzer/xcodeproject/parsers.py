@@ -59,9 +59,11 @@ class XcProjectParser():
             elif target.productType == 'com.apple.product-type.framework':
                 xcode_target_type = XcTarget.Type.FRAMEWORK
             
-            elif target.productType.startswith('com.apple.product-type.app-extension') \
-                or target.productType == 'com.apple.product-type.watchkit2-extension':
-                xcode_target_type = XcTarget.Type.EXTENSION
+            elif target.productType.startswith('com.apple.product-type.app-extension'):
+                xcode_target_type = XcTarget.Type.APP_EXTENSION
+            
+            elif target.productType == 'com.apple.product-type.watchkit2-extension':
+                xcode_target_type = XcTarget.Type.WATCH_EXTENSION
             
             elif target.productType.startswith('com.apple.product-type.application'):
                 xcode_target_type = XcTarget.Type.APPLICATION

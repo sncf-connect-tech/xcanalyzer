@@ -7,17 +7,28 @@ class XcProject():
         self.targets = targets
     
     def targets_of_type(self, target_type):
-        return set([t for t in self.targets if t.type == target_type])
+        results = {t for t in self.targets if t.type == target_type}
+        return sorted(results, key=lambda t: t.name)
 
 
 class XcTarget():
 
     class Type():
         TEST = 'test'
-        UI_TEST = 'uitest'
+        UI_TEST = 'ui_test'
         FRAMEWORK = 'framework'
-        EXTENSION = 'extension'
+        APP_EXTENSION = 'app_extension'
+        WATCH_EXTENSION = 'watch_extension'
         APPLICATION = 'application'
+
+        AVAILABLES = [
+            FRAMEWORK,
+            APP_EXTENSION,
+            WATCH_EXTENSION,
+            APPLICATION,
+            TEST,
+            UI_TEST,
+        ]
 
     def __init__(self, name, target_type, dependencies=set()):
         self.name = name
