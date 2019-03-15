@@ -2,3 +2,4 @@ swift-code-metrics
 pbxproj
 ipdb
 graphviz
+termcolor

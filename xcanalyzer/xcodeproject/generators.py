@@ -1,4 +1,5 @@
 from graphviz import Digraph
+from termcolor import cprint
 
 from .models import XcTarget
 
@@ -78,3 +79,36 @@ class XcProjectGraphGenerator():
             print(graph.source)
 
         return True
+
+
+class XcProjReporter():
+
+    def __init__(self, xcode_project):
+        self.xcode_project = xcode_project
+
+    def print_targets(self, by_type=True):
+        if not by_type:
+            target_names = [t.name for t in self.xcode_project.targets]
+            target_names.sort()
+            for target_name in target_names:
+                print(target_name)
+        else:
+            targets_by_type = dict()
+            for target in self.xcode_project.targets:
+                if not target.type in targets_by_type:
+                    targets_by_type[target.type] = list()
+                
+                targets_by_type[target.type].append(target.name)
+            
+            target_types = list(targets_by_type.keys())
+            target_types.sort()
+
+            for target_type in target_types:
+                # Target type
+                cprint('{}s:'.format(target_type.capitalize()), attrs=['bold'])
+
+                # Targets
+                targets_by_type[target_type].sort()
+                for target in targets_by_type[target_type]:
+                    print('- {}'.format(target))
+
