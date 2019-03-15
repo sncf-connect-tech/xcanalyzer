@@ -62,5 +62,21 @@ for (dirpath, dirnames, filenames) in os.walk(path):
     if ignored_dirs & folder_parts:
         continue
     
-    if not dirnames and not filenames:
-        print(relative_dirpath)
+    if dirnames:
+        continue
+    
+    unhidden_filenames = set([f for f in filenames if not f.startswith('.')])
+    if unhidden_filenames:
+        continue
+    
+    # Hidden files
+    hidden_filenames = list(set(filenames) - unhidden_filenames)
+    hidden_filenames.sort()
+
+    display = relative_dirpath
+
+    if hidden_filenames:
+        hidden_filenames_display = ', '.join([f for f in hidden_filenames])
+        display += ' [{}]'.format(hidden_filenames_display)
+    
+    print(display)
