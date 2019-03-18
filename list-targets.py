@@ -13,6 +13,11 @@ argument_parser = argparse.ArgumentParser(description="List all targets and file
 argument_parser.add_argument('path',
                              help='Path of the folder containing your `.xcodeproj` folder.')
 
+# Sorted by name argument
+argument_parser.add_argument('-n', '--name-sorted',
+                             dest='sorted_by_name',
+                             action='store_true', 
+                             help='Gives the liste of targets sorted by name. So they are not grouped by type.')
 
 # --- Parse arguments ---
 args = argument_parser.parse_args()
@@ -29,4 +34,4 @@ except XcodeProjectReadException as e:
 
 # Reporter
 reporter = XcProjReporter(xcode_project_reader.xcode_project)
-reporter.print_targets()
+reporter.print_targets(by_type=(not args.sorted_by_name))
