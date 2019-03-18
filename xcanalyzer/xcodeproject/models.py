@@ -20,14 +20,18 @@ class XcTarget():
         APP_EXTENSION = 'app_extension'
         WATCH_EXTENSION = 'watch_extension'
         APPLICATION = 'application'
+        WATCH_APPLICATION = 'watch_application'
+        OTHER = 'other'
 
-        AVAILABLES = [
+        AVAILABLES = [  # Default order of display
             FRAMEWORK,
             APP_EXTENSION,
             WATCH_EXTENSION,
+            WATCH_APPLICATION,
             APPLICATION,
             TEST,
             UI_TEST,
+            OTHER,
         ]
 
     def __init__(self, name, target_type, dependencies=set()):

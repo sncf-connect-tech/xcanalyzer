@@ -98,6 +98,10 @@ class XcProjReporter():
             for target_type in XcTarget.Type.AVAILABLES:
                 targets = self.xcode_project.targets_of_type(target_type)
 
+                if not targets:
+                    target_type_counts[target_type] = (None, len(targets))
+                    continue
+
                 # Target type
                 target_type_display = '{}s'.format(target_type.replace('_', ' ').capitalize())
                 cprint('{} ({}):'.format(target_type_display, len(targets)), attrs=['bold'])
@@ -108,8 +112,8 @@ class XcProjReporter():
                 
                 target_type_counts[target_type] = (target_type_display, len(targets))
                 
-            print()
-            print('---')
+            print('--------------------')
             for target_type in XcTarget.Type.AVAILABLES:
-                print('{:>2} {}'.format(target_type_counts[target_type][1], target_type_counts[target_type][0]))
+                if target_type_counts[target_type][1]:
+                    print('{:>2} {}'.format(target_type_counts[target_type][1], target_type_counts[target_type][0]))
             cprint('{:>2} Targets in total'.format(len(self.xcode_project.targets)), attrs=['bold'])
