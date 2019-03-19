@@ -17,6 +17,11 @@ class XcProject():
             return None
         
         return candidates[0]
+    
+    @property
+    def targets_sorted_by_name(self):
+        results = list(self.targets)
+        return sorted(results, key=lambda t: t.name)
 
 
 class XcTarget():
@@ -46,11 +51,13 @@ class XcTarget():
                  name,
                  target_type,
                  dependencies=set(),
-                 source_files=set()):
+                 source_files=set(),
+                 resource_files=set()):
         self.name = name
         self.type = target_type
         self.dependencies = dependencies  # Set of targets
         self.source_files = source_files
+        self.resource_files = resource_files
 
     def __eq__(self, other):
         if self.type != other.type:

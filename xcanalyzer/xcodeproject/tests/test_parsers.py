@@ -72,8 +72,19 @@ class XcProjectParserTests(TestCase):
         project_parser = self.fixture.sample_xc_project_parser
         xcode_project = project_parser.xcode_project
 
-        core_target = xcode_project.target_with_name('SampleCore')
+        target = xcode_project.target_with_name('SampleCore')
 
-        self.assertTrue(core_target.source_files)
-        self.assertTrue('/SampleCore/SampleCore.swift' in core_target.source_files)
-        self.assertFalse('/SampleiOSApp/AppDelegate.swift' in core_target.source_files)
+        self.assertTrue(target.source_files)
+        self.assertTrue('/SampleCore/SampleCore.swift' in target.source_files)
+        self.assertFalse('/SampleiOSApp/AppDelegate.swift' in target.source_files)
+
+    def test_xc_project_parser__gives_resource_files_for_each_target(self):
+        project_parser = self.fixture.sample_xc_project_parser
+        xcode_project = project_parser.xcode_project
+
+        target = xcode_project.target_with_name('SampleiOSApp')
+
+        self.assertTrue(target.source_files)
+        self.assertTrue('/SampleiOSApp/Base.lproj/Main.storyboard' in target.resource_files)
+        self.assertTrue('/SampleiOSApp/en.lproj/Main.strings' in target.resource_files)
+        self.assertFalse('/SampleiOSApp/AppDelegate.swift' in target.resource_files)

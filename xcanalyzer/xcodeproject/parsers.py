@@ -70,7 +70,7 @@ class XcProjectParser():
             child_key, parent_path = children_paths.pop()
             child = self.xcode_project.get_object(child_key)
 
-            if child.isa == 'PBXGroup':  # Child is a group
+            if child.isa in {'PBXGroup', 'PBXVariantGroup'}:  # Child is a group
                 if hasattr(child, 'path'):
                     if child.sourceTree == '<group>':  # Relative to group
                         child_path = '/'.join([parent_path, child.path])
@@ -83,7 +83,7 @@ class XcProjectParser():
                 # Add children to compute paths in next steps
                 for grandchild in child.children:
                     children_paths.append((grandchild, child_path))
-
+            
             elif child.isa == 'PBXFileReference':  # Child is file reference
                 if child.sourceTree == '<group>':  # Relative to group
                     self.filepaths[child] = '/'.join([parent_path, child.path])
@@ -125,6 +125,16 @@ class XcProjectParser():
                         build_file = self.xcode_project.get_object(build_file_key)
                         file_ref = self.xcode_project.get_object(build_file.fileRef)
                         xcode_target.source_files.add(self.filepaths[file_ref])
+                elif build_phase.isa == 'PBXResourcesBuildPhase':
+                    for build_file_key in build_phase.files:
+                        build_file = self.xcode_project.get_object(build_file_key)
+                        file_ref = self.xcode_project.get_object(build_file.fileRef)
+                        if file_ref.isa == 'PBXVariantGroup':
+                            for child in file_ref.children:
+                                variant_file_ref = self.xcode_project.get_object(child)
+                                xcode_target.resource_files.add(self.filepaths[variant_file_ref])
+                        else:
+                            xcode_target.resource_files.add(self.filepaths[file_ref])
 
         # Set dependencies for each target        
         for target_name, dependencies_names in target_dependencies_names.items():

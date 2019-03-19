@@ -104,6 +104,8 @@
 		DFAC5E7F22401C11002C424B /* Tutu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Tutu.swift; path = Titi/Tutu.swift; sourceTree = "<group>"; };
 		DFAC5E8422401DC9002C424B /* Tyty.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tyty.swift; sourceTree = "<group>"; };
 		DFAC5E8D22403605002C424B /* Try.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Try.swift; path = SampleCore/Bar/Try.swift; sourceTree = SOURCE_ROOT; };
+		DFAC5E9022411F9F002C424B /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
+		DFAC5E9222413D89002C424B /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Main.strings; sourceTree = "<group>"; };
 		DFB4DB5622397A49007DB426 /* SampleiOSApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SampleiOSApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DFB4DB5922397A49007DB426 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		DFB4DB5B22397A49007DB426 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -685,6 +687,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				DFB4DB5E22397A49007DB426 /* Base */,
+				DFAC5E9222413D89002C424B /* en */,
 			);
 			name = Main.storyboard;
 			sourceTree = "<group>";
@@ -693,6 +696,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				DFB4DB6322397A4A007DB426 /* Base */,
+				DFAC5E9022411F9F002C424B /* en */,
 			);
 			name = LaunchScreen.storyboard;
 			sourceTree = "<group>";

@@ -54,7 +54,7 @@ class XcProjectGraphGenerator():
 
         # Add nodes
         for xcode_target in targets:
-            if xcode_target.type in { XcTarget.Type.TEST, XcTarget.Type.UI_TEST }:
+            if xcode_target.type in {XcTarget.Type.TEST, XcTarget.Type.UI_TEST}:
                 style = 'dotted'
             elif xcode_target.type in {XcTarget.Type.APP_EXTENSION, XcTarget.Type.WATCH_EXTENSION}:
                 style = 'dashed'
@@ -119,5 +119,12 @@ class XcProjReporter():
             cprint('{:>2} Targets in total'.format(len(self.xcode_project.targets)), attrs=['bold'])
 
     def print_files_by_targets(self):
-        pass
-        # self.xcode_project.targets
+        for target in self.xcode_project.targets_sorted_by_name:
+            source_files = list(target.source_files)
+            source_files.sort()
+
+            target_display = '{} [{} source files]:'.format(target.name, len(source_files))
+            cprint(target_display, attrs=['bold'])
+
+            for source_file in source_files:
+                print(source_file)
