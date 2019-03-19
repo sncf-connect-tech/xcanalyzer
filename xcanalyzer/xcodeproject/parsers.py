@@ -1,5 +1,6 @@
 import os
 
+import openstep_parser as osp
 from pbxproj import XcodeProject
 
 from .exceptions import XcodeProjectReadException
@@ -23,7 +24,10 @@ class XcProjectParser():
 
         # Load pbxproj
         pbxproj_path = '{}/{}/project.pbxproj'.format(self.project_folder_path, self.xcode_proj_name)
-        self.xcode_project = XcodeProject.load(pbxproj_path)
+
+        with open(pbxproj_path, 'r') as f:  # To avoid ResourceWarning: unclosed file
+            tree = osp.OpenStepDecoder.ParseFromFile(f)
+            self.xcode_project = XcodeProject(tree, pbxproj_path)
 
         self._find_filepaths()
 
@@ -125,11 +129,14 @@ class XcProjectParser():
                         build_file = self.xcode_project.get_object(build_file_key)
                         file_ref = self.xcode_project.get_object(build_file.fileRef)
                         xcode_target.source_files.add(self.filepaths[file_ref])
+
+                # Resources files
                 elif build_phase.isa == 'PBXResourcesBuildPhase':
                     for build_file_key in build_phase.files:
                         build_file = self.xcode_project.get_object(build_file_key)
                         file_ref = self.xcode_project.get_object(build_file.fileRef)
-                        if file_ref.isa == 'PBXVariantGroup':
+
+                        if file_ref.isa == 'PBXVariantGroup':  # Localized resource files
                             for child in file_ref.children:
                                 variant_file_ref = self.xcode_project.get_object(child)
                                 xcode_target.resource_files.add(self.filepaths[variant_file_ref])
