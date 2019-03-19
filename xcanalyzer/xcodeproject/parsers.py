@@ -25,8 +25,10 @@ class XcProjectParser():
         pbxproj_path = '{}/{}/project.pbxproj'.format(self.project_folder_path, self.xcode_proj_name)
         self.xcode_project = XcodeProject.load(pbxproj_path)
 
+        self._find_filepaths()
+
         # Tests, extensions and app modules
-        self._find_modules()
+        self._find_targets()
 
     def _check_folder_path(self):
         if not os.path.isdir(self.project_folder_path):
@@ -41,7 +43,55 @@ class XcProjectParser():
         
         raise XcodeProjectReadException("No '.xcodeproj' folder found in folder: {}".format(self.project_folder_path))
 
-    def _find_modules(self):
+    def _map_target_type(self, target):
+        if target.productType.startswith('com.apple.product-type.app-extension'):
+            return XcTarget.Type.APP_EXTENSION
+        
+        return {
+            'com.apple.product-type.bundle.unit-test': XcTarget.Type.TEST,
+            'com.apple.product-type.bundle.ui-testing': XcTarget.Type.UI_TEST,
+            'com.apple.product-type.framework': XcTarget.Type.FRAMEWORK,
+            'com.apple.product-type.watchkit2-extension': XcTarget.Type.WATCH_EXTENSION,
+            'com.apple.product-type.application': XcTarget.Type.APPLICATION,
+            'com.apple.product-type.application.watchapp2': XcTarget.Type.WATCH_APPLICATION,
+        }.get(target.productType, XcTarget.Type.OTHER)
+
+    def _find_filepaths(self):
+        project_object = self.xcode_project.get_object(self.xcode_project.rootObject)
+        assert project_object.isa == 'PBXProject'
+        
+        main_group = self.xcode_project.get_object(project_object.mainGroup)
+        assert main_group.isa == 'PBXGroup'
+
+        self.filepaths = dict()
+        children_paths = [(c, '') for c in main_group.children]
+
+        while children_paths:
+            child_key, parent_path = children_paths.pop()
+            child = self.xcode_project.get_object(child_key)
+
+            if child.isa == 'PBXGroup':  # Child is a group
+                if hasattr(child, 'path'):
+                    if child.sourceTree == '<group>':  # Relative to group
+                        child_path = '/'.join([parent_path, child.path])
+                
+                    elif child.sourceTree == 'SOURCE_ROOT':  # Relative to project
+                        child_path = '/{}'.format(child.path)
+                else:
+                    child_path = parent_path
+
+                # Add children to compute paths in next steps
+                for grandchild in child.children:
+                    children_paths.append((grandchild, child_path))
+
+            elif child.isa == 'PBXFileReference':  # Child is file reference
+                if child.sourceTree == '<group>':  # Relative to group
+                    self.filepaths[child] = '/'.join([parent_path, child.path])
+            
+                elif child.sourceTree == 'SOURCE_ROOT':  # Relative to project
+                    self.filepaths[child] = '/{}'.format(child.path)
+
+    def _find_targets(self):
         targets = self.xcode_project.objects.get_targets()
 
         xcode_targets = set()
@@ -50,32 +100,13 @@ class XcProjectParser():
 
         for target in targets:
             # Test modules
-            if target.productType == 'com.apple.product-type.bundle.unit-test':
-                xcode_target_type = XcTarget.Type.TEST
-            
-            elif target.productType == 'com.apple.product-type.bundle.ui-testing':
-                xcode_target_type = XcTarget.Type.UI_TEST
-            
-            elif target.productType == 'com.apple.product-type.framework':
-                xcode_target_type = XcTarget.Type.FRAMEWORK
-            
-            elif target.productType.startswith('com.apple.product-type.app-extension'):
-                xcode_target_type = XcTarget.Type.APP_EXTENSION
-            
-            elif target.productType == 'com.apple.product-type.watchkit2-extension':
-                xcode_target_type = XcTarget.Type.WATCH_EXTENSION
-            
-            elif target.productType == 'com.apple.product-type.application':
-                xcode_target_type = XcTarget.Type.APPLICATION
-            
-            elif target.productType == 'com.apple.product-type.application.watchapp2':
-                xcode_target_type = XcTarget.Type.WATCH_APPLICATION
-            
-            else:
-                xcode_target_type = XcTarget.Type.OTHER
+            xcode_target_type = self._map_target_type(target)
 
             # Transform into XcTarget
-            xcode_target = XcTarget(target.name, xcode_target_type)
+            xcode_target = XcTarget(target.name,
+                                    xcode_target_type,
+                                    dependencies=set(),
+                                    source_files=set())
             xcode_targets.add(xcode_target)
 
             # Find target's dependencies
@@ -83,6 +114,17 @@ class XcProjectParser():
             pbxproj_dependencies = [self.xcode_project.get_object(dep_key) for dep_key in target.dependencies]
             dependencies_names = [self.xcode_project.get_object(dep.target).name for dep in pbxproj_dependencies]
             target_dependencies_names[target.name] = dependencies_names
+
+            # Find file for each target
+            for build_phase_key in target.buildPhases:
+                build_phase = self.xcode_project.get_object(build_phase_key)
+
+                # Sources files
+                if build_phase.isa == 'PBXSourcesBuildPhase':
+                    for build_file_key in build_phase.files:
+                        build_file = self.xcode_project.get_object(build_file_key)
+                        file_ref = self.xcode_project.get_object(build_file.fileRef)
+                        xcode_target.source_files.add(self.filepaths[file_ref])
 
         # Set dependencies for each target        
         for target_name, dependencies_names in target_dependencies_names.items():

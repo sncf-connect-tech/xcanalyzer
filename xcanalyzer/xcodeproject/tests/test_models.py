@@ -24,7 +24,7 @@ class XcProjectTests(TestCase):
         xc_project = XcProject(name="MyXcProject", targets=targets)
 
         self.assertEqual(xc_project.targets, targets)
-    
+
     # targets_of_type
 
     def test_targets_of_type__returns_filtered_target_by_type(self):
@@ -37,9 +37,28 @@ class XcProjectTests(TestCase):
         targets = xc_project.targets_of_type(XcTarget.Type.UI_TEST)
 
         self.assertEqual(targets, [target_1])
+    
+    # target_with_name
 
+    def test_target_with_name__returns_none__when_no_matching_target_name(self):
+        target_1 = self.fixture.any_target(name='MyTarget1')
+        xc_project = XcProject(name="MyXcProject", targets=set([target_1]))
+
+        target_2 = xc_project.target_with_name('MyTarget2')
+
+        self.assertIsNone(target_2)
+
+    def test_target_with_name__returns_target__when_a_target_name_matches(self):
+        target = self.fixture.any_target(name='MyTarget')
+        xc_project = XcProject(name="MyXcProject", targets=set([target]))
+
+        resulting_target = xc_project.target_with_name('MyTarget')
+
+        self.assertEqual(resulting_target, target)
 
 class XcTargetTests(TestCase):
+
+    fixture = XcModelsFixture()
 
     # __init__
 
@@ -53,6 +72,25 @@ class XcTargetTests(TestCase):
         xc_target = XcTarget(name="MyXcTarget", target_type=XcTarget.Type.UI_TEST)
 
         self.assertFalse(xc_target.dependencies)
+    
+    def test_instantiate_xc_target__with_dependencies__has_dependencies(self):
+        target_dep = self.fixture.any_target(name='MyDep')
+
+        xc_target = XcTarget(name="MyXcTarget", target_type=XcTarget.Type.UI_TEST, dependencies=set([target_dep]))
+
+        self.assertTrue(target_dep in xc_target.dependencies)
+    
+    def test_instantiate_xc_target__without__files_has_no_file(self):
+        xc_target = XcTarget(name="MyXcTarget", target_type=XcTarget.Type.UI_TEST)
+
+        self.assertFalse(xc_target.source_files)
+
+    def test_instantiate_xc_target__with_files__has_files(self):
+        any_file = '/path/to/my/file'
+
+        xc_target = XcTarget(name="MyXcTarget", target_type=XcTarget.Type.UI_TEST, source_files=set([any_file]))
+
+        self.assertTrue(any_file in xc_target.source_files)
     
     # __eq__
 

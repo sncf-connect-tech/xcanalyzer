@@ -14,8 +14,8 @@ for i in range(0, 4):
 
 class XcModelsFixture():
 
-    def any_target(self, target_type=XcTarget.Type.APPLICATION):
-        return XcTarget(name="MyXcTarget", target_type=target_type)
+    def any_target(self, name='MyXcTarget', target_type=XcTarget.Type.APPLICATION):
+        return XcTarget(name=name, target_type=target_type)
     
     def any_project(self):
         targets = set([self.any_target()])

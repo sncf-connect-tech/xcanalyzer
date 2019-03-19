@@ -28,14 +28,14 @@ class XcProjectParserTests(TestCase):
 
     # xcode_proj_name
 
-    def test_xc_project_parser__loaded__gives_project_name(self):
+    def test_xc_project_parser__gives_project_name(self):
         project_parser = self.fixture.sample_xc_project_parser
 
         self.assertEqual(project_parser.xcode_proj_name, 'SampleiOSApp.xcodeproj')
 
     # xcode_project
 
-    def test_xc_project_parser__loaded__gives_xcproject_with_name(self):
+    def test_xc_project_parser__gives_xcproject_with_name(self):
         project_parser = self.fixture.sample_xc_project_parser
 
         self.assertTrue(project_parser.xcode_project)
@@ -54,14 +54,26 @@ class XcProjectParserTests(TestCase):
         self.assertTrue(ui_test_target in xcode_project.targets)
         self.assertTrue(framework_target in xcode_project.targets)
     
-    def test_xc_project_parser__loaded__gives_dependencies_between_targets(self):
+    def test_xc_project_parser__gives_dependencies_between_targets(self):
         project_parser = self.fixture.sample_xc_project_parser
         xcode_project = project_parser.xcode_project
 
-        core_target = [t for t in xcode_project.targets if t.name == 'SampleCore'][0]
-        ui_target = [t for t in xcode_project.targets if t.name == 'SampleUI'][0]
-        app_target = [t for t in xcode_project.targets if t.name == 'SampleiOSApp'][0]
+        core_target = xcode_project.target_with_name('SampleCore')
+        ui_target = xcode_project.target_with_name('SampleUI')
+        app_target = xcode_project.target_with_name('SampleiOSApp')
 
         self.assertTrue(core_target in ui_target.dependencies)
         self.assertTrue(core_target in app_target.dependencies)
         self.assertTrue(ui_target in app_target.dependencies)
+    
+    # Target's files
+
+    def test_xc_project_parser__gives_source_files_for_each_target(self):
+        project_parser = self.fixture.sample_xc_project_parser
+        xcode_project = project_parser.xcode_project
+
+        core_target = xcode_project.target_with_name('SampleCore')
+
+        self.assertTrue(core_target.source_files)
+        self.assertTrue('/SampleCore/SampleCore.swift' in core_target.source_files)
+        self.assertFalse('/SampleiOSApp/AppDelegate.swift' in core_target.source_files)

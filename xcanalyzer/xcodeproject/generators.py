@@ -56,9 +56,9 @@ class XcProjectGraphGenerator():
         for xcode_target in targets:
             if xcode_target.type in { XcTarget.Type.TEST, XcTarget.Type.UI_TEST }:
                 style = 'dotted'
-            elif xcode_target.type == XcTarget.Type.EXTENSION:
+            elif xcode_target.type in {XcTarget.Type.APP_EXTENSION, XcTarget.Type.WATCH_EXTENSION}:
                 style = 'dashed'
-            elif xcode_target.type == XcTarget.Type.APPLICATION:
+            elif xcode_target.type in {XcTarget.Type.APPLICATION, XcTarget.Type.WATCH_APPLICATION}:
                 style = 'diagonals'
             else:
                 style = 'solid'
@@ -117,3 +117,7 @@ class XcProjReporter():
                 if target_type_counts[target_type][1]:
                     print('{:>2} {}'.format(target_type_counts[target_type][1], target_type_counts[target_type][0]))
             cprint('{:>2} Targets in total'.format(len(self.xcode_project.targets)), attrs=['bold'])
+
+    def print_files_by_targets(self):
+        pass
+        # self.xcode_project.targets

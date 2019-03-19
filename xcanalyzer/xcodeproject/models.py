@@ -9,6 +9,14 @@ class XcProject():
     def targets_of_type(self, target_type):
         results = {t for t in self.targets if t.type == target_type}
         return sorted(results, key=lambda t: t.name)
+    
+    def target_with_name(self, name):
+        candidates = [t for t in self.targets if t.name == name]
+
+        if not candidates:
+            return None
+        
+        return candidates[0]
 
 
 class XcTarget():
@@ -34,10 +42,15 @@ class XcTarget():
             OTHER,
         ]
 
-    def __init__(self, name, target_type, dependencies=set()):
+    def __init__(self,
+                 name,
+                 target_type,
+                 dependencies=set(),
+                 source_files=set()):
         self.name = name
         self.type = target_type
         self.dependencies = dependencies  # Set of targets
+        self.source_files = source_files
 
     def __eq__(self, other):
         if self.type != other.type:

@@ -7,6 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		DFAC5E79224016BF002C424B /* SampleCore.h in Headers */ = {isa = PBXBuildFile; fileRef = DFB4DB8E223997A4007DB426 /* SampleCore.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		DFAC5E7B22401710002C424B /* SampleCore.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFAC5E7A22401710002C424B /* SampleCore.swift */; };
+		DFAC5E7E22401BFA002C424B /* Tata.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFAC5E7D22401BFA002C424B /* Tata.swift */; };
+		DFAC5E8022401C11002C424B /* Tutu.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFAC5E7F22401C11002C424B /* Tutu.swift */; };
+		DFAC5E8522401DC9002C424B /* Tyty.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFAC5E8422401DC9002C424B /* Tyty.swift */; };
+		DFAC5E8E22403605002C424B /* Try.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFAC5E8D22403605002C424B /* Try.swift */; };
 		DFB4DB5A22397A49007DB426 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFB4DB5922397A49007DB426 /* AppDelegate.swift */; };
 		DFB4DB5C22397A49007DB426 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFB4DB5B22397A49007DB426 /* ViewController.swift */; };
 		DFB4DB5F22397A49007DB426 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DFB4DB5D22397A49007DB426 /* Main.storyboard */; };
@@ -16,7 +22,6 @@
 		DFB4DB7A22397A4A007DB426 /* SampleiOSAppUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFB4DB7922397A4A007DB426 /* SampleiOSAppUITests.swift */; };
 		DFB4DB95223997A4007DB426 /* SampleCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DFB4DB8C223997A4007DB426 /* SampleCore.framework */; };
 		DFB4DB9C223997A4007DB426 /* SampleCoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFB4DB9B223997A4007DB426 /* SampleCoreTests.swift */; };
-		DFB4DB9E223997A5007DB426 /* SampleCore.h in Headers */ = {isa = PBXBuildFile; fileRef = DFB4DB8E223997A4007DB426 /* SampleCore.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		DFB4DBA1223997A5007DB426 /* SampleCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DFB4DB8C223997A4007DB426 /* SampleCore.framework */; };
 		DFB4DBA2223997A5007DB426 /* SampleCore.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = DFB4DB8C223997A4007DB426 /* SampleCore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		DFB4DBB8223997E6007DB426 /* SampleUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DFB4DBAF223997E5007DB426 /* SampleUI.framework */; };
@@ -94,6 +99,11 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		DFAC5E7A22401710002C424B /* SampleCore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleCore.swift; sourceTree = "<group>"; };
+		DFAC5E7D22401BFA002C424B /* Tata.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Tata.swift; sourceTree = "<group>"; };
+		DFAC5E7F22401C11002C424B /* Tutu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Tutu.swift; path = Titi/Tutu.swift; sourceTree = "<group>"; };
+		DFAC5E8422401DC9002C424B /* Tyty.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tyty.swift; sourceTree = "<group>"; };
+		DFAC5E8D22403605002C424B /* Try.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Try.swift; path = SampleCore/Bar/Try.swift; sourceTree = SOURCE_ROOT; };
 		DFB4DB5622397A49007DB426 /* SampleiOSApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SampleiOSApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DFB4DB5922397A49007DB426 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		DFB4DB5B22397A49007DB426 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -178,6 +188,31 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		DFAC5E7C22401BFA002C424B /* Toto */ = {
+			isa = PBXGroup;
+			children = (
+				DFAC5E7D22401BFA002C424B /* Tata.swift */,
+			);
+			path = Toto;
+			sourceTree = "<group>";
+		};
+		DFAC5E8322401DB4002C424B /* Foo */ = {
+			isa = PBXGroup;
+			children = (
+				DFAC5E8422401DC9002C424B /* Tyty.swift */,
+			);
+			name = Foo;
+			sourceTree = "<group>";
+		};
+		DFAC5E8C224035F8002C424B /* Bar */ = {
+			isa = PBXGroup;
+			children = (
+				DFAC5E8D22403605002C424B /* Try.swift */,
+			);
+			name = Bar;
+			path = SampleCore/Bar;
+			sourceTree = SOURCE_ROOT;
+		};
 		DFB4DB4D22397A49007DB426 = {
 			isa = PBXGroup;
 			children = (
@@ -240,11 +275,16 @@
 		DFB4DB8D223997A4007DB426 /* SampleCore */ = {
 			isa = PBXGroup;
 			children = (
+				DFAC5E8C224035F8002C424B /* Bar */,
+				DFAC5E8322401DB4002C424B /* Foo */,
 				DFB4DB8E223997A4007DB426 /* SampleCore.h */,
 				DFB4DB8F223997A4007DB426 /* Info.plist */,
+				DFAC5E7A22401710002C424B /* SampleCore.swift */,
+				DFAC5E7F22401C11002C424B /* Tutu.swift */,
+				DFAC5E7C22401BFA002C424B /* Toto */,
 			);
 			path = SampleCore;
-			sourceTree = "<group>";
+			sourceTree = SOURCE_ROOT;
 		};
 		DFB4DB9A223997A4007DB426 /* SampleCoreTests */ = {
 			isa = PBXGroup;
@@ -280,7 +320,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DFB4DB9E223997A5007DB426 /* SampleCore.h in Headers */,
+				DFAC5E79224016BF002C424B /* SampleCore.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -447,6 +487,7 @@
 					};
 					DFB4DB8B223997A4007DB426 = {
 						CreatedOnToolsVersion = 10.1;
+						LastSwiftMigration = 1010;
 					};
 					DFB4DB93223997A4007DB426 = {
 						CreatedOnToolsVersion = 10.1;
@@ -568,6 +609,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DFAC5E7B22401710002C424B /* SampleCore.swift in Sources */,
+				DFAC5E8022401C11002C424B /* Tutu.swift in Sources */,
+				DFAC5E8E22403605002C424B /* Try.swift in Sources */,
+				DFAC5E7E22401BFA002C424B /* Tata.swift in Sources */,
+				DFAC5E8522401DC9002C424B /* Tyty.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -773,6 +819,7 @@
 		DFB4DB7F22397A4A007DB426 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = NQT2PRY5GX;
@@ -791,6 +838,7 @@
 		DFB4DB8022397A4A007DB426 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = NQT2PRY5GX;
@@ -891,6 +939,7 @@
 		DFB4DBA3223997A5007DB426 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -909,6 +958,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.vsct.SampleCore;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
@@ -919,6 +969,7 @@
 		DFB4DBA4223997A5007DB426 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
