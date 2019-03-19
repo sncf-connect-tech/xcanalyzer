@@ -120,11 +120,15 @@ class XcProjReporter():
 
     def print_files_by_targets(self):
         for target in self.xcode_project.targets_sorted_by_name:
-            source_files = list(target.source_files)
-            source_files.sort()
-
-            target_display = '{} [{} source files]:'.format(target.name, len(source_files))
+            counters = [
+                '{} source files'.format(len(target.source_files)),
+                '{} resource files'.format(len(target.resource_files)),
+            ]
+            target_display = '{} [{}]:'.format(target.name, ', '.join(counters))
             cprint(target_display, attrs=['bold'])
 
-            for source_file in source_files:
-                print(source_file)
+            # Resource and source files of the target
+            files = list(target.source_files) + list(target.resource_files)
+            files.sort()
+            for filepath in files:
+                print(filepath)
