@@ -30,3 +30,4 @@ except XcodeProjectReadException as e:
 # Reporter
 reporter = XcProjReporter(xcode_project_reader.xcode_project)
 reporter.print_files_by_targets()
+reporter.print_files_summary()

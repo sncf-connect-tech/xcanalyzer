@@ -86,6 +86,9 @@ class XcProjReporter():
     def __init__(self, xcode_project):
         self.xcode_project = xcode_project
 
+    def _print_horizontal_line(self):
+        print('--------------------')
+
     def print_targets(self, by_type=True):
         if not by_type:
             target_names = [t.name for t in self.xcode_project.targets]
@@ -93,13 +96,13 @@ class XcProjReporter():
             for target_name in target_names:
                 print(target_name)
         else:
-            target_type_counts = dict()
+            self.target_type_counts = dict()
 
             for target_type in XcTarget.Type.AVAILABLES:
                 targets = self.xcode_project.targets_of_type(target_type)
 
                 if not targets:
-                    target_type_counts[target_type] = (None, len(targets))
+                    self.target_type_counts[target_type] = (None, len(targets))
                     continue
 
                 # Target type
@@ -110,13 +113,17 @@ class XcProjReporter():
                 for target in targets:
                     print('- {}'.format(target.name))
                 
-                target_type_counts[target_type] = (target_type_display, len(targets))
-                
-            print('--------------------')
-            for target_type in XcTarget.Type.AVAILABLES:
-                if target_type_counts[target_type][1]:
-                    print('{:>2} {}'.format(target_type_counts[target_type][1], target_type_counts[target_type][0]))
-            cprint('{:>2} Targets in total'.format(len(self.xcode_project.targets)), attrs=['bold'])
+                self.target_type_counts[target_type] = (target_type_display, len(targets))
+    
+    def print_targets_summary(self):
+        # Targets summary
+        self._print_horizontal_line()
+
+        for target_type in XcTarget.Type.AVAILABLES:
+            if self.target_type_counts[target_type][1]:
+                print('{:>2} {}'.format(self.target_type_counts[target_type][1],
+                                        self.target_type_counts[target_type][0]))
+        cprint('{:>2} Targets in total'.format(len(self.xcode_project.targets)), attrs=['bold'])
 
     def print_files_by_targets(self):
         for target in self.xcode_project.targets_sorted_by_name:
@@ -132,3 +139,22 @@ class XcProjReporter():
             files.sort()
             for filepath in files:
                 print(filepath)
+    
+    def print_files_summary(self):
+        self._print_horizontal_line()
+
+        source_files = set()
+        resource_files = set()
+
+        for target in self.xcode_project.targets:
+            source_files |= target.source_files
+            resource_files |= target.resource_files
+
+        source_files_count = len(source_files)
+        resource_files_count = len(resource_files)
+
+        total_files_count = source_files_count + resource_files_count
+
+        print('{:>2} Source files in total'.format(source_files_count))
+        print('{:>2} Resource files in total'.format(resource_files_count))
+        cprint('{:>2} Files in total'.format(total_files_count), attrs=['bold'])
