@@ -190,9 +190,17 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		DF1507522248C5A1009D0B98 /* GrandChildGroup */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = GrandChildGroup;
+			sourceTree = "<group>";
+		};
 		DFAC5E7C22401BFA002C424B /* Toto */ = {
 			isa = PBXGroup;
 			children = (
+				DF1507522248C5A1009D0B98 /* GrandChildGroup */,
 				DFAC5E7D22401BFA002C424B /* Tata.swift */,
 			);
 			path = Toto;
@@ -204,7 +212,8 @@
 				DFAC5E8422401DC9002C424B /* Tyty.swift */,
 			);
 			name = Foo;
-			sourceTree = "<group>";
+			path = SampleCore;
+			sourceTree = SOURCE_ROOT;
 		};
 		DFAC5E8C224035F8002C424B /* Bar */ = {
 			isa = PBXGroup;

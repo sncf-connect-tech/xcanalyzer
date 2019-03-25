@@ -1,6 +1,6 @@
 import os
 
-from ..models import XcTarget, XcProject
+from ..models import XcTarget, XcProject, XcGroup
 from ..parsers import XcProjectParser
 
 
@@ -19,7 +19,10 @@ class XcModelsFixture():
     
     def any_project(self):
         targets = set([self.any_target()])
-        return XcProject('MyXcProject', targets=targets)
+        return XcProject('MyXcProject', targets=targets, groups=set())
+    
+    def any_group(self):
+        return XcGroup('MyGroup')
 
 
 # Xcode sample project

@@ -158,3 +158,6 @@ class XcProjReporter():
         print('{:>2} Source files in total'.format(source_files_count))
         print('{:>2} Resource files in total'.format(resource_files_count))
         cprint('{:>2} Files in total'.format(total_files_count), attrs=['bold'])
+    
+    def print_groups(self):
+        pass

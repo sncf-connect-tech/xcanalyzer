@@ -1,9 +1,63 @@
 from unittest import TestCase
 
-from ..models import XcTarget, XcProject
+from ..models import XcTarget, XcProject, XcGroup
 
 from .fixtures import XcModelsFixture
 
+
+class XcGroupTests(TestCase):
+
+    fixture = XcModelsFixture()
+
+    # __init__
+
+    def test_instantiate_xc_group(self):
+        xc_group = XcGroup(name='MyGroup')
+
+        self.assertTrue(xc_group)
+        self.assertEqual(xc_group.name, 'MyGroup')
+    
+    def test_instantiate_xc_group__with_groups__has_groups(self):
+        group = self.fixture.any_group()
+        groups = set([group])
+
+        xc_group = XcGroup(name='MyGroup', groups=groups)
+
+        self.assertEqual(xc_group.groups, groups)
+    
+    # __eq__
+
+    def test_xc_groups_are_not_equal__when_different_name(self):
+        group_1 = XcGroup(name="MyGroup1")
+        group_2 = XcGroup(name="MyGroup2")
+
+        self.assertFalse(group_1 == group_2)
+
+    def test_xc_groups_are_equal__when_same_name(self):
+        group_1 = XcGroup(name="MyGroup")
+        group_2 = XcGroup(name="MyGroup")
+
+        self.assertTrue(group_1 == group_2)
+
+    # __hash__
+
+    def test_xc_group_hashes_are_same__when_same_name(self):
+        group_1 = XcGroup(name="MyGroup")
+        group_2 = XcGroup(name="MyGroup")
+
+        hash_1 = hash(group_1)
+        hash_2 = hash(group_2)
+
+        self.assertEqual(hash_1, hash_2)
+    
+    # __repr__
+
+    def test_xc_group_repr_contain_name(self):
+        group = XcGroup(name="MyGroup")
+
+        representation = str(group)
+
+        self.assertEqual(representation, "<XcGroup> MyGroup")
 
 class XcProjectTests(TestCase):
 
@@ -12,7 +66,7 @@ class XcProjectTests(TestCase):
     # __init__
 
     def test_instantiate_xc_project(self):
-        xc_project = XcProject(name="MyXcProject", targets=set())
+        xc_project = XcProject(name="MyXcProject", targets=set(), groups=set())
 
         self.assertTrue(xc_project)
         self.assertEqual(xc_project.name, "MyXcProject")
@@ -21,9 +75,17 @@ class XcProjectTests(TestCase):
         target = self.fixture.any_target()
         targets = set([target])
         
-        xc_project = XcProject(name="MyXcProject", targets=targets)
+        xc_project = XcProject(name="MyXcProject", targets=targets, groups=set())
 
         self.assertEqual(xc_project.targets, targets)
+
+    def test_instantiate_xc_project__with_groups__has_groups(self):
+        group = self.fixture.any_group()
+        groups = set([group])
+        
+        xc_project = XcProject(name="MyXcProject", targets=set(), groups=groups)
+
+        self.assertEqual(xc_project.groups, groups)
 
     # targets_of_type
 
@@ -32,7 +94,7 @@ class XcProjectTests(TestCase):
         target_2 = self.fixture.any_target(target_type=XcTarget.Type.TEST)
         target_3 = self.fixture.any_target(target_type=XcTarget.Type.APPLICATION)
         targets = set([target_1, target_2, target_3])
-        xc_project = XcProject(name="MyXcProject", targets=targets)
+        xc_project = XcProject(name="MyXcProject", targets=targets, groups=set())
 
         targets = xc_project.targets_of_type(XcTarget.Type.UI_TEST)
 
@@ -42,7 +104,7 @@ class XcProjectTests(TestCase):
 
     def test_target_with_name__returns_none__when_no_matching_target_name(self):
         target_1 = self.fixture.any_target(name='MyTarget1')
-        xc_project = XcProject(name="MyXcProject", targets=set([target_1]))
+        xc_project = XcProject(name="MyXcProject", targets=set([target_1]), groups=set())
 
         target_2 = xc_project.target_with_name('MyTarget2')
 
@@ -50,7 +112,7 @@ class XcProjectTests(TestCase):
 
     def test_target_with_name__returns_target__when_a_target_name_matches(self):
         target = self.fixture.any_target(name='MyTarget')
-        xc_project = XcProject(name="MyXcProject", targets=set([target]))
+        xc_project = XcProject(name="MyXcProject", targets=set([target]), groups=set())
 
         resulting_target = xc_project.target_with_name('MyTarget')
 

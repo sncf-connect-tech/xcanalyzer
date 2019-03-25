@@ -2,7 +2,7 @@ from unittest import TestCase
 
 import os
 
-from ..models import XcTarget
+from ..models import XcTarget, XcGroup
 from ..parsers import XcProjectParser
 
 from .fixtures import SampleXcodeProjectFixture, XcProjectParserFixture
@@ -26,24 +26,17 @@ class XcProjectParserTests(TestCase):
 
         project_parser.load()
 
-    # xcode_proj_name
-
-    def test_xc_project_parser__gives_project_name(self):
-        project_parser = self.fixture.sample_xc_project_parser
-
-        self.assertEqual(project_parser.xcode_proj_name, 'SampleiOSApp.xcodeproj')
-
-    # xcode_project
+    # targets
 
     def test_xc_project_parser__gives_xcproject_with_name(self):
         project_parser = self.fixture.sample_xc_project_parser
 
-        self.assertTrue(project_parser.xcode_project)
-        self.assertTrue(project_parser.xcode_project.name, 'SampleiOSApp')
+        self.assertTrue(project_parser.object)
+        self.assertTrue(project_parser.object.name, 'SampleiOSApp')
 
     def test_xc_project_parser__loaded__gives_targets(self):
         project_parser = self.fixture.sample_xc_project_parser
-        xcode_project = project_parser.xcode_project
+        xcode_project = project_parser.object
 
         app_target = XcTarget(name='SampleiOSApp', target_type=XcTarget.Type.APPLICATION)
         test_target = XcTarget(name='SampleiOSAppTests', target_type=XcTarget.Type.TEST)
@@ -56,7 +49,7 @@ class XcProjectParserTests(TestCase):
     
     def test_xc_project_parser__gives_dependencies_between_targets(self):
         project_parser = self.fixture.sample_xc_project_parser
-        xcode_project = project_parser.xcode_project
+        xcode_project = project_parser.object
 
         core_target = xcode_project.target_with_name('SampleCore')
         ui_target = xcode_project.target_with_name('SampleUI')
@@ -66,11 +59,11 @@ class XcProjectParserTests(TestCase):
         self.assertTrue(core_target in app_target.dependencies)
         self.assertTrue(ui_target in app_target.dependencies)
     
-    # Target's files
+    # targets files
 
     def test_xc_project_parser__gives_source_files_for_each_target(self):
         project_parser = self.fixture.sample_xc_project_parser
-        xcode_project = project_parser.xcode_project
+        xcode_project = project_parser.object
 
         target = xcode_project.target_with_name('SampleCore')
 
@@ -80,7 +73,7 @@ class XcProjectParserTests(TestCase):
 
     def test_xc_project_parser__gives_resource_files_for_each_target(self):
         project_parser = self.fixture.sample_xc_project_parser
-        xcode_project = project_parser.xcode_project
+        xcode_project = project_parser.object
 
         target = xcode_project.target_with_name('SampleiOSApp')
 
@@ -88,3 +81,35 @@ class XcProjectParserTests(TestCase):
         self.assertTrue('/SampleiOSApp/Base.lproj/Main.storyboard' in target.resource_files)
         self.assertTrue('/SampleiOSApp/en.lproj/Main.strings' in target.resource_files)
         self.assertFalse('/SampleiOSApp/AppDelegate.swift' in target.resource_files)
+
+    # groups
+
+    def test_xc_project_parser__gives_root_groups(self):
+        project_parser = self.fixture.sample_xc_project_parser
+        xcode_project = project_parser.object
+
+        groups = xcode_project.groups
+
+        self.assertTrue(XcGroup('SampleCore') in groups)
+        self.assertTrue(XcGroup('SampleCoreTests') in groups)
+        self.assertTrue(XcGroup('SampleUI') in groups)
+        self.assertTrue(XcGroup('SampleiOSApp') in groups)
+    
+    def test_xc_project_parser__gives_children_groups(self):
+        project_parser = self.fixture.sample_xc_project_parser
+        xcode_project = project_parser.object
+        
+        group = [g for g in xcode_project.groups if g.name == 'SampleCore'][0]
+
+        self.assertTrue(XcGroup('Bar') in group.groups)
+        self.assertTrue(XcGroup('Foo') in group.groups)
+        self.assertTrue(XcGroup('Toto') in group.groups)
+    
+    def test_xc_project_parser__gives_grand_children_groups(self):
+        project_parser = self.fixture.sample_xc_project_parser
+        xcode_project = project_parser.object
+        core_group = [g for g in xcode_project.groups if g.name == 'SampleCore'][0]
+
+        group = [g for g in core_group.groups if g.name == 'Toto'][0]
+
+        self.assertTrue(XcGroup('GrandChildGroup') in group.groups)

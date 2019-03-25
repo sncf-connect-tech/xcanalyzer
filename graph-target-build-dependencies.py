@@ -78,7 +78,7 @@ except XcodeProjectReadException as e:
     exit()
 
 # Generator
-graph_generator = XcProjectGraphGenerator(xcode_project_reader.xcode_project)
+graph_generator = XcProjectGraphGenerator(xcode_project_reader.object)
 
 # Generate graph
 if args.framework_only:

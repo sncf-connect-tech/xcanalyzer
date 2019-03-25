@@ -4,7 +4,7 @@ import openstep_parser as osp
 from pbxproj import XcodeProject
 
 from .exceptions import XcodeProjectReadException
-from .models import XcTarget, XcProject
+from .models import XcTarget, XcProject, XcGroup
 
 
 class XcProjectParser():
@@ -12,27 +12,30 @@ class XcProjectParser():
     def __init__(self, project_folder_path):
         self.project_folder_path = project_folder_path
 
-        self.xcode_proj_name = None
-        self.xcode_project = None
-
     def load(self):
         # Check given path
         self._check_folder_path()
 
         # Find xcode proj folder
-        self.xcode_proj_name = self._find_xcodeproj()
+        xcode_proj_name = self._find_xcodeproj()
 
         # Load pbxproj
-        pbxproj_path = '{}/{}/project.pbxproj'.format(self.project_folder_path, self.xcode_proj_name)
+        pbxproj_path = '{}/{}/project.pbxproj'.format(self.project_folder_path, xcode_proj_name)
 
         with open(pbxproj_path, 'r') as f:  # To avoid ResourceWarning: unclosed file
             tree = osp.OpenStepDecoder.ParseFromFile(f)
             self.xcode_project = XcodeProject(tree, pbxproj_path)
 
+        # Output object
+        self.object = XcProject(xcode_proj_name, targets=set(), groups=set())
+
+        # Groups
+        self.object.groups = self._parse_groups()
+
         self._find_filepaths()
 
         # Tests, extensions and app modules
-        self._find_targets()
+        self.object.targets = self._parse_targets()
 
     def _check_folder_path(self):
         if not os.path.isdir(self.project_folder_path):
@@ -60,15 +63,53 @@ class XcProjectParser():
             'com.apple.product-type.application.watchapp2': XcTarget.Type.WATCH_APPLICATION,
         }.get(target.productType, XcTarget.Type.OTHER)
 
-    def _find_filepaths(self):
+    @property
+    def _main_group(self):
         project_object = self.xcode_project.get_object(self.xcode_project.rootObject)
         assert project_object.isa == 'PBXProject'
         
         main_group = self.xcode_project.get_object(project_object.mainGroup)
         assert main_group.isa == 'PBXGroup'
 
+        return main_group
+
+    def _parse_groups(self):
+        # key is a child key reference, value is the XcGroup destination of the group's parent
+        children_to_treat = dict()
+
+        root_group = XcGroup('root')
+        for child_key in self._main_group.children:
+            child = self.xcode_project.get_object(child_key)
+            if child.isa != 'PBXGroup':
+                continue
+            children_to_treat[child_key] = root_group
+
+        while children_to_treat:
+            current_child_key = list(children_to_treat.keys())[0]
+            parent_group = children_to_treat.pop(current_child_key)
+            current_child = self.xcode_project.get_object(current_child_key)
+            if current_child.isa != 'PBXGroup':
+                continue
+            
+            # Current child name
+            if hasattr(current_child, 'name'):
+                name = current_child.name
+            else:
+                name = current_child.path
+
+            # Link the parent with its child
+            current_group = XcGroup(name)
+            parent_group.groups.add(current_group)
+
+            # Add this child's children for treatment
+            for child_key in current_child.children:
+                children_to_treat[child_key] = current_group
+        
+        return root_group.groups
+
+    def _find_filepaths(self):
         self.filepaths = dict()
-        children_paths = [(c, '') for c in main_group.children]
+        children_paths = [(c, '') for c in self._main_group.children]
 
         while children_paths:
             child_key, parent_path = children_paths.pop()
@@ -95,7 +136,7 @@ class XcProjectParser():
                 elif child.sourceTree == 'SOURCE_ROOT':  # Relative to project
                     self.filepaths[child] = '/{}'.format(child.path)
 
-    def _find_targets(self):
+    def _parse_targets(self):
         targets = self.xcode_project.objects.get_targets()
 
         xcode_targets = set()
@@ -149,6 +190,5 @@ class XcProjectParser():
             dependencies_targets = {t for t in xcode_targets if t.name in dependencies_names}
 
             target.dependencies = dependencies_targets
-
-        # Instantiate Xcode project
-        self.xcode_project = XcProject(self.xcode_proj_name, targets=xcode_targets)
+    
+        return xcode_targets
