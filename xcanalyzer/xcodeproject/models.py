@@ -37,6 +37,33 @@ class XcProject():
     def targets_sorted_by_name(self):
         results = list(self.targets)
         return sorted(results, key=lambda t: t.name)
+    
+    @property
+    def group_paths(self):
+        """ Returns the list of path sorted by name of all groups in the project. """
+
+        results = []
+
+        parent_paths = dict()
+
+        for group in self.groups:
+            parent_paths[group] = ''
+        
+        while parent_paths:
+            # Look fo current group and its path
+            current_group = list(parent_paths.keys())[0]
+            parent_path = parent_paths.pop(current_group)
+            current_path = '/'.join([parent_path, current_group.name])
+
+            # Add current group path
+            results.append(current_path)
+
+            # Add its children to be treated
+            for subgroup in current_group.groups:
+                parent_paths[subgroup] = current_path
+            
+        results.sort()
+        return results
 
 
 class XcTarget():

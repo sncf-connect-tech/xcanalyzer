@@ -159,5 +159,6 @@ class XcProjReporter():
         print('{:>2} Resource files in total'.format(resource_files_count))
         cprint('{:>2} Files in total'.format(total_files_count), attrs=['bold'])
     
-    def print_groups(self):
-        pass
+    def print_groups(self, empty=False):
+        for group_path in self.xcode_project.group_paths:
+            print(group_path)

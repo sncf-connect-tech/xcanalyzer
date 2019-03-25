@@ -58,6 +58,7 @@ class XcGroupTests(TestCase):
         representation = str(group)
 
         self.assertEqual(representation, "<XcGroup> MyGroup")
+    
 
 class XcProjectTests(TestCase):
 
@@ -117,6 +118,22 @@ class XcProjectTests(TestCase):
         resulting_target = xc_project.target_with_name('MyTarget')
 
         self.assertEqual(resulting_target, target)
+
+    # group_paths
+    def test_group_paths__gives_correct_sorted_paths_list(self):
+        group_C = XcGroup(name="MyGroupC")
+        group_B = XcGroup(name="MyGroupB", groups = set([group_C]))
+        group_A = XcGroup(name="MyGroupA", groups = set([group_B]))
+
+        project = XcProject(name="MyProject", targets=set(), groups=set([group_A]))
+
+        expected_paths = [
+            '/MyGroupA',
+            '/MyGroupA/MyGroupB',
+            '/MyGroupA/MyGroupB/MyGroupC',
+        ]
+        self.assertEqual(expected_paths, project.group_paths)
+
 
 class XcTargetTests(TestCase):
 
