@@ -25,7 +25,7 @@ class XcModelsFixture():
         return XcGroup('MyGroup')
 
     def any_file(self):
-        return XcFile('MyFile')
+        return XcFile('MyFile', '/MyFile')
 
 # Xcode sample project
 

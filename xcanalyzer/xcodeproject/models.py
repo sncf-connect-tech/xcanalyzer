@@ -1,7 +1,8 @@
 class XcFile():
 
-    def __init__(self, name):
+    def __init__(self, name, path):
         self.name = name
+        self.path = path
 
     def __eq__(self, other):
         return self.name == other.name
