@@ -47,7 +47,7 @@ class XcFileTests(TestCase):
 
         representation = str(xc_file)
 
-        self.assertEqual(representation, "<XcFile> MyFile")
+        self.assertEqual(representation, "<XcFile> MyFile [/MyFile]")
 
 
 class XcGroupTests(TestCase):

@@ -68,8 +68,8 @@ class XcProjectParserTests(TestCase):
         target = xcode_project.target_with_name('SampleCore')
 
         self.assertTrue(target.source_files)
-        self.assertTrue('/SampleCore/SampleCore.swift' in target.source_files)
-        self.assertFalse('/SampleiOSApp/AppDelegate.swift' in target.source_files)
+        self.assertTrue(XcFile('SampleCore.swift', '/SampleCore/SampleCore.swift') in target.source_files)
+        self.assertFalse(XcFile('AppDelegate.swift', '/SampleiOSApp/AppDelegate.swift') in target.source_files)
 
     def test_xc_project_parser__gives_resource_files_for_each_target(self):
         project_parser = self.fixture.sample_xc_project_parser
@@ -78,9 +78,12 @@ class XcProjectParserTests(TestCase):
         target = xcode_project.target_with_name('SampleiOSApp')
 
         self.assertTrue(target.source_files)
-        self.assertTrue('/SampleiOSApp/Base.lproj/Main.storyboard' in target.resource_files)
-        self.assertTrue('/SampleiOSApp/en.lproj/Main.strings' in target.resource_files)
-        self.assertFalse('/SampleiOSApp/AppDelegate.swift' in target.resource_files)
+        self.assertTrue(XcFile('View.xib', '/SampleiOSApp/View.xib') in target.resource_files)
+        self.assertTrue(XcFile('Main.storyboard', '/SampleiOSApp/Base.lproj/Main.storyboard') in target.resource_files)
+        self.assertTrue(XcFile('Main.strings', '/SampleiOSApp/en.lproj/Main.strings') in target.resource_files)
+        self.assertTrue(XcFile('Localizable.strings', '/SampleiOSApp/en.lproj/Localizable.strings') in target.resource_files)
+        self.assertTrue(XcFile('Localizable.strings', '/SampleiOSApp/fr.lproj/Localizable.strings') in target.resource_files)
+        self.assertFalse(XcFile('AppDelegate.swift', '/SampleiOSApp/AppDelegate.swift') in target.resource_files)
 
     # groups
 

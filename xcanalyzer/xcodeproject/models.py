@@ -11,15 +11,16 @@ class XcFile():
         return hash(self.name)
 
     def __repr__(self):
-        return "<XcFile> {}".format(self.name)
+        return "<XcFile> {} [{}]".format(self.name, self.path)
 
 
 class XcGroup():
 
-    def __init__(self, name, groups=None, files=None):
+    def __init__(self, name, groups=None, files=None, is_variant=False):
         self.name = name
         self.groups = groups or set()
         self.files = files or set()
+        self.is_variant = is_variant
 
     def __eq__(self, other):
         return self.name == other.name

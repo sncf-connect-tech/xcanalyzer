@@ -74,13 +74,16 @@ class XcProjectParser():
 
         return main_group
 
-    def _file_name_for_file_ref(self, file_ref):
+    def _file_name_for_file_ref(self, file_ref, of_variant=False):
         assert file_ref.isa == 'PBXFileReference'
 
-        if hasattr(file_ref, 'name'):
-            return file_ref.name
+        if of_variant:
+            return file_ref.path.split('/')[-1]
         else:
-            return file_ref.path
+            if hasattr(file_ref, 'name'):
+                return file_ref.name
+            else:
+                return file_ref.path
 
     def _find_root_files(self):
         results = set()
@@ -94,7 +97,7 @@ class XcProjectParser():
         return results
 
     def _parse_groups(self):
-        self.filepaths = dict()
+        self.file_mapping = dict()
 
         # key is a child key reference
         # value is a tuple:
@@ -132,7 +135,8 @@ class XcProjectParser():
                     name = current_child.path
 
                 # Link the parent with its child
-                current_group = XcGroup(name)
+                is_variant = current_child.isa == 'PBXVariantGroup'
+                current_group = XcGroup(name, is_variant=is_variant)
                 parent_group.groups.add(current_group)
 
                 # Add this child's children for treatment
@@ -146,9 +150,13 @@ class XcProjectParser():
                 elif current_child.sourceTree == 'SOURCE_ROOT':  # Relative to project
                     current_path = '/{}'.format(current_child.path)
 
-                self.filepaths[current_child] = current_path
-                filename = self._file_name_for_file_ref(current_child)
-                parent_group.files.add(XcFile(filename, current_path))
+                filename = self._file_name_for_file_ref(current_child,
+                                                        of_variant=parent_group.is_variant)
+                xc_file = XcFile(filename, current_path)
+                parent_group.files.add(xc_file)
+
+                # File mapping to be used foreward in targets parsing
+                self.file_mapping[current_child] = xc_file
         
         return root_group.groups
 
@@ -185,7 +193,7 @@ class XcProjectParser():
                     for build_file_key in build_phase.files:
                         build_file = self.xcode_project.get_object(build_file_key)
                         file_ref = self.xcode_project.get_object(build_file.fileRef)
-                        xcode_target.source_files.add(self.filepaths[file_ref])
+                        xcode_target.source_files.add(self.file_mapping[file_ref])
 
                 # Resources files
                 elif build_phase.isa == 'PBXResourcesBuildPhase':
@@ -196,9 +204,9 @@ class XcProjectParser():
                         if file_ref.isa == 'PBXVariantGroup':  # Localized resource files
                             for child in file_ref.children:
                                 variant_file_ref = self.xcode_project.get_object(child)
-                                xcode_target.resource_files.add(self.filepaths[variant_file_ref])
+                                xcode_target.resource_files.add(self.file_mapping[variant_file_ref])
                         else:
-                            xcode_target.resource_files.add(self.filepaths[file_ref])
+                            xcode_target.resource_files.add(self.file_mapping[file_ref])
 
         # Set dependencies for each target        
         for target_name, dependencies_names in target_dependencies_names.items():
