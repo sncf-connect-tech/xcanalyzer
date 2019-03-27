@@ -1,8 +1,24 @@
+class XcFile():
+
+    def __init__(self, name):
+        self.name = name
+
+    def __eq__(self, other):
+        return self.name == other.name
+
+    def __hash__(self):
+        return hash(self.name)
+
+    def __repr__(self):
+        return "<XcFile> {}".format(self.name)
+
+
 class XcGroup():
 
-    def __init__(self, name, groups=None):
+    def __init__(self, name, groups=None, files=None):
         self.name = name
         self.groups = groups or set()
+        self.files = files or set()
 
     def __eq__(self, other):
         return self.name == other.name
@@ -16,10 +32,11 @@ class XcGroup():
 
 class XcProject():
 
-    def __init__(self, name, targets, groups):
+    def __init__(self, name, targets, groups, files):
         self.name = name
         self.targets = targets
         self.groups = groups
+        self.files = files
     
     def targets_of_type(self, target_type):
         results = {t for t in self.targets if t.type == target_type}

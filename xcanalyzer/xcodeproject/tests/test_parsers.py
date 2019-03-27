@@ -2,7 +2,7 @@ from unittest import TestCase
 
 import os
 
-from ..models import XcTarget, XcGroup
+from ..models import XcTarget, XcGroup, XcFile
 from ..parsers import XcProjectParser
 
 from .fixtures import SampleXcodeProjectFixture, XcProjectParserFixture
@@ -113,3 +113,13 @@ class XcProjectParserTests(TestCase):
         group = [g for g in core_group.groups if g.name == 'Toto'][0]
 
         self.assertTrue(XcGroup('GrandChildGroup') in group.groups)
+
+    # files
+
+    def test_xc_project_parser__gives_root_files(self):
+        project_parser = self.fixture.sample_xc_project_parser
+        xcode_project = project_parser.object
+
+        files = xcode_project.files
+
+        self.assertTrue(XcFile('README.md') in files)

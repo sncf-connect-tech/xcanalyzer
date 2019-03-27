@@ -1,8 +1,53 @@
 from unittest import TestCase
 
-from ..models import XcTarget, XcProject, XcGroup
+from ..models import XcTarget, XcProject, XcGroup, XcFile
 
 from .fixtures import XcModelsFixture
+
+
+class XcFileTests(TestCase):
+
+    # __init__
+
+    def test_init_xc_file(self):
+        xc_file = XcFile(name='MyFile')
+
+        self.assertTrue(xc_file)
+        self.assertEqual(xc_file.name, 'MyFile')
+
+    # __eq__
+
+    def test_xc_files_are_not_equal__when_different_name(self):
+        file_1 = XcFile(name="MyFile1")
+        file_2 = XcFile(name="MyFile2")
+
+        self.assertFalse(file_1 == file_2)
+
+    def test_xc_files_are_equal__when_same_name(self):
+        file_1 = XcFile(name="MyFile")
+        file_2 = XcFile(name="MyFile")
+
+        self.assertTrue(file_1 == file_2)
+
+    # __hash__
+
+    def test_xc_file_hashes_are_same__when_same_name(self):
+        file_1 = XcFile(name="MyFile")
+        file_2 = XcFile(name="MyFile")
+
+        hash_1 = hash(file_1)
+        hash_2 = hash(file_2)
+
+        self.assertEqual(hash_1, hash_2)
+    
+    # __repr__
+
+    def test_xc_file_repr_contain_name(self):
+        xc_file = XcFile(name="MyFile")
+
+        representation = str(xc_file)
+
+        self.assertEqual(representation, "<XcFile> MyFile")
 
 
 class XcGroupTests(TestCase):
@@ -11,19 +56,27 @@ class XcGroupTests(TestCase):
 
     # __init__
 
-    def test_instantiate_xc_group(self):
+    def test_init_xc_group(self):
         xc_group = XcGroup(name='MyGroup')
 
         self.assertTrue(xc_group)
         self.assertEqual(xc_group.name, 'MyGroup')
     
-    def test_instantiate_xc_group__with_groups__has_groups(self):
+    def test_init_xc_group__with_groups__has_groups(self):
         group = self.fixture.any_group()
         groups = set([group])
 
         xc_group = XcGroup(name='MyGroup', groups=groups)
 
         self.assertEqual(xc_group.groups, groups)
+    
+    def test_init_xc_group__with_groups__has_groups(self):
+        my_file = self.fixture.any_file()
+        files = set([my_file])
+
+        xc_group = XcGroup(name='MyGroup', files=files)
+
+        self.assertEqual(xc_group.files, files)
     
     # __eq__
 
@@ -67,7 +120,7 @@ class XcProjectTests(TestCase):
     # __init__
 
     def test_instantiate_xc_project(self):
-        xc_project = XcProject(name="MyXcProject", targets=set(), groups=set())
+        xc_project = XcProject(name="MyXcProject", targets=set(), groups=set(), files=set())
 
         self.assertTrue(xc_project)
         self.assertEqual(xc_project.name, "MyXcProject")
@@ -76,7 +129,7 @@ class XcProjectTests(TestCase):
         target = self.fixture.any_target()
         targets = set([target])
         
-        xc_project = XcProject(name="MyXcProject", targets=targets, groups=set())
+        xc_project = XcProject(name="MyXcProject", targets=targets, groups=set(), files=set())
 
         self.assertEqual(xc_project.targets, targets)
 
@@ -84,7 +137,7 @@ class XcProjectTests(TestCase):
         group = self.fixture.any_group()
         groups = set([group])
         
-        xc_project = XcProject(name="MyXcProject", targets=set(), groups=groups)
+        xc_project = XcProject(name="MyXcProject", targets=set(), groups=groups, files=set())
 
         self.assertEqual(xc_project.groups, groups)
 
@@ -95,7 +148,7 @@ class XcProjectTests(TestCase):
         target_2 = self.fixture.any_target(target_type=XcTarget.Type.TEST)
         target_3 = self.fixture.any_target(target_type=XcTarget.Type.APPLICATION)
         targets = set([target_1, target_2, target_3])
-        xc_project = XcProject(name="MyXcProject", targets=targets, groups=set())
+        xc_project = XcProject(name="MyXcProject", targets=targets, groups=set(), files=set())
 
         targets = xc_project.targets_of_type(XcTarget.Type.UI_TEST)
 
@@ -105,7 +158,7 @@ class XcProjectTests(TestCase):
 
     def test_target_with_name__returns_none__when_no_matching_target_name(self):
         target_1 = self.fixture.any_target(name='MyTarget1')
-        xc_project = XcProject(name="MyXcProject", targets=set([target_1]), groups=set())
+        xc_project = XcProject(name="MyXcProject", targets=set([target_1]), groups=set(), files=set())
 
         target_2 = xc_project.target_with_name('MyTarget2')
 
@@ -113,7 +166,7 @@ class XcProjectTests(TestCase):
 
     def test_target_with_name__returns_target__when_a_target_name_matches(self):
         target = self.fixture.any_target(name='MyTarget')
-        xc_project = XcProject(name="MyXcProject", targets=set([target]), groups=set())
+        xc_project = XcProject(name="MyXcProject", targets=set([target]), groups=set(), files=set())
 
         resulting_target = xc_project.target_with_name('MyTarget')
 
@@ -125,7 +178,7 @@ class XcProjectTests(TestCase):
         group_B = XcGroup(name="MyGroupB", groups = set([group_C]))
         group_A = XcGroup(name="MyGroupA", groups = set([group_B]))
 
-        project = XcProject(name="MyProject", targets=set(), groups=set([group_A]))
+        project = XcProject(name="MyProject", targets=set(), groups=set([group_A]), files=set())
 
         expected_paths = [
             '/MyGroupA',

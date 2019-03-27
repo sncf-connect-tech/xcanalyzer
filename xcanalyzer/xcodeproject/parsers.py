@@ -4,7 +4,7 @@ import openstep_parser as osp
 from pbxproj import XcodeProject
 
 from .exceptions import XcodeProjectReadException
-from .models import XcTarget, XcProject, XcGroup
+from .models import XcTarget, XcProject, XcGroup, XcFile
 
 
 class XcProjectParser():
@@ -26,8 +26,11 @@ class XcProjectParser():
             tree = osp.OpenStepDecoder.ParseFromFile(f)
             self.xcode_project = XcodeProject(tree, pbxproj_path)
 
+        # Files a project root
+        root_files = self._find_root_files()
+
         # Output object
-        self.object = XcProject(xcode_proj_name, targets=set(), groups=set())
+        self.object = XcProject(xcode_proj_name, targets=set(), groups=set(), files=root_files)
 
         # Groups
         self.object.groups = self._parse_groups()
@@ -72,6 +75,26 @@ class XcProjectParser():
         assert main_group.isa == 'PBXGroup'
 
         return main_group
+
+    def _file_name_for_file_ref(self, file_ref):
+        assert file_ref.isa == 'PBXFileReference'
+
+        if file_ref.sourceTree == '<group>':  # Relative to group
+            return file_ref.path
+    
+        elif file_ref.sourceTree == 'SOURCE_ROOT':  # Relative to project
+            return file_ref.path
+
+    def _find_root_files(self):
+        results = set()
+
+        for child_key in self._main_group.children:
+            child = self.xcode_project.get_object(child_key)
+            if child.isa == 'PBXFileReference':
+                filename = self._file_name_for_file_ref(child)
+                results.add(XcFile(filename))
+
+        return results
 
     def _parse_groups(self):
         # key is a child key reference, value is the XcGroup destination of the group's parent
