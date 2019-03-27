@@ -35,4 +35,4 @@ except XcodeProjectReadException as e:
 
 # Reporter
 reporter = XcProjReporter(xcode_project_reader.object)
-reporter.print_groups(empty=True)
+reporter.print_groups(filter_empty=args.empty_groups)

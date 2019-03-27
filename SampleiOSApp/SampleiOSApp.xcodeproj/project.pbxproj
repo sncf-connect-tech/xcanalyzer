@@ -204,6 +204,13 @@
 			path = GrandChildGroup;
 			sourceTree = "<group>";
 		};
+		DF4ACD56224C1B8800984A77 /* EmptyGroup */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = EmptyGroup;
+			sourceTree = "<group>";
+		};
 		DFAC5E7C22401BFA002C424B /* Toto */ = {
 			isa = PBXGroup;
 			children = (
@@ -297,6 +304,7 @@
 		DFB4DB8D223997A4007DB426 /* SampleCore */ = {
 			isa = PBXGroup;
 			children = (
+				DF4ACD56224C1B8800984A77 /* EmptyGroup */,
 				DFAC5E8C224035F8002C424B /* Bar */,
 				DFAC5E8322401DB4002C424B /* Foo */,
 				DFB4DB8E223997A4007DB426 /* SampleCore.h */,

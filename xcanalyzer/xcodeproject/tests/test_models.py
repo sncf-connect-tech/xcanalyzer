@@ -173,19 +173,47 @@ class XcProjectTests(TestCase):
         self.assertEqual(resulting_target, target)
 
     # group_paths
-    def test_group_paths__gives_correct_sorted_paths_list(self):
-        group_C = XcGroup(name="MyGroupC")
-        group_B = XcGroup(name="MyGroupB", groups = set([group_C]))
-        group_A = XcGroup(name="MyGroupA", groups = set([group_B]))
 
+    def test_group_paths__gives_all_paths__sorted(self):
+        group_C = XcGroup(name="MyGroupC")
+        group_B = XcGroup(name="MyGroupB", groups=set([group_C]))
+        group_A = XcGroup(name="MyGroupA", groups=set([group_B]))
         project = XcProject(name="MyProject", targets=set(), groups=set([group_A]), files=set())
+
+        paths = project.group_paths()
 
         expected_paths = [
             '/MyGroupA',
             '/MyGroupA/MyGroupB',
             '/MyGroupA/MyGroupB/MyGroupC',
         ]
-        self.assertEqual(expected_paths, project.group_paths)
+        self.assertEqual(expected_paths, paths)
+    
+    def test_group_paths__gives_empty_groups__when_filter_empty_true(self):
+        group = XcGroup(name="MyGroup")
+        project = XcProject(name="MyProject", targets=set(), groups=set([group]), files=set())
+
+        paths = project.group_paths(filter_empty=True)
+
+        self.assertEqual(['/MyGroup'], paths)
+    
+    def test_group_paths__exclude_groups_with_files__when_filter_empty_true(self):
+        file = self.fixture.any_file()
+        group = XcGroup(name="MyGroup", files=set([file]))
+        project = XcProject(name="MyProject", targets=set(), groups=set([group]), files=set())
+
+        paths = project.group_paths(filter_empty=True)
+
+        self.assertFalse(paths)
+
+    def test_group_paths__exclude_groups_with_groups__when_filter_empty_true(self):
+        subgroup = self.fixture.any_group()
+        group = XcGroup(name="MyGroup", groups=set([subgroup]))
+        project = XcProject(name="MyProject", targets=set(), groups=set([group]), files=set())
+
+        paths = project.group_paths(filter_empty=True)
+
+        self.assertFalse('/MyGroup' in paths)
 
 
 class XcTargetTests(TestCase):
