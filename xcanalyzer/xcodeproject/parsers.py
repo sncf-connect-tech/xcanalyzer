@@ -79,10 +79,9 @@ class XcProjectParser():
     def _file_name_for_file_ref(self, file_ref):
         assert file_ref.isa == 'PBXFileReference'
 
-        if file_ref.sourceTree == '<group>':  # Relative to group
-            return file_ref.path
-    
-        elif file_ref.sourceTree == 'SOURCE_ROOT':  # Relative to project
+        if hasattr(file_ref, 'name'):
+            return file_ref.name
+        else:
             return file_ref.path
 
     def _find_root_files(self):
@@ -111,7 +110,12 @@ class XcProjectParser():
             current_child_key = list(children_to_treat.keys())[0]
             parent_group = children_to_treat.pop(current_child_key)
             current_child = self.xcode_project.get_object(current_child_key)
-            if current_child.isa != 'PBXGroup':
+
+            if current_child.isa == 'PBXFileReference':
+                filename = self._file_name_for_file_ref(current_child)
+                parent_group.files.add(XcFile(filename))
+                continue
+            elif current_child.isa != 'PBXGroup':
                 continue
             
             # Current child name

@@ -123,3 +123,23 @@ class XcProjectParserTests(TestCase):
         files = xcode_project.files
 
         self.assertTrue(XcFile('README.md') in files)
+
+    def test_xc_project_parser__gives_files_of_root_groups(self):
+        project_parser = self.fixture.sample_xc_project_parser
+        xcode_project = project_parser.object
+        
+        group = [g for g in xcode_project.groups if g.name == 'SampleCore'][0]
+
+        self.assertTrue(XcFile('SampleCore.swift') in group.files)
+        self.assertTrue(XcFile('Tutu.swift') in group.files)
+    
+    def test_xc_project_parser__gives_files_of_other_groups(self):
+        project_parser = self.fixture.sample_xc_project_parser
+        xcode_project = project_parser.object
+        
+        core_group = [g for g in xcode_project.groups if g.name == 'SampleCore'][0]
+        bar_group = [g for g in core_group.groups if g.name == 'Bar'][0]
+        foo_group = [g for g in core_group.groups if g.name == 'Foo'][0]
+
+        self.assertTrue(XcFile('Try.swift') in bar_group.files)
+        self.assertTrue(XcFile('Tyty.swift') in foo_group.files)
