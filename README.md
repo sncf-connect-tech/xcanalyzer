@@ -23,3 +23,12 @@ To launch the tests, activate the ven then type:
 To clean the project, runs:
 
         ./cleanup.sh
+
+## Work in progress
+
+The goals to reach:
+
+- find groups without folder
+- find groups relative to project
+- find files not used in project
+- find files used in several targets
