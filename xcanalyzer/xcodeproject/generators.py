@@ -163,3 +163,21 @@ class XcProjReporter():
     def print_groups(self, filter_empty=False):
         for group_path in self.xcode_project.group_paths(filter_empty=filter_empty):
             print(group_path)
+    
+    def print_groups_summary(self):
+        self._print_horizontal_line()
+
+        group_paths = self.xcode_project.group_paths()
+
+        # Total groups count
+        total_groups_count = len(group_paths)
+
+        # Root groups count
+        root_groups_count = len([p for p in group_paths if len(p.split('/')) == 2])
+
+        # Non root groups count
+        other_groups_count = total_groups_count - root_groups_count
+
+        print('{:>2} Root groups in total'.format(root_groups_count))
+        print('{:>2} Other groups in total'.format(other_groups_count))
+        cprint('{:>2} Groups in total'.format(total_groups_count), attrs=['bold'])

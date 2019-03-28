@@ -24,6 +24,9 @@ argument_parser.add_argument('--empty',
 # --- Parse arguments ---
 args = argument_parser.parse_args()
 
+# Filter empty groups argument
+filter_empty = args.empty_groups
+
 # Xcode code project reader
 xcode_project_reader = XcProjectParser(args.path, verbose=False)
 
@@ -36,4 +39,7 @@ except XcodeProjectReadException as e:
 
 # Reporter
 reporter = XcProjReporter(xcode_project_reader.object)
-reporter.print_groups(filter_empty=args.empty_groups)
+reporter.print_groups(filter_empty=filter_empty)
+
+if not filter_empty:
+    reporter.print_groups_summary()
