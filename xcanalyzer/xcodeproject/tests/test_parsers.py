@@ -124,6 +124,20 @@ class XcProjectParserTests(TestCase):
         app_group = [g for g in xcode_project.groups if g.group_path == '/SampleiOSApp'][0]
 
         self.assertTrue(XcGroup('/SampleiOSApp/Main.storyboard', '/SampleiOSApp/Main.storyboard') in app_group.groups)
+    
+    def test_xc_project_parser__set_project_relative_to_true__for_project_relative_group(self):
+        project_parser = self.fixture.sample_xc_project_parser
+        xcode_project = project_parser.object
+        core_group = [g for g in xcode_project.groups if g.group_path == '/SampleCore'][0]
+
+        normal_group = [g for g in core_group.groups if g.group_path == '/SampleCore/Normal'][0]
+        project_relative_group = [g for g in core_group.groups if g.group_path == '/SampleCore/RelativeToProject'][0]
+        project_relative_without_folder_group = [g for g in core_group.groups if g.group_path == '/SampleCore/RelativeToProjectWithoutFolder'][0]
+
+        self.assertEqual(normal_group.is_project_relative, False)
+        self.assertEqual(project_relative_group.is_project_relative, True)
+        self.assertEqual(project_relative_without_folder_group.is_project_relative, True)
+
 
     # files
 

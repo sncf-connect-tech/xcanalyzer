@@ -133,9 +133,11 @@ class XcProjectParser():
                         current_filepath = '/'.join([parent_path, current_child.path])
                     else:
                         current_filepath = parent_path  # current group without folder
+                    is_project_relative = False
                 
                 elif current_child.sourceTree == 'SOURCE_ROOT':  # Relative to project
                     current_filepath = '/{}'.format(current_child.path)
+                    is_project_relative = True
 
                 # Current child group path
                 if hasattr(current_child, 'name'):
@@ -146,7 +148,10 @@ class XcProjectParser():
 
                 # Link the parent with its child
                 is_variant = current_child.isa == 'PBXVariantGroup'
-                current_group = XcGroup(current_group_path, current_filepath, is_variant=is_variant)
+                current_group = XcGroup(current_group_path,
+                                        current_filepath,
+                                        is_project_relative=is_project_relative,
+                                        is_variant=is_variant)
 
                 parent_group.groups.append(current_group)
 

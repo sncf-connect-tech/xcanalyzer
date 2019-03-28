@@ -16,9 +16,16 @@ class XcFile():
 
 class XcGroup():
 
-    def __init__(self, group_path, filepath, groups=None, files=None, is_variant=False):
+    def __init__(self,
+                 group_path,
+                 filepath,
+                 is_project_relative=False,
+                 groups=None,
+                 files=None,
+                 is_variant=False):
         self.group_path = group_path
         self.filepath = filepath
+        self.is_project_relative = is_project_relative
         self.groups = groups or list()
         self.files = files or set()
         self.is_variant = is_variant
@@ -73,10 +80,17 @@ class XcProject():
             current_group = remaining_groups.pop()
             current_path = current_group.group_path
 
+            # Empty groups
             if filter_mode == 'empty':
-                # Only empty folder
                 if not current_group.groups and not current_group.files:
                     results.append(current_path)
+            
+            # Relative to project groups
+            elif filter_mode == 'project_relative':
+                if current_group.is_project_relative:
+                    results.append(current_path)
+            
+            # All groups
             else:
                 # Add current group path
                 results.append(current_path)

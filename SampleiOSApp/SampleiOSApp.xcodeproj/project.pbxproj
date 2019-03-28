@@ -334,7 +334,7 @@
 				DFAC5E7F22401C11002C424B /* Ghost.swift */,
 			);
 			path = SampleCore;
-			sourceTree = SOURCE_ROOT;
+			sourceTree = "<group>";
 		};
 		DFB4DB9A223997A4007DB426 /* SampleCoreTests */ = {
 			isa = PBXGroup;
@@ -769,8 +769,7 @@
 				DFAC5E9022411F9F002C424B /* en */,
 			);
 			name = LaunchScreen.storyboard;
-			path = SampleiOSApp;
-			sourceTree = SOURCE_ROOT;
+			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
 
