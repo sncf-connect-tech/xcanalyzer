@@ -189,11 +189,11 @@ class XcProjectTests(TestCase):
         ]
         self.assertEqual(expected_paths, paths)
     
-    def test_group_paths__gives_empty_groups__when_filter_empty_true(self):
+    def test_group_paths__gives_empty_groups__when_filter_empty(self):
         group = XcGroup(group_path="/MyGroup", filepath="/MyGroup")
         project = XcProject(name="MyProject", targets=set(), groups=set([group]), files=set())
 
-        paths = project.group_paths(filter_empty=True)
+        paths = project.group_paths(filter_mode='empty')
 
         self.assertEqual(['/MyGroup'], paths)
     
@@ -202,7 +202,7 @@ class XcProjectTests(TestCase):
         group = XcGroup(group_path="/MyGroup", filepath="/MyGroup", files=set([file]))
         project = XcProject(name="MyProject", targets=set(), groups=set([group]), files=set())
 
-        paths = project.group_paths(filter_empty=True)
+        paths = project.group_paths(filter_mode='empty')
 
         self.assertFalse(paths)
 
@@ -211,7 +211,7 @@ class XcProjectTests(TestCase):
         group = XcGroup(group_path="/MyGroup", filepath="/MyGroup", groups=set([subgroup]))
         project = XcProject(name="MyProject", targets=set(), groups=set([group]), files=set())
 
-        paths = project.group_paths(filter_empty=True)
+        paths = project.group_paths(filter_mode='empty')
 
         self.assertFalse('/MyGroup' in paths)
 

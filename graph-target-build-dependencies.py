@@ -49,7 +49,7 @@ argument_parser.add_argument('-f', '--output-format',
                              choices=['pdf', 'png'],
                              default='pdf',
                              dest='output_format',
-                             help='Output format of the granerated file (PDF and PNG are supported).')
+                             help='Output format of the generated file (PDF and PNG are supported).')
 
 
 # --- Parse arguments ---

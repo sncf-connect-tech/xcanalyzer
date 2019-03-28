@@ -58,7 +58,7 @@ class XcProject():
         results = list(self.targets)
         return sorted(results, key=lambda t: t.name)
     
-    def group_paths(self, filter_empty=False):
+    def group_paths(self, filter_mode=None):
         """ Returns the list of path sorted by name of all groups in the project. """
 
         results = []
@@ -73,7 +73,7 @@ class XcProject():
             current_group = remaining_groups.pop()
             current_path = current_group.group_path
 
-            if filter_empty:
+            if filter_mode == 'empty':
                 # Only empty folder
                 if not current_group.groups and not current_group.files:
                     results.append(current_path)

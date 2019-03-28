@@ -15,17 +15,15 @@ argument_parser.add_argument('path',
                              help='Path of the folder containing your `.xcodeproj` folder.')
 
 # Sorted by name argument
-argument_parser.add_argument('--empty',
-                             dest='empty_groups',
-                             action='store_true', 
-                             help='Give the list of empty groups in the Xcode project.')
+argument_parser.add_argument('-m', '--mode',
+                             choices=['all', 'empty', 'project_relative', 'without_folder'],
+                             default='all',
+                             dest='mode',
+                             help='Give the list of all, empty, relative to project or without folder groups in the Xcode project.')
 
 
 # --- Parse arguments ---
 args = argument_parser.parse_args()
-
-# Filter empty groups argument
-filter_empty = args.empty_groups
 
 # Xcode code project reader
 xcode_project_reader = XcProjectParser(args.path, verbose=False)
@@ -39,7 +37,10 @@ except XcodeProjectReadException as e:
 
 # Reporter
 reporter = XcProjReporter(xcode_project_reader.object)
-reporter.print_groups(filter_empty=filter_empty)
+if args.mode == 'all':
+    reporter.print_groups()
+else:
+    reporter.print_groups(filter_mode=mode)
 
-if not filter_empty:
+if args.mode == 'all':
     reporter.print_groups_summary()
