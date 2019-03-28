@@ -148,8 +148,7 @@ class XcProjectParser():
                 is_variant = current_child.isa == 'PBXVariantGroup'
                 current_group = XcGroup(current_group_path, current_filepath, is_variant=is_variant)
 
-                if not is_variant:
-                    parent_group.groups.append(current_group)
+                parent_group.groups.append(current_group)
 
                 # Add this child's children for treatment
                 for child_key in current_child.children:
