@@ -118,12 +118,12 @@ class XcProjectParserTests(TestCase):
         expected_group = XcGroup('/SampleCore/Toto/GrandChildGroup', '/SampleCore/Toto/GrandChildGroup')
         self.assertTrue(expected_group in group.groups)
     
-    def test_xc_project_parser__does_not_give_variant_groups(self):
+    def test_xc_project_parser__gives_variant_groups(self):
         project_parser = self.fixture.sample_xc_project_parser
         xcode_project = project_parser.object
         app_group = [g for g in xcode_project.groups if g.group_path == '/SampleiOSApp'][0]
 
-        self.assertFalse(XcGroup('/SampleiOSApp/Main.storyboard', '/SampleiOSApp/Main.storyboard') in app_group.groups)
+        self.assertTrue(XcGroup('/SampleiOSApp/Main.storyboard', '/SampleiOSApp/Main.storyboard') in app_group.groups)
 
     # files
 
