@@ -57,16 +57,16 @@ class XcGroupTests(TestCase):
     # __init__
 
     def test_init_xc_group(self):
-        xc_group = XcGroup(name='MyGroup')
+        xc_group = XcGroup(group_path='/MyGroup', filepath='/MyGroup')
 
         self.assertTrue(xc_group)
-        self.assertEqual(xc_group.name, 'MyGroup')
+        self.assertEqual(xc_group.group_path, '/MyGroup')
     
     def test_init_xc_group__with_groups__has_groups(self):
         group = self.fixture.any_group()
         groups = set([group])
 
-        xc_group = XcGroup(name='MyGroup', groups=groups)
+        xc_group = XcGroup(group_path='/MyGroup', filepath='/MyGroup', groups=groups)
 
         self.assertEqual(xc_group.groups, groups)
     
@@ -74,29 +74,29 @@ class XcGroupTests(TestCase):
         my_file = self.fixture.any_file()
         files = set([my_file])
 
-        xc_group = XcGroup(name='MyGroup', files=files)
+        xc_group = XcGroup(group_path='/MyGroup', filepath='/MyGroup', files=files)
 
         self.assertEqual(xc_group.files, files)
     
     # __eq__
 
-    def test_xc_groups_are_not_equal__when_different_name(self):
-        group_1 = XcGroup(name="MyGroup1")
-        group_2 = XcGroup(name="MyGroup2")
+    def test_xc_groups_are_not_equal__when_different_group_path(self):
+        group_1 = XcGroup(group_path="/MyGroup1", filepath="/MyGroup")
+        group_2 = XcGroup(group_path="/MyGroup2", filepath="/MyGroup")
 
         self.assertFalse(group_1 == group_2)
 
-    def test_xc_groups_are_equal__when_same_name(self):
-        group_1 = XcGroup(name="MyGroup")
-        group_2 = XcGroup(name="MyGroup")
+    def test_xc_groups_are_equal__when_same_group_path(self):
+        group_1 = XcGroup(group_path="/MyGroup", filepath="/MyGroup1")
+        group_2 = XcGroup(group_path="/MyGroup", filepath="/MyGroup2")
 
         self.assertTrue(group_1 == group_2)
 
     # __hash__
 
-    def test_xc_group_hashes_are_same__when_same_name(self):
-        group_1 = XcGroup(name="MyGroup")
-        group_2 = XcGroup(name="MyGroup")
+    def test_xc_group_hashes_are_same__when_same_group_path(self):
+        group_1 = XcGroup(group_path="/MyGroup", filepath="/MyGroup1")
+        group_2 = XcGroup(group_path="/MyGroup", filepath="/MyGroup2")
 
         hash_1 = hash(group_1)
         hash_2 = hash(group_2)
@@ -105,12 +105,12 @@ class XcGroupTests(TestCase):
     
     # __repr__
 
-    def test_xc_group_repr_contain_name(self):
-        group = XcGroup(name="MyGroup")
+    def test_xc_group_repr_contains_group_path(self):
+        group = XcGroup(group_path="/MyGroup", filepath="/MyGroup")
 
         representation = str(group)
 
-        self.assertEqual(representation, "<XcGroup> MyGroup")
+        self.assertEqual(representation, "<XcGroup> /MyGroup")
     
 
 class XcProjectTests(TestCase):
@@ -175,9 +175,9 @@ class XcProjectTests(TestCase):
     # group_paths
 
     def test_group_paths__gives_all_paths__sorted(self):
-        group_C = XcGroup(name="MyGroupC")
-        group_B = XcGroup(name="MyGroupB", groups=set([group_C]))
-        group_A = XcGroup(name="MyGroupA", groups=set([group_B]))
+        group_C = XcGroup(group_path="/MyGroupA/MyGroupB/MyGroupC", filepath="/MyGroupA/MyGroupB/MyGroupC")
+        group_B = XcGroup(group_path="/MyGroupA/MyGroupB", filepath="/MyGroupA/MyGroupB", groups=set([group_C]))
+        group_A = XcGroup(group_path="/MyGroupA", filepath="/MyGroupA", groups=set([group_B]))
         project = XcProject(name="MyProject", targets=set(), groups=set([group_A]), files=set())
 
         paths = project.group_paths()
@@ -190,7 +190,7 @@ class XcProjectTests(TestCase):
         self.assertEqual(expected_paths, paths)
     
     def test_group_paths__gives_empty_groups__when_filter_empty_true(self):
-        group = XcGroup(name="MyGroup")
+        group = XcGroup(group_path="/MyGroup", filepath="/MyGroup")
         project = XcProject(name="MyProject", targets=set(), groups=set([group]), files=set())
 
         paths = project.group_paths(filter_empty=True)
@@ -199,7 +199,7 @@ class XcProjectTests(TestCase):
     
     def test_group_paths__exclude_groups_with_files__when_filter_empty_true(self):
         file = self.fixture.any_file()
-        group = XcGroup(name="MyGroup", files=set([file]))
+        group = XcGroup(group_path="/MyGroup", filepath="/MyGroup", files=set([file]))
         project = XcProject(name="MyProject", targets=set(), groups=set([group]), files=set())
 
         paths = project.group_paths(filter_empty=True)
@@ -207,8 +207,8 @@ class XcProjectTests(TestCase):
         self.assertFalse(paths)
 
     def test_group_paths__exclude_groups_with_groups__when_filter_empty_true(self):
-        subgroup = self.fixture.any_group()
-        group = XcGroup(name="MyGroup", groups=set([subgroup]))
+        subgroup = XcGroup(group_path="/MyGroup/MySubGroup", filepath="/MyGroup/MySubGroup")
+        group = XcGroup(group_path="/MyGroup", filepath="/MyGroup", groups=set([subgroup]))
         project = XcProject(name="MyProject", targets=set(), groups=set([group]), files=set())
 
         paths = project.group_paths(filter_empty=True)

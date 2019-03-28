@@ -4,6 +4,7 @@ import argparse
 
 from xcanalyzer.xcodeproject.parsers import XcProjectParser
 from xcanalyzer.xcodeproject.generators import XcProjReporter
+from xcanalyzer.xcodeproject.exceptions import XcodeProjectReadException
 
 
 # --- Arguments ---
@@ -24,7 +25,7 @@ argument_parser.add_argument('--empty',
 args = argument_parser.parse_args()
 
 # Xcode code project reader
-xcode_project_reader = XcProjectParser(args.path)
+xcode_project_reader = XcProjectParser(args.path, verbose=False)
 
 # Loading the project
 try:

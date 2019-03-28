@@ -22,7 +22,7 @@ class XcModelsFixture():
         return XcProject('MyXcProject', targets=targets, groups=set(), files=set())
     
     def any_group(self):
-        return XcGroup('MyGroup')
+        return XcGroup('/MyGroup', '/MyGroup')
 
     def any_file(self):
         return XcFile('MyFile', '/MyFile')

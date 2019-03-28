@@ -93,36 +93,37 @@ class XcProjectParserTests(TestCase):
 
         groups = xcode_project.groups
 
-        self.assertTrue(XcGroup('SampleCore') in groups)
-        self.assertTrue(XcGroup('SampleCoreTests') in groups)
-        self.assertTrue(XcGroup('SampleUI') in groups)
-        self.assertTrue(XcGroup('SampleiOSApp') in groups)
+        self.assertTrue(XcGroup('/SampleCore', '/SampleCore') in groups)
+        self.assertTrue(XcGroup('/SampleCoreTests', '/SampleCoreTests') in groups)
+        self.assertTrue(XcGroup('/SampleUI', '/SampleUI') in groups)
+        self.assertTrue(XcGroup('/SampleiOSApp', '/SampleiOSApp') in groups)
     
     def test_xc_project_parser__gives_children_groups(self):
         project_parser = self.fixture.sample_xc_project_parser
         xcode_project = project_parser.object
         
-        group = [g for g in xcode_project.groups if g.name == 'SampleCore'][0]
+        group = [g for g in xcode_project.groups if g.group_path == '/SampleCore'][0]
 
-        self.assertTrue(XcGroup('Bar') in group.groups)
-        self.assertTrue(XcGroup('Foo') in group.groups)
-        self.assertTrue(XcGroup('Toto') in group.groups)
+        self.assertTrue(XcGroup('/SampleCore/Bar', '/SampleCore/Bar') in group.groups)
+        self.assertTrue(XcGroup('/SampleCore/Foo', '/SampleCore/Foo') in group.groups)
+        self.assertTrue(XcGroup('/SampleCore/Toto', '/SampleCore/Toto') in group.groups)
     
     def test_xc_project_parser__gives_grand_children_groups(self):
         project_parser = self.fixture.sample_xc_project_parser
         xcode_project = project_parser.object
-        core_group = [g for g in xcode_project.groups if g.name == 'SampleCore'][0]
+        core_group = [g for g in xcode_project.groups if g.group_path == '/SampleCore'][0]
 
-        group = [g for g in core_group.groups if g.name == 'Toto'][0]
+        group = [g for g in core_group.groups if g.group_path == '/SampleCore/Toto'][0]
 
-        self.assertTrue(XcGroup('GrandChildGroup') in group.groups)
+        expected_group = XcGroup('/SampleCore/Toto/GrandChildGroup', '/SampleCore/Toto/GrandChildGroup')
+        self.assertTrue(expected_group in group.groups)
     
     def test_xc_project_parser__does_not_give_variant_groups(self):
         project_parser = self.fixture.sample_xc_project_parser
         xcode_project = project_parser.object
-        app_group = [g for g in xcode_project.groups if g.name == 'SampleiOSApp'][0]
+        app_group = [g for g in xcode_project.groups if g.group_path == '/SampleiOSApp'][0]
 
-        self.assertFalse(XcGroup('Main.storyboard') in app_group.groups)
+        self.assertFalse(XcGroup('/SampleiOSApp/Main.storyboard', '/SampleiOSApp/Main.storyboard') in app_group.groups)
 
     # files
 
@@ -138,7 +139,7 @@ class XcProjectParserTests(TestCase):
         project_parser = self.fixture.sample_xc_project_parser
         xcode_project = project_parser.object
         
-        group = [g for g in xcode_project.groups if g.name == 'SampleCore'][0]
+        group = [g for g in xcode_project.groups if g.group_path == '/SampleCore'][0]
 
         self.assertTrue(XcFile('SampleCore.swift', '/SampleCore/SampleCore.swift') in group.files)
         self.assertTrue(XcFile('Tutu.swift', '/SampleCore/Titi/Tutu.swift') in group.files)
@@ -147,9 +148,9 @@ class XcProjectParserTests(TestCase):
         project_parser = self.fixture.sample_xc_project_parser
         xcode_project = project_parser.object
         
-        core_group = [g for g in xcode_project.groups if g.name == 'SampleCore'][0]
-        bar_group = [g for g in core_group.groups if g.name == 'Bar'][0]
-        foo_group = [g for g in core_group.groups if g.name == 'Foo'][0]
+        core_group = [g for g in xcode_project.groups if g.group_path == '/SampleCore'][0]
+        bar_group = [g for g in core_group.groups if g.group_path == '/SampleCore/Bar'][0]
+        foo_group = [g for g in core_group.groups if g.group_path == '/SampleCore/Foo'][0]
 
         self.assertTrue(XcFile('Try.swift', '/SampleCore/Bar/Try.swift') in bar_group.files)
         self.assertTrue(XcFile('Tyty.swift', '/SampleCore/Tyty.swift') in foo_group.files)

@@ -211,6 +211,21 @@
 			path = EmptyGroup;
 			sourceTree = "<group>";
 		};
+		DF4ACD5A224CB4F500984A77 /* GroupWithoutFolder */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = GroupWithoutFolder;
+			sourceTree = "<group>";
+		};
+		DF4ACD5C224CB66700984A77 /* Foo2 */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Foo2;
+			path = SampleCore;
+			sourceTree = SOURCE_ROOT;
+		};
 		DFAC5E7C22401BFA002C424B /* Toto */ = {
 			isa = PBXGroup;
 			children = (
@@ -223,6 +238,7 @@
 		DFAC5E8322401DB4002C424B /* Foo */ = {
 			isa = PBXGroup;
 			children = (
+				DF4ACD5C224CB66700984A77 /* Foo2 */,
 				DFAC5E8422401DC9002C424B /* Tyty.swift */,
 			);
 			name = Foo;
@@ -304,6 +320,7 @@
 		DFB4DB8D223997A4007DB426 /* SampleCore */ = {
 			isa = PBXGroup;
 			children = (
+				DF4ACD5A224CB4F500984A77 /* GroupWithoutFolder */,
 				DF4ACD56224C1B8800984A77 /* EmptyGroup */,
 				DFAC5E8C224035F8002C424B /* Bar */,
 				DFAC5E8322401DB4002C424B /* Foo */,

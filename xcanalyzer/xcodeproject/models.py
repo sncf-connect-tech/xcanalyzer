@@ -16,20 +16,21 @@ class XcFile():
 
 class XcGroup():
 
-    def __init__(self, name, groups=None, files=None, is_variant=False):
-        self.name = name
-        self.groups = groups or set()
+    def __init__(self, group_path, filepath, groups=None, files=None, is_variant=False):
+        self.group_path = group_path
+        self.filepath = filepath
+        self.groups = groups or list()
         self.files = files or set()
         self.is_variant = is_variant
 
     def __eq__(self, other):
-        return self.name == other.name
+        return self.group_path == other.group_path
 
     def __hash__(self):
-        return hash(self.name)
+        return hash(self.group_path)
 
     def __repr__(self):
-        return "<XcGroup> {}".format(self.name)
+        return "<XcGroup> {}".format(self.group_path)
     
 
 class XcProject():
@@ -62,16 +63,15 @@ class XcProject():
 
         results = []
 
-        parent_paths = dict()
+        remaining_groups = list()
 
         for group in self.groups:
-            parent_paths[group] = ''
+            remaining_groups.append(group)
         
-        while parent_paths:
+        while remaining_groups:
             # Look for current group and its path
-            current_group = list(parent_paths.keys())[0]
-            parent_path = parent_paths.pop(current_group)
-            current_path = '/'.join([parent_path, current_group.name])
+            current_group = remaining_groups.pop()
+            current_path = current_group.group_path
 
             if filter_empty:
                 # Only empty folder
@@ -83,7 +83,7 @@ class XcProject():
 
             # Add its children to be treated
             for subgroup in current_group.groups:
-                parent_paths[subgroup] = current_path
+                remaining_groups.append(subgroup)
             
         results.sort()
         return results

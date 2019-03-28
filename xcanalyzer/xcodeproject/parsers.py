@@ -9,8 +9,9 @@ from .models import XcTarget, XcProject, XcGroup, XcFile
 
 class XcProjectParser():
 
-    def __init__(self, project_folder_path):
+    def __init__(self, project_folder_path, verbose=False):
         self.project_folder_path = project_folder_path
+        self.verbose = verbose
 
     def load(self):
         # Check given path
@@ -20,6 +21,8 @@ class XcProjectParser():
         xcode_proj_name = self._find_xcodeproj()
 
         # Load pbxproj
+        if self.verbose:
+            print("-> Load pbxproj")
         pbxproj_path = '{}/{}/project.pbxproj'.format(self.project_folder_path, xcode_proj_name)
 
         with open(pbxproj_path, 'r') as f:  # To avoid ResourceWarning: unclosed file
@@ -27,15 +30,21 @@ class XcProjectParser():
             self.xcode_project = XcodeProject(tree, pbxproj_path)
 
         # Files a project root
+        if self.verbose:
+            print("-> Find root files")
         root_files = self._find_root_files()
 
         # Output object
-        self.object = XcProject(xcode_proj_name, targets=set(), groups=set(), files=root_files)
+        self.object = XcProject(xcode_proj_name, targets=set(), groups=list(), files=root_files)
 
         # Groups
+        if self.verbose:
+            print("-> Parse groups")
         self.object.groups = self._parse_groups()
 
         # Tests, extensions and app modules
+        if self.verbose:
+            print("-> Parse targets")
         self.object.targets = self._parse_targets()
 
     def _check_folder_path(self):
@@ -105,7 +114,7 @@ class XcProjectParser():
         #   the path of parent
         children_to_treat = dict()
 
-        root_group = XcGroup('root')
+        root_group = XcGroup('', '')
         for child_key in self._main_group.children:
             child = self.xcode_project.get_object(child_key)
             if child.isa != 'PBXGroup':
@@ -118,43 +127,47 @@ class XcProjectParser():
             current_child = self.xcode_project.get_object(current_child_key)
 
             if current_child.isa in {'PBXGroup', 'PBXVariantGroup'}:  # Child is a group
-                # Compute current child path
-                if hasattr(current_child, 'path'):
-                    if current_child.sourceTree == '<group>':  # Relative to group
-                        current_path = '/'.join([parent_path, current_child.path])
+                # Compute current child filepath
+                if current_child.sourceTree == '<group>':  # Relative to group
+                    if hasattr(current_child, 'path'):
+                        current_filepath = '/'.join([parent_path, current_child.path])
+                    else:
+                        current_filepath = parent_path  # current group without folder
                 
-                    elif current_child.sourceTree == 'SOURCE_ROOT':  # Relative to project
-                        current_path = '/{}'.format(current_child.path)
-                else:
-                    current_path = parent_path
+                elif current_child.sourceTree == 'SOURCE_ROOT':  # Relative to project
+                    current_filepath = '/{}'.format(current_child.path)
 
-                # Current child name
+                # Current child group path
                 if hasattr(current_child, 'name'):
                     name = current_child.name
                 else:
                     name = current_child.path
+                current_group_path = '/'.join([parent_group.group_path, name])
 
                 # Link the parent with its child
                 is_variant = current_child.isa == 'PBXVariantGroup'
-                current_group = XcGroup(name, is_variant=is_variant)
+                current_group = XcGroup(current_group_path, current_filepath, is_variant=is_variant)
 
                 if not is_variant:
-                    parent_group.groups.add(current_group)
+                    parent_group.groups.append(current_group)
 
                 # Add this child's children for treatment
                 for child_key in current_child.children:
-                    children_to_treat[child_key] = (current_group, current_path)
+                    children_to_treat[child_key] = (current_group, current_filepath)
+
+                # File mapping to be used foreward in targets parsing
+                self.file_mapping[current_child] = current_group
 
             elif current_child.isa == 'PBXFileReference':  # Child is a file reference
                 if current_child.sourceTree == '<group>':  # Relative to group
-                    current_path = '/'.join([parent_path, current_child.path])
+                    current_filepath = '/'.join([parent_path, current_child.path])
             
                 elif current_child.sourceTree == 'SOURCE_ROOT':  # Relative to project
-                    current_path = '/{}'.format(current_child.path)
+                    current_filepath = '/{}'.format(current_child.path)
 
                 filename = self._file_name_for_file_ref(current_child,
                                                         of_variant=parent_group.is_variant)
-                xc_file = XcFile(filename, current_path)
+                xc_file = XcFile(filename, current_filepath)
                 parent_group.files.add(xc_file)
 
                 # File mapping to be used foreward in targets parsing
