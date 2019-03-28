@@ -15,10 +15,10 @@ argument_parser.add_argument('path',
                              help='Path of the folder containing your `.xcodeproj` folder.')
 
 # Sorted by name argument
-argument_parser.add_argument('-m', '--mode',
+argument_parser.add_argument('-f', '--filter',
                              choices=['all', 'empty', 'project_relative', 'without_folder'],
                              default='all',
-                             dest='mode',
+                             dest='filter_mode',
                              help='Give the list of all, empty, relative to project or without folder groups in the Xcode project.')
 
 
@@ -37,10 +37,10 @@ except XcodeProjectReadException as e:
 
 # Reporter
 reporter = XcProjReporter(xcode_project_reader.object)
-if args.mode == 'all':
+if args.filter_mode == 'all':
     reporter.print_groups()
 else:
-    reporter.print_groups(filter_mode=mode)
+    reporter.print_groups(filter_mode=args.filter_mode)
 
-if args.mode == 'all':
+if args.filter_mode == 'all':
     reporter.print_groups_summary()

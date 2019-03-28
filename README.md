@@ -32,3 +32,4 @@ The goals to reach:
 - find groups relative to project
 - find files not used in project
 - find files used in several targets
+- find files with mismatches between xcode path and file path (See `SampleiOSApp` > `Ghost.swift`)

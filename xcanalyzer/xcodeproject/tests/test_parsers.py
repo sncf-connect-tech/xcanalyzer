@@ -104,18 +104,18 @@ class XcProjectParserTests(TestCase):
         
         group = [g for g in xcode_project.groups if g.group_path == '/SampleCore'][0]
 
-        self.assertTrue(XcGroup('/SampleCore/Bar', '/SampleCore/Bar') in group.groups)
-        self.assertTrue(XcGroup('/SampleCore/Foo', '/SampleCore/Foo') in group.groups)
-        self.assertTrue(XcGroup('/SampleCore/Toto', '/SampleCore/Toto') in group.groups)
+        self.assertTrue(XcGroup('/SampleCore/RelativeToProject', '/SampleCore/RelativeToProject') in group.groups)
+        self.assertTrue(XcGroup('/SampleCore/RelativeToProjectWithoutFolder', '/SampleCore/RelativeToProjectWithoutFolder') in group.groups)
+        self.assertTrue(XcGroup('/SampleCore/Normal', '/SampleCore/Normal') in group.groups)
     
     def test_xc_project_parser__gives_grand_children_groups(self):
         project_parser = self.fixture.sample_xc_project_parser
         xcode_project = project_parser.object
         core_group = [g for g in xcode_project.groups if g.group_path == '/SampleCore'][0]
 
-        group = [g for g in core_group.groups if g.group_path == '/SampleCore/Toto'][0]
+        group = [g for g in core_group.groups if g.group_path == '/SampleCore/Normal'][0]
 
-        expected_group = XcGroup('/SampleCore/Toto/GrandChildGroup', '/SampleCore/Toto/GrandChildGroup')
+        expected_group = XcGroup('/SampleCore/Normal/GrandChildGroup', '/SampleCore/Normal/GrandChildGroup')
         self.assertTrue(expected_group in group.groups)
     
     def test_xc_project_parser__gives_variant_groups(self):
@@ -142,15 +142,15 @@ class XcProjectParserTests(TestCase):
         group = [g for g in xcode_project.groups if g.group_path == '/SampleCore'][0]
 
         self.assertTrue(XcFile('SampleCore.swift', '/SampleCore/SampleCore.swift') in group.files)
-        self.assertTrue(XcFile('Tutu.swift', '/SampleCore/Titi/Tutu.swift') in group.files)
+        self.assertTrue(XcFile('Ghost.swift', '/SampleCore/GhostFolder/Ghost.swift') in group.files)
     
     def test_xc_project_parser__gives_files_of_other_groups(self):
         project_parser = self.fixture.sample_xc_project_parser
         xcode_project = project_parser.object
         
         core_group = [g for g in xcode_project.groups if g.group_path == '/SampleCore'][0]
-        bar_group = [g for g in core_group.groups if g.group_path == '/SampleCore/Bar'][0]
-        foo_group = [g for g in core_group.groups if g.group_path == '/SampleCore/Foo'][0]
+        bar_group = [g for g in core_group.groups if g.group_path == '/SampleCore/RelativeToProject'][0]
+        foo_group = [g for g in core_group.groups if g.group_path == '/SampleCore/RelativeToProjectWithoutFolder'][0]
 
-        self.assertTrue(XcFile('Try.swift', '/SampleCore/Bar/Try.swift') in bar_group.files)
-        self.assertTrue(XcFile('Tyty.swift', '/SampleCore/Tyty.swift') in foo_group.files)
+        self.assertTrue(XcFile('InsideRelativeToProject.swift', '/SampleCore/RelativeToProject/InsideRelativeToProject.swift') in bar_group.files)
+        self.assertTrue(XcFile('InsideRelativeToProjectWithoutFolder.swift', '/SampleCore/InsideRelativeToProjectWithoutFolder.swift') in foo_group.files)

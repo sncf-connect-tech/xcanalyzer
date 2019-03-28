@@ -10,12 +10,12 @@
 		DF4ACD4F224C158900984A77 /* View.xib in Resources */ = {isa = PBXBuildFile; fileRef = DF4ACD4E224C158900984A77 /* View.xib */; };
 		DF4ACD52224C17D300984A77 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = DF4ACD54224C17D300984A77 /* Localizable.strings */; };
 		DF4ACD61224CC3E900984A77 /* Core.strings in Resources */ = {isa = PBXBuildFile; fileRef = DF4ACD63224CC3E900984A77 /* Core.strings */; };
+		DF4ACD66224D1E4800984A77 /* InsideRelativeToProject.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF4ACD65224D1E4800984A77 /* InsideRelativeToProject.swift */; };
 		DFAC5E79224016BF002C424B /* SampleCore.h in Headers */ = {isa = PBXBuildFile; fileRef = DFB4DB8E223997A4007DB426 /* SampleCore.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		DFAC5E7B22401710002C424B /* SampleCore.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFAC5E7A22401710002C424B /* SampleCore.swift */; };
-		DFAC5E7E22401BFA002C424B /* Tata.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFAC5E7D22401BFA002C424B /* Tata.swift */; };
-		DFAC5E8022401C11002C424B /* Tutu.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFAC5E7F22401C11002C424B /* Tutu.swift */; };
-		DFAC5E8522401DC9002C424B /* Tyty.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFAC5E8422401DC9002C424B /* Tyty.swift */; };
-		DFAC5E8E22403605002C424B /* Try.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFAC5E8D22403605002C424B /* Try.swift */; };
+		DFAC5E7E22401BFA002C424B /* InsideNormal.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFAC5E7D22401BFA002C424B /* InsideNormal.swift */; };
+		DFAC5E8022401C11002C424B /* Ghost.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFAC5E7F22401C11002C424B /* Ghost.swift */; };
+		DFAC5E8522401DC9002C424B /* InsideRelativeToProjectWithoutFolder.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFAC5E8422401DC9002C424B /* InsideRelativeToProjectWithoutFolder.swift */; };
 		DFB4DB5A22397A49007DB426 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFB4DB5922397A49007DB426 /* AppDelegate.swift */; };
 		DFB4DB5C22397A49007DB426 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFB4DB5B22397A49007DB426 /* ViewController.swift */; };
 		DFB4DB5F22397A49007DB426 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DFB4DB5D22397A49007DB426 /* Main.storyboard */; };
@@ -108,12 +108,12 @@
 		DF4ACD55224C17E700984A77 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Localizable.strings; sourceTree = "<group>"; };
 		DF4ACD62224CC3E900984A77 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Core.strings; sourceTree = "<group>"; };
 		DF4ACD64224CC3EA00984A77 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Core.strings; sourceTree = "<group>"; };
+		DF4ACD65224D1E4800984A77 /* InsideRelativeToProject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InsideRelativeToProject.swift; sourceTree = "<group>"; };
 		DF85324E224BCC9600792A18 /* LICENCE.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = LICENCE.md; sourceTree = SOURCE_ROOT; };
 		DFAC5E7A22401710002C424B /* SampleCore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleCore.swift; sourceTree = "<group>"; };
-		DFAC5E7D22401BFA002C424B /* Tata.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Tata.swift; sourceTree = "<group>"; };
-		DFAC5E7F22401C11002C424B /* Tutu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Tutu.swift; path = Titi/Tutu.swift; sourceTree = "<group>"; };
-		DFAC5E8422401DC9002C424B /* Tyty.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tyty.swift; sourceTree = "<group>"; };
-		DFAC5E8D22403605002C424B /* Try.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Try.swift; path = SampleCore/Bar/Try.swift; sourceTree = SOURCE_ROOT; };
+		DFAC5E7D22401BFA002C424B /* InsideNormal.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InsideNormal.swift; sourceTree = "<group>"; };
+		DFAC5E7F22401C11002C424B /* Ghost.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Ghost.swift; path = GhostFolder/Ghost.swift; sourceTree = "<group>"; };
+		DFAC5E8422401DC9002C424B /* InsideRelativeToProjectWithoutFolder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InsideRelativeToProjectWithoutFolder.swift; sourceTree = "<group>"; };
 		DFAC5E9022411F9F002C424B /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
 		DFAC5E9222413D89002C424B /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Main.strings; sourceTree = "<group>"; };
 		DFB4DB5622397A49007DB426 /* SampleiOSApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SampleiOSApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -207,27 +207,19 @@
 			path = GrandChildGroup;
 			sourceTree = "<group>";
 		};
-		DF4ACD56224C1B8800984A77 /* EmptyGroup */ = {
+		DF4ACD56224C1B8800984A77 /* Empty */ = {
 			isa = PBXGroup;
 			children = (
 			);
-			path = EmptyGroup;
+			path = Empty;
 			sourceTree = "<group>";
 		};
-		DF4ACD5A224CB4F500984A77 /* GroupWithoutFolder */ = {
+		DF4ACD5A224CB4F500984A77 /* WithoutFolder */ = {
 			isa = PBXGroup;
 			children = (
 			);
-			name = GroupWithoutFolder;
+			name = WithoutFolder;
 			sourceTree = "<group>";
-		};
-		DF4ACD5C224CB66700984A77 /* Foo2 */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = Foo2;
-			path = SampleCore;
-			sourceTree = SOURCE_ROOT;
 		};
 		DF4ACD5E224CC3C300984A77 /* OnlyLocalizedFiles */ = {
 			isa = PBXGroup;
@@ -237,32 +229,31 @@
 			path = OnlyLocalizedFiles;
 			sourceTree = "<group>";
 		};
-		DFAC5E7C22401BFA002C424B /* Toto */ = {
+		DFAC5E7C22401BFA002C424B /* Normal */ = {
 			isa = PBXGroup;
 			children = (
 				DF1507522248C5A1009D0B98 /* GrandChildGroup */,
-				DFAC5E7D22401BFA002C424B /* Tata.swift */,
+				DFAC5E7D22401BFA002C424B /* InsideNormal.swift */,
 			);
-			path = Toto;
+			path = Normal;
 			sourceTree = "<group>";
 		};
-		DFAC5E8322401DB4002C424B /* Foo */ = {
+		DFAC5E8322401DB4002C424B /* RelativeToProjectWithoutFolder */ = {
 			isa = PBXGroup;
 			children = (
-				DF4ACD5C224CB66700984A77 /* Foo2 */,
-				DFAC5E8422401DC9002C424B /* Tyty.swift */,
+				DFAC5E8422401DC9002C424B /* InsideRelativeToProjectWithoutFolder.swift */,
 			);
-			name = Foo;
+			name = RelativeToProjectWithoutFolder;
 			path = SampleCore;
 			sourceTree = SOURCE_ROOT;
 		};
-		DFAC5E8C224035F8002C424B /* Bar */ = {
+		DFAC5E8C224035F8002C424B /* RelativeToProject */ = {
 			isa = PBXGroup;
 			children = (
-				DFAC5E8D22403605002C424B /* Try.swift */,
+				DF4ACD65224D1E4800984A77 /* InsideRelativeToProject.swift */,
 			);
-			name = Bar;
-			path = SampleCore/Bar;
+			name = RelativeToProject;
+			path = SampleCore/RelativeToProject;
 			sourceTree = SOURCE_ROOT;
 		};
 		DFB4DB4D22397A49007DB426 = {
@@ -331,16 +322,16 @@
 		DFB4DB8D223997A4007DB426 /* SampleCore */ = {
 			isa = PBXGroup;
 			children = (
+				DF4ACD56224C1B8800984A77 /* Empty */,
 				DF4ACD5E224CC3C300984A77 /* OnlyLocalizedFiles */,
-				DF4ACD5A224CB4F500984A77 /* GroupWithoutFolder */,
-				DF4ACD56224C1B8800984A77 /* EmptyGroup */,
-				DFAC5E8C224035F8002C424B /* Bar */,
-				DFAC5E8322401DB4002C424B /* Foo */,
+				DF4ACD5A224CB4F500984A77 /* WithoutFolder */,
+				DFAC5E8C224035F8002C424B /* RelativeToProject */,
+				DFAC5E8322401DB4002C424B /* RelativeToProjectWithoutFolder */,
+				DFAC5E7C22401BFA002C424B /* Normal */,
 				DFB4DB8E223997A4007DB426 /* SampleCore.h */,
 				DFB4DB8F223997A4007DB426 /* Info.plist */,
 				DFAC5E7A22401710002C424B /* SampleCore.swift */,
-				DFAC5E7F22401C11002C424B /* Tutu.swift */,
-				DFAC5E7C22401BFA002C424B /* Toto */,
+				DFAC5E7F22401C11002C424B /* Ghost.swift */,
 			);
 			path = SampleCore;
 			sourceTree = SOURCE_ROOT;
@@ -673,10 +664,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				DFAC5E7B22401710002C424B /* SampleCore.swift in Sources */,
-				DFAC5E8022401C11002C424B /* Tutu.swift in Sources */,
-				DFAC5E8E22403605002C424B /* Try.swift in Sources */,
-				DFAC5E7E22401BFA002C424B /* Tata.swift in Sources */,
-				DFAC5E8522401DC9002C424B /* Tyty.swift in Sources */,
+				DFAC5E8022401C11002C424B /* Ghost.swift in Sources */,
+				DF4ACD66224D1E4800984A77 /* InsideRelativeToProject.swift in Sources */,
+				DFAC5E7E22401BFA002C424B /* InsideNormal.swift in Sources */,
+				DFAC5E8522401DC9002C424B /* InsideRelativeToProjectWithoutFolder.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
