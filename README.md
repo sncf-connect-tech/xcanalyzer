@@ -28,8 +28,10 @@ To clean the project, runs:
 
 The goals to reach:
 
-- list files by target, of 2 other types (not source neither resource files):
-        - frameworks
+- list targets
+        - linked frameworks
+        - embed frameworks
+        - target build dependencies
 
 - find files not used in project
 - find files used in several targets

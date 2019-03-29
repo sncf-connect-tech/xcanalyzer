@@ -162,9 +162,9 @@ class XcProjReporter():
 
         total_files_count = source_files_count + resource_files_count + header_files_count
 
-        print('{:>2} Source files in total'.format(source_files_count))
-        print('{:>2} Resource files in total'.format(resource_files_count))
-        print('{:>2} Header files in total'.format(header_files_count))
+        print('{:>2} Source files'.format(source_files_count))
+        print('{:>2} Resource files'.format(resource_files_count))
+        print('{:>2} Header files'.format(header_files_count))
         cprint('{:>2} Files in total'.format(total_files_count), attrs=['bold'])
     
     def print_groups(self, filter_mode=False):

@@ -13,6 +13,7 @@
 		DF4ACD66224D1E4800984A77 /* InsideRelativeToProject.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF4ACD65224D1E4800984A77 /* InsideRelativeToProject.swift */; };
 		DF4ACD67224E1C2F00984A77 /* SampleCore.h in Headers */ = {isa = PBXBuildFile; fileRef = DFB4DB8E223997A4007DB426 /* SampleCore.h */; };
 		DF4ACD68224E236D00984A77 /* LICENCE.md in Resources */ = {isa = PBXBuildFile; fileRef = DF85324E224BCC9600792A18 /* LICENCE.md */; };
+		DF4ACD6A224E2C2300984A77 /* SampleCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DFB4DB8C223997A4007DB426 /* SampleCore.framework */; };
 		DFAC5E7B22401710002C424B /* SampleCore.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFAC5E7A22401710002C424B /* SampleCore.swift */; };
 		DFAC5E7E22401BFA002C424B /* InsideNormal.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFAC5E7D22401BFA002C424B /* InsideNormal.swift */; };
 		DFAC5E8022401C11002C424B /* Ghost.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFAC5E7F22401C11002C424B /* Ghost.swift */; };
@@ -187,6 +188,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DF4ACD6A224E2C2300984A77 /* SampleCore.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -230,6 +232,13 @@
 			path = OnlyLocalizedFiles;
 			sourceTree = "<group>";
 		};
+		DF4ACD69224E2C2300984A77 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		DFAC5E7C22401BFA002C424B /* Normal */ = {
 			isa = PBXGroup;
 			children = (
@@ -270,6 +279,7 @@
 				DFB4DB6D22397A4A007DB426 /* SampleiOSAppTests */,
 				DFB4DB7822397A4A007DB426 /* SampleiOSAppUITests */,
 				DFB4DB5722397A49007DB426 /* Products */,
+				DF4ACD69224E2C2300984A77 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
