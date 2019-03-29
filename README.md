@@ -28,9 +28,8 @@ To clean the project, runs:
 
 The goals to reach:
 
-- find variant groups
-
-- list files, by target, of 2 other types (not source neither resource files)
+- list files by target, of 2 other types (not source neither resource files):
+        - frameworks
 
 - find files not used in project
 - find files used in several targets

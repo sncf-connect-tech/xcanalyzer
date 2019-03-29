@@ -130,12 +130,14 @@ class XcProjReporter():
             counters = [
                 '{} source files'.format(len(target.source_files)),
                 '{} resource files'.format(len(target.resource_files)),
+                '{} header files'.format(len(target.header_files)),
             ]
             target_display = '{} [{}]:'.format(target.name, ', '.join(counters))
             cprint(target_display, attrs=['bold'])
 
             # Resource and source files of the target
-            files = list(target.source_files) + list(target.resource_files)
+            files = list(target.source_files) + list(target.resource_files) + list(target.header_files)
+
             filepaths = [f.path for f in files]
             filepaths.sort()
             for filepath in filepaths:
@@ -146,18 +148,23 @@ class XcProjReporter():
 
         source_files = set()
         resource_files = set()
+        header_files = set()
 
         for target in self.xcode_project.targets:
             source_files |= target.source_files
             resource_files |= target.resource_files
+            header_files |= target.header_files
 
+        # Counter
         source_files_count = len(source_files)
         resource_files_count = len(resource_files)
+        header_files_count = len(header_files)
 
-        total_files_count = source_files_count + resource_files_count
+        total_files_count = source_files_count + resource_files_count + header_files_count
 
         print('{:>2} Source files in total'.format(source_files_count))
         print('{:>2} Resource files in total'.format(resource_files_count))
+        print('{:>2} Header files in total'.format(header_files_count))
         cprint('{:>2} Files in total'.format(total_files_count), attrs=['bold'])
     
     def print_groups(self, filter_mode=False):

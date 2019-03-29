@@ -11,7 +11,8 @@
 		DF4ACD52224C17D300984A77 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = DF4ACD54224C17D300984A77 /* Localizable.strings */; };
 		DF4ACD61224CC3E900984A77 /* Core.strings in Resources */ = {isa = PBXBuildFile; fileRef = DF4ACD63224CC3E900984A77 /* Core.strings */; };
 		DF4ACD66224D1E4800984A77 /* InsideRelativeToProject.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF4ACD65224D1E4800984A77 /* InsideRelativeToProject.swift */; };
-		DFAC5E79224016BF002C424B /* SampleCore.h in Headers */ = {isa = PBXBuildFile; fileRef = DFB4DB8E223997A4007DB426 /* SampleCore.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		DF4ACD67224E1C2F00984A77 /* SampleCore.h in Headers */ = {isa = PBXBuildFile; fileRef = DFB4DB8E223997A4007DB426 /* SampleCore.h */; };
+		DF4ACD68224E236D00984A77 /* LICENCE.md in Resources */ = {isa = PBXBuildFile; fileRef = DF85324E224BCC9600792A18 /* LICENCE.md */; };
 		DFAC5E7B22401710002C424B /* SampleCore.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFAC5E7A22401710002C424B /* SampleCore.swift */; };
 		DFAC5E7E22401BFA002C424B /* InsideNormal.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFAC5E7D22401BFA002C424B /* InsideNormal.swift */; };
 		DFAC5E8022401C11002C424B /* Ghost.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFAC5E7F22401C11002C424B /* Ghost.swift */; };
@@ -370,7 +371,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DFAC5E79224016BF002C424B /* SampleCore.h in Headers */,
+				DF4ACD67224E1C2F00984A77 /* SampleCore.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -606,6 +607,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DF4ACD68224E236D00984A77 /* LICENCE.md in Resources */,
 				DF4ACD61224CC3E900984A77 /* Core.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

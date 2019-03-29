@@ -26,7 +26,7 @@ class XcModelsFixture():
 
     def any_file(self):
         return XcFile('MyFile', '/MyFile')
-
+    
 # Xcode sample project
 
 class SampleXcodeProjectFixture():

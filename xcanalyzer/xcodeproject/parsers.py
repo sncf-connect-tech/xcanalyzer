@@ -29,6 +29,8 @@ class XcProjectParser():
             tree = osp.OpenStepDecoder.ParseFromFile(f)
             self.xcode_project = XcodeProject(tree, pbxproj_path)
 
+        self.file_mapping = dict()
+
         # Files a project root
         if self.verbose:
             print("-> Find root files")
@@ -101,13 +103,13 @@ class XcProjectParser():
             child = self.xcode_project.get_object(child_key)
             if child.isa == 'PBXFileReference':
                 filename = self._file_name_for_file_ref(child)
-                results.add(XcFile(filename, '/'))
+                xc_file = XcFile(filename, '/{}'.format(filename))
+                results.add(xc_file)
+                self.file_mapping[child] = xc_file
 
         return results
 
     def _parse_groups(self):
-        self.file_mapping = dict()
-
         # key is a child key reference
         # value is a tuple:
         #   the XcGroup destination of the parent
@@ -226,6 +228,13 @@ class XcProjectParser():
                                 xcode_target.resource_files.add(self.file_mapping[variant_file_ref])
                         else:
                             xcode_target.resource_files.add(self.file_mapping[file_ref])
+                
+                # Header files
+                elif build_phase.isa == 'PBXHeadersBuildPhase':
+                    for build_file_key in build_phase.files:
+                        build_file = self.xcode_project.get_object(build_file_key)
+                        file_ref = self.xcode_project.get_object(build_file.fileRef)
+                        xcode_target.header_files.add(self.file_mapping[file_ref])
 
         # Set dependencies for each target        
         for target_name, dependencies_names in target_dependencies_names.items():

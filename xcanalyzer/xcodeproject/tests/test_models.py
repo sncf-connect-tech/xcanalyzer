@@ -320,6 +320,8 @@ class XcTargetTests(TestCase):
 
         self.assertFalse(xc_target.dependencies)
     
+    # __init__ - dependencies
+
     def test_instantiate_xc_target__with_dependencies__has_dependencies(self):
         target_dep = self.fixture.any_target(name='MyDep')
 
@@ -327,30 +329,48 @@ class XcTargetTests(TestCase):
 
         self.assertTrue(target_dep in xc_target.dependencies)
     
+    # __init__ - source files
+
     def test_instantiate_xc_target__without__source_files_has_no_source_file(self):
         xc_target = XcTarget(name="MyXcTarget", target_type=XcTarget.Type.UI_TEST)
 
         self.assertFalse(xc_target.source_files)
 
     def test_instantiate_xc_target__with_source_files__has_source_files(self):
-        any_file = '/path/to/my/file'
+        any_file = self.fixture.any_file()
 
         xc_target = XcTarget(name="MyXcTarget", target_type=XcTarget.Type.UI_TEST, source_files=set([any_file]))
 
         self.assertTrue(any_file in xc_target.source_files)
     
+    # __init__ - resource files
+
     def test_instantiate_xc_target__without__resource_files_has_no_resource_file(self):
         xc_target = XcTarget(name="MyXcTarget", target_type=XcTarget.Type.UI_TEST)
 
         self.assertFalse(xc_target.resource_files)
 
     def test_instantiate_xc_target__with_resource_files__has_resource_files(self):
-        any_file = '/path/to/my/file'
+        any_file = self.fixture.any_file()
 
         xc_target = XcTarget(name="MyXcTarget", target_type=XcTarget.Type.UI_TEST, resource_files=set([any_file]))
 
         self.assertTrue(any_file in xc_target.resource_files)
     
+    # __init__ - header files
+
+    def test_instantiate_xc_target__with_header_files__has_header_files(self):
+        any_file = self.fixture.any_file()
+
+        xc_target = XcTarget(name="MyXcTarget", target_type=XcTarget.Type.UI_TEST, header_files=set([any_file]))
+
+        self.assertTrue(any_file in xc_target.header_files)
+
+    def test_instantiate_xc_target__without__header_files_has_no_header_file(self):
+        xc_target = XcTarget(name="MyXcTarget", target_type=XcTarget.Type.UI_TEST)
+
+        self.assertFalse(xc_target.header_files)
+
     # __eq__
 
     def test_xc_targets_are_not_equal__when_different_type(self):
