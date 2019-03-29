@@ -179,10 +179,13 @@ class XcProjReporter():
 
         # Root groups count
         root_groups_count = len(self.xcode_project.groups)
+        variant_root_groups_count = len([g for g in self.xcode_project.groups if g.is_variant])
 
         # Non root groups count
-        other_groups_count = total_groups_count - root_groups_count
+        variant_groups_count = len([g for g in groups if g.is_variant]) - variant_root_groups_count
+        other_groups_count = total_groups_count - root_groups_count - variant_groups_count
 
-        print('{:>2} Root groups'.format(root_groups_count))
+        print('{:>2} Root groups (whom {} variant)'.format(root_groups_count, variant_root_groups_count))
+        print('{:>2} Variant groups'.format(variant_groups_count))
         print('{:>2} Other groups'.format(other_groups_count))
         cprint('{:>2} Groups in total'.format(total_groups_count), attrs=['bold'])
