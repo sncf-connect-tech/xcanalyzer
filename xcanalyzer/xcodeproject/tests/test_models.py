@@ -48,7 +48,7 @@ class XcFileTests(TestCase):
         representation = str(xc_file)
 
         self.assertEqual(representation, "<XcFile> MyFile [/MyFile]")
-
+    
 
 class XcGroupTests(TestCase):
 
@@ -106,11 +106,27 @@ class XcGroupTests(TestCase):
     # __repr__
 
     def test_xc_group_repr_contains_group_path(self):
-        group = XcGroup(group_path="/MyGroup", filepath="/MyGroup")
+        group = XcGroup(group_path="/MyGroup", filepath="/MyGroupFilePath")
 
         representation = str(group)
 
-        self.assertEqual(representation, "<XcGroup> /MyGroup")
+        self.assertEqual(representation, "<XcGroup> /MyGroup [/MyGroupFilePath]")
+    
+    # has_folder
+
+    def test_xc_group_has_folder__returns_true__when_same_group_path_and_filepath(self):
+        group = XcGroup(group_path="/MyGroup", filepath="/MyGroup")
+
+        has_folder = group.has_folder
+
+        self.assertEqual(has_folder, True)
+
+    def test_xc_group_has_folder__returns_false__when_different_group_path_and_filepath(self):
+        group = XcGroup(group_path="/MyGroup", filepath="/OtherGroup")
+
+        has_folder = group.has_folder
+
+        self.assertEqual(has_folder, False)
     
 
 class XcProjectTests(TestCase):
@@ -233,6 +249,34 @@ class XcProjectTests(TestCase):
         project = XcProject(name="MyProject", targets=set(), groups=set([group]), files=set())
 
         paths = project.group_paths(filter_mode='project_relative')
+
+        self.assertFalse(paths)
+    
+    # group_paths - without_folder
+
+    def test_group_paths__gives_groups_without_folder__when_filter_without_folder(self):
+        group_relative_group = XcGroup(group_path="/Parent/Group1", filepath="/Parent", is_project_relative=False)
+        project_relative_group = XcGroup(group_path="/Parent/Group2", filepath="/Parent", is_project_relative=True)
+        project = XcProject(name="MyProject", targets=set(), groups=[group_relative_group, project_relative_group], files=set())
+
+        paths = project.group_paths(filter_mode='without_folder')
+
+        self.assertEqual(len(paths), 2)
+    
+    def test_group_paths__excludes_groups_with_folder__when_filter_without_folder(self):
+        group_relative_group = XcGroup(group_path="/Parent/Group1", filepath="/Parent/Group1", is_project_relative=False)
+        project_relative_group = XcGroup(group_path="/Parent/Group2", filepath="/Parent/Group2", is_project_relative=True)
+        project = XcProject(name="MyProject", targets=set(), groups=[group_relative_group, project_relative_group], files=set())
+
+        paths = project.group_paths(filter_mode='without_folder')
+
+        self.assertFalse(paths)
+    
+    def test_group_paths__excludes_variant_groups__when_filter_without_folder(self):
+        variant_group = XcGroup(group_path="/VariantGroup", filepath="/", is_variant=True)
+        project = XcProject(name="MyProject", targets=set(), groups=[variant_group], files=set())
+
+        paths = project.group_paths(filter_mode='without_folder')
 
         self.assertFalse(paths)
 

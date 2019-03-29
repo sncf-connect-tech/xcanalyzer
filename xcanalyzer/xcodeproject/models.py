@@ -37,7 +37,11 @@ class XcGroup():
         return hash(self.group_path)
 
     def __repr__(self):
-        return "<XcGroup> {}".format(self.group_path)
+        return "<XcGroup> {} [{}]".format(self.group_path, self.filepath)
+    
+    @property
+    def has_folder(self):
+        return self.group_path == self.filepath
     
 
 class XcProject():
@@ -74,7 +78,7 @@ class XcProject():
 
         for group in self.groups:
             remaining_groups.append(group)
-        
+
         while remaining_groups:
             # Look for current group and its path
             current_group = remaining_groups.pop()
@@ -88,6 +92,11 @@ class XcProject():
             # Relative to project groups
             elif filter_mode == 'project_relative':
                 if current_group.is_project_relative:
+                    results.append(current_path)
+            
+            # Without folder groups
+            elif filter_mode == 'without_folder':
+                if not current_group.is_variant and not current_group.has_folder:
                     results.append(current_path)
             
             # All groups
