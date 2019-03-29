@@ -10,30 +10,30 @@ class XcFileTests(TestCase):
     # __init__
 
     def test_init_xc_file(self):
-        xc_file = XcFile(name='MyFile', path='/MyFile')
+        xc_file = XcFile(filepath='/MyFile')
 
         self.assertTrue(xc_file)
-        self.assertEqual(xc_file.name, 'MyFile')
+        self.assertEqual(xc_file.filepath, '/MyFile')
 
     # __eq__
 
-    def test_xc_files_are_not_equal__when_different_name(self):
-        file_1 = XcFile(name="MyFile1", path='/MyFile1')
-        file_2 = XcFile(name="MyFile2", path='/MyFile2')
+    def test_xc_files_are_not_equal__when_different_filepath(self):
+        file_1 = XcFile(filepath='/MyFile1')
+        file_2 = XcFile(filepath='/MyFile2')
 
         self.assertFalse(file_1 == file_2)
 
-    def test_xc_files_are_equal__when_same_name(self):
-        file_1 = XcFile(name="MyFile", path='/MyFile')
-        file_2 = XcFile(name="MyFile", path='/MyFile')
+    def test_xc_files_are_equal__when_same_filepath(self):
+        file_1 = XcFile(filepath='/MyFile')
+        file_2 = XcFile(filepath='/MyFile')
 
         self.assertTrue(file_1 == file_2)
 
     # __hash__
 
-    def test_xc_file_hashes_are_same__when_same_name(self):
-        file_1 = XcFile(name="MyFile", path='/MyFile')
-        file_2 = XcFile(name="MyFile", path='/MyFile')
+    def test_xc_file_hashes_are_same__when_same_filepath(self):
+        file_1 = XcFile(filepath='/MyFile')
+        file_2 = XcFile(filepath='/MyFile')
 
         hash_1 = hash(file_1)
         hash_2 = hash(file_2)
@@ -42,12 +42,12 @@ class XcFileTests(TestCase):
     
     # __repr__
 
-    def test_xc_file_repr_contain_name(self):
-        xc_file = XcFile(name="MyFile", path='/MyFile')
+    def test_xc_file_repr_contains_filepath(self):
+        xc_file = XcFile(filepath='/MyFile')
 
         representation = str(xc_file)
 
-        self.assertEqual(representation, "<XcFile> MyFile [/MyFile]")
+        self.assertEqual(representation, "<XcFile> /MyFile")
     
 
 class XcGroupTests(TestCase):

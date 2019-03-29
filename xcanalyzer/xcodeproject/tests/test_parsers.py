@@ -68,8 +68,8 @@ class XcProjectParserTests(TestCase):
         target = xcode_project.target_with_name('SampleCore')
 
         self.assertTrue(target.source_files)
-        self.assertTrue(XcFile('SampleCore.swift', '/SampleCore/SampleCore.swift') in target.source_files)
-        self.assertFalse(XcFile('AppDelegate.swift', '/SampleiOSApp/AppDelegate.swift') in target.source_files)
+        self.assertTrue(XcFile('/SampleCore/SampleCore.swift') in target.source_files)
+        self.assertFalse(XcFile('/SampleiOSApp/AppDelegate.swift') in target.source_files)
 
     def test_xc_project_parser__gives_resource_files_for_each_target(self):
         project_parser = self.fixture.sample_xc_project_parser
@@ -78,12 +78,12 @@ class XcProjectParserTests(TestCase):
         target = xcode_project.target_with_name('SampleiOSApp')
 
         self.assertTrue(target.source_files)
-        self.assertTrue(XcFile('View.xib', '/SampleiOSApp/View.xib') in target.resource_files)
-        self.assertTrue(XcFile('Main.storyboard', '/SampleiOSApp/Base.lproj/Main.storyboard') in target.resource_files)
-        self.assertTrue(XcFile('Main.strings', '/SampleiOSApp/en.lproj/Main.strings') in target.resource_files)
-        self.assertTrue(XcFile('Localizable.strings', '/SampleiOSApp/en.lproj/Localizable.strings') in target.resource_files)
-        self.assertTrue(XcFile('Localizable.strings', '/SampleiOSApp/fr.lproj/Localizable.strings') in target.resource_files)
-        self.assertFalse(XcFile('AppDelegate.swift', '/SampleiOSApp/AppDelegate.swift') in target.resource_files)
+        self.assertTrue(XcFile('/SampleiOSApp/View.xib') in target.resource_files)
+        self.assertTrue(XcFile('/SampleiOSApp/Base.lproj/Main.storyboard') in target.resource_files)
+        self.assertTrue(XcFile('/SampleiOSApp/en.lproj/Main.strings') in target.resource_files)
+        self.assertTrue(XcFile('/SampleiOSApp/en.lproj/Localizable.strings') in target.resource_files)
+        self.assertTrue(XcFile('/SampleiOSApp/fr.lproj/Localizable.strings') in target.resource_files)
+        self.assertFalse(XcFile('/SampleiOSApp/AppDelegate.swift') in target.resource_files)
     
     def test_xc_project_parser__gives_header_files_for_each_target(self):
         project_parser = self.fixture.sample_xc_project_parser
@@ -92,7 +92,7 @@ class XcProjectParserTests(TestCase):
         target = xcode_project.target_with_name('SampleCore')
 
         self.assertTrue(target.header_files)
-        self.assertTrue(XcFile('SampleCore.h', '/SampleCore/SampleCore.h') in target.header_files)
+        self.assertTrue(XcFile('/SampleCore/SampleCore.h') in target.header_files)
 
     # groups
 
@@ -156,7 +156,7 @@ class XcProjectParserTests(TestCase):
 
         files = xcode_project.files
 
-        self.assertTrue(XcFile('README.md', '/README.md') in files)
+        self.assertTrue(XcFile('/README.md') in files)
 
     def test_xc_project_parser__gives_files_of_root_groups(self):
         project_parser = self.fixture.sample_xc_project_parser
@@ -164,8 +164,8 @@ class XcProjectParserTests(TestCase):
         
         group = [g for g in xcode_project.groups if g.group_path == '/SampleCore'][0]
 
-        self.assertTrue(XcFile('SampleCore.swift', '/SampleCore/SampleCore.swift') in group.files)
-        self.assertTrue(XcFile('Ghost.swift', '/SampleCore/GhostFolder/Ghost.swift') in group.files)
+        self.assertTrue(XcFile('/SampleCore/SampleCore.swift') in group.files)
+        self.assertTrue(XcFile('/SampleCore/GhostFolder/Ghost.swift') in group.files)
     
     def test_xc_project_parser__gives_files_of_other_groups(self):
         project_parser = self.fixture.sample_xc_project_parser
@@ -175,5 +175,5 @@ class XcProjectParserTests(TestCase):
         bar_group = [g for g in core_group.groups if g.group_path == '/SampleCore/RelativeToProject'][0]
         foo_group = [g for g in core_group.groups if g.group_path == '/SampleCore/RelativeToProjectWithoutFolder'][0]
 
-        self.assertTrue(XcFile('InsideRelativeToProject.swift', '/SampleCore/RelativeToProject/InsideRelativeToProject.swift') in bar_group.files)
-        self.assertTrue(XcFile('InsideRelativeToProjectWithoutFolder.swift', '/SampleCore/InsideRelativeToProjectWithoutFolder.swift') in foo_group.files)
+        self.assertTrue(XcFile('/SampleCore/RelativeToProject/InsideRelativeToProject.swift') in bar_group.files)
+        self.assertTrue(XcFile('/SampleCore/InsideRelativeToProjectWithoutFolder.swift') in foo_group.files)

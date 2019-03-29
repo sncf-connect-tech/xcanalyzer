@@ -1,17 +1,16 @@
 class XcFile():
 
-    def __init__(self, name, path):
-        self.name = name
-        self.path = path
+    def __init__(self, filepath):
+        self.filepath = filepath
 
     def __eq__(self, other):
-        return self.name == other.name
+        return self.filepath == other.filepath
 
     def __hash__(self):
-        return hash(self.name)
+        return hash(self.filepath)
 
     def __repr__(self):
-        return "<XcFile> {} [{}]".format(self.name, self.path)
+        return "<XcFile> {}".format(self.filepath)
 
 
 class XcGroup():

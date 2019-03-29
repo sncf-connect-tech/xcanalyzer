@@ -138,7 +138,7 @@ class XcProjReporter():
             # Resource and source files of the target
             files = list(target.source_files) + list(target.resource_files) + list(target.header_files)
 
-            filepaths = [f.path for f in files]
+            filepaths = [f.filepath for f in files]
             filepaths.sort()
             for filepath in filepaths:
                 print(filepath)

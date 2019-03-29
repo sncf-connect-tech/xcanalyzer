@@ -103,7 +103,7 @@ class XcProjectParser():
             child = self.xcode_project.get_object(child_key)
             if child.isa == 'PBXFileReference':
                 filename = self._file_name_for_file_ref(child)
-                xc_file = XcFile(filename, '/{}'.format(filename))
+                xc_file = XcFile(filepath='/{}'.format(filename))
                 results.add(xc_file)
                 self.file_mapping[child] = xc_file
 
@@ -125,16 +125,16 @@ class XcProjectParser():
 
         while children_to_treat:
             current_child_key = list(children_to_treat.keys())[0]
-            parent_group, parent_path = children_to_treat.pop(current_child_key)
+            parent_group, parent_filepath = children_to_treat.pop(current_child_key)
             current_child = self.xcode_project.get_object(current_child_key)
 
             if current_child.isa in {'PBXGroup', 'PBXVariantGroup'}:  # Child is a group
                 # Compute current child filepath
                 if current_child.sourceTree == '<group>':  # Relative to group
                     if hasattr(current_child, 'path'):
-                        current_filepath = '/'.join([parent_path, current_child.path])
+                        current_filepath = '/'.join([parent_filepath, current_child.path])
                     else:
-                        current_filepath = parent_path  # current group without folder
+                        current_filepath = parent_filepath  # current group without folder
                     is_project_relative = False
                 
                 elif current_child.sourceTree == 'SOURCE_ROOT':  # Relative to project
@@ -166,14 +166,12 @@ class XcProjectParser():
 
             elif current_child.isa == 'PBXFileReference':  # Child is a file reference
                 if current_child.sourceTree == '<group>':  # Relative to group
-                    current_filepath = '/'.join([parent_path, current_child.path])
+                    current_filepath = '/'.join([parent_filepath, current_child.path])
             
                 elif current_child.sourceTree == 'SOURCE_ROOT':  # Relative to project
                     current_filepath = '/{}'.format(current_child.path)
 
-                filename = self._file_name_for_file_ref(current_child,
-                                                        of_variant=parent_group.is_variant)
-                xc_file = XcFile(filename, current_filepath)
+                xc_file = XcFile(filepath=current_filepath)
                 parent_group.files.add(xc_file)
 
                 # File mapping to be used foreward in targets parsing
