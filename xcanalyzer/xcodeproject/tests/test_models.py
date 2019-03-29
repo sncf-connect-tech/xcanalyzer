@@ -188,7 +188,7 @@ class XcProjectTests(TestCase):
 
         self.assertEqual(resulting_target, target)
 
-    # group_paths - all
+    # groups_filtered - all
 
     def test_groups_filtered__gives_all_paths__sorted(self):
         group_C = XcGroup(group_path="/MyGroupA/MyGroupB/MyGroupC", filepath="/MyGroupA/MyGroupB/MyGroupC")
@@ -206,7 +206,7 @@ class XcProjectTests(TestCase):
         paths = [g.group_path for g in groups]
         self.assertEqual(paths, expected_paths)
     
-    # group_paths - empty
+    # groups_filtered - empty
     
     def test_groups_filtered__gives_empty_groups__when_filter_empty(self):
         group = XcGroup(group_path="/MyGroup", filepath="/MyGroup")
@@ -236,7 +236,7 @@ class XcProjectTests(TestCase):
         paths = [g.group_path for g in groups]
         self.assertFalse('/MyGroup' in paths)
     
-    # group_paths - project_relative
+    # groups_filtered - project_relative
 
     def test_groups_filtered__gives_project_relative_groups__when_filter_project_relative(self):
         group = XcGroup(group_path="/MyGroup", filepath="/MyGroup", is_project_relative=True)
@@ -256,7 +256,7 @@ class XcProjectTests(TestCase):
 
         self.assertFalse(groups)
     
-    # group_paths - without_folder
+    # groups_filtered - without_folder
 
     def test_groups_filtered__gives_groups_without_folder__when_filter_without_folder(self):
         group_relative_group = XcGroup(group_path="/Parent/Group1", filepath="/Parent", is_project_relative=False)
@@ -281,6 +281,24 @@ class XcProjectTests(TestCase):
         project = XcProject(name="MyProject", targets=set(), groups=[variant_group], files=set())
 
         groups = project.groups_filtered(filter_mode='without_folder')
+
+        self.assertFalse(groups)
+    
+    # groups_filtered - variant
+    
+    def test_groups_filtered__gives_variant_groups__when_filter_variant(self):
+        variant_group = XcGroup(group_path="/MyGroup", filepath="/MyGroup", is_variant=True)
+        project = XcProject(name="MyProject", targets=set(), groups=[variant_group], files=set())
+
+        groups = project.groups_filtered(filter_mode='variant')
+
+        self.assertTrue(groups)
+    
+    def test_groups_filtered__excludes_non_variant_groups__when_filter_variant(self):
+        group = XcGroup(group_path="/MyGroup", filepath="/MyGroup", is_variant=False)
+        project = XcProject(name="MyProject", targets=set(), groups=[group], files=set())
+
+        groups = project.groups_filtered(filter_mode='variant')
 
         self.assertFalse(groups)
 

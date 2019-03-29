@@ -97,6 +97,11 @@ class XcProject():
             elif filter_mode == 'without_folder':
                 if not current_group.is_variant and not current_group.has_folder:
                     results.append(current_group)
+                
+            # Variant groups
+            elif filter_mode == 'variant':
+                if current_group.is_variant:
+                    results.append(current_group)
             
             # All groups
             else:

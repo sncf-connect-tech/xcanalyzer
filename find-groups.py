@@ -16,10 +16,10 @@ argument_parser.add_argument('path',
 
 # Sorted by name argument
 argument_parser.add_argument('-f', '--filter',
-                             choices=['all', 'empty', 'project_relative', 'without_folder'],
+                             choices=['all', 'empty', 'project_relative', 'without_folder', 'variant'],
                              default='all',
                              dest='filter_mode',
-                             help='Give the list of all, empty, relative to project or without folder groups in the Xcode project.')
+                             help='Give the list of all, empty, relative to project, without folder or variant groups from the Xcode project.')
 
 
 # --- Parse arguments ---
