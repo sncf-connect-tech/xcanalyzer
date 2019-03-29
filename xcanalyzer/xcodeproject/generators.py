@@ -161,23 +161,28 @@ class XcProjReporter():
         cprint('{:>2} Files in total'.format(total_files_count), attrs=['bold'])
     
     def print_groups(self, filter_mode=False):
-        for group_path in self.xcode_project.group_paths(filter_mode=filter_mode):
+        groups = self.xcode_project.groups_filtered(filter_mode=filter_mode)
+        group_paths = [g.group_path for g in groups]
+
+        group_paths.sort()
+
+        for group_path in group_paths:
             print(group_path)
     
-    def print_groups_summary(self):
+    def print_all_groups_summary(self):
         self._print_horizontal_line()
 
-        group_paths = self.xcode_project.group_paths()
+        groups = self.xcode_project.groups_filtered()
 
         # Total groups count
-        total_groups_count = len(group_paths)
+        total_groups_count = len(groups)
 
         # Root groups count
-        root_groups_count = len([p for p in group_paths if len(p.split('/')) == 2])
+        root_groups_count = len(self.xcode_project.groups)
 
         # Non root groups count
         other_groups_count = total_groups_count - root_groups_count
 
-        print('{:>2} Root groups in total'.format(root_groups_count))
-        print('{:>2} Other groups in total'.format(other_groups_count))
+        print('{:>2} Root groups'.format(root_groups_count))
+        print('{:>2} Other groups'.format(other_groups_count))
         cprint('{:>2} Groups in total'.format(total_groups_count), attrs=['bold'])

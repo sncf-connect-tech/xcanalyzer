@@ -69,7 +69,7 @@ class XcProject():
         results = list(self.targets)
         return sorted(results, key=lambda t: t.name)
     
-    def group_paths(self, filter_mode=None):
+    def groups_filtered(self, filter_mode=None):
         """ Returns the list of path sorted by name of all groups in the project. """
 
         results = []
@@ -82,33 +82,31 @@ class XcProject():
         while remaining_groups:
             # Look for current group and its path
             current_group = remaining_groups.pop()
-            current_path = current_group.group_path
 
             # Empty groups
             if filter_mode == 'empty':
                 if not current_group.groups and not current_group.files:
-                    results.append(current_path)
+                    results.append(current_group)
             
             # Relative to project groups
             elif filter_mode == 'project_relative':
                 if current_group.is_project_relative:
-                    results.append(current_path)
+                    results.append(current_group)
             
             # Without folder groups
             elif filter_mode == 'without_folder':
                 if not current_group.is_variant and not current_group.has_folder:
-                    results.append(current_path)
+                    results.append(current_group)
             
             # All groups
             else:
                 # Add current group path
-                results.append(current_path)
+                results.append(current_group)
 
             # Add its children to be treated
             for subgroup in current_group.groups:
                 remaining_groups.append(subgroup)
-            
-        results.sort()
+        
         return results
 
 

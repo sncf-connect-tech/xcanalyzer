@@ -28,9 +28,9 @@ To clean the project, runs:
 
 The goals to reach:
 
-- find groups without folder
-- find groups relative to project
 - find variant groups
+
+- list files, by target, of 2 other types (not source neither resource files)
 
 - find files not used in project
 - find files used in several targets

@@ -43,4 +43,4 @@ else:
     reporter.print_groups(filter_mode=args.filter_mode)
 
 if args.filter_mode == 'all':
-    reporter.print_groups_summary()
+    reporter.print_all_groups_summary()

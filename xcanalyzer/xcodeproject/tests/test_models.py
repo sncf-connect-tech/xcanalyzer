@@ -190,95 +190,99 @@ class XcProjectTests(TestCase):
 
     # group_paths - all
 
-    def test_group_paths__gives_all_paths__sorted(self):
+    def test_groups_filtered__gives_all_paths__sorted(self):
         group_C = XcGroup(group_path="/MyGroupA/MyGroupB/MyGroupC", filepath="/MyGroupA/MyGroupB/MyGroupC")
         group_B = XcGroup(group_path="/MyGroupA/MyGroupB", filepath="/MyGroupA/MyGroupB", groups=set([group_C]))
         group_A = XcGroup(group_path="/MyGroupA", filepath="/MyGroupA", groups=set([group_B]))
         project = XcProject(name="MyProject", targets=set(), groups=set([group_A]), files=set())
 
-        paths = project.group_paths()
+        groups = project.groups_filtered()
 
         expected_paths = [
             '/MyGroupA',
             '/MyGroupA/MyGroupB',
             '/MyGroupA/MyGroupB/MyGroupC',
         ]
-        self.assertEqual(expected_paths, paths)
+        paths = [g.group_path for g in groups]
+        self.assertEqual(paths, expected_paths)
     
     # group_paths - empty
     
-    def test_group_paths__gives_empty_groups__when_filter_empty(self):
+    def test_groups_filtered__gives_empty_groups__when_filter_empty(self):
         group = XcGroup(group_path="/MyGroup", filepath="/MyGroup")
         project = XcProject(name="MyProject", targets=set(), groups=set([group]), files=set())
 
-        paths = project.group_paths(filter_mode='empty')
+        groups = project.groups_filtered(filter_mode='empty')
 
-        self.assertEqual(['/MyGroup'], paths)
+        paths = [g.group_path for g in groups]
+        self.assertEqual(paths, ['/MyGroup'])
     
-    def test_group_paths__exclude_groups_with_files__when_filter_empty(self):
+    def test_groups_filtered__exclude_groups_with_files__when_filter_empty(self):
         file = self.fixture.any_file()
         group = XcGroup(group_path="/MyGroup", filepath="/MyGroup", files=set([file]))
         project = XcProject(name="MyProject", targets=set(), groups=set([group]), files=set())
 
-        paths = project.group_paths(filter_mode='empty')
+        groups = project.groups_filtered(filter_mode='empty')
 
-        self.assertFalse(paths)
+        self.assertFalse(groups)
 
-    def test_group_paths__exclude_groups_with_groups__when_filter_empty(self):
+    def test_groups_filtered__exclude_groups_with_groups__when_filter_empty(self):
         subgroup = XcGroup(group_path="/MyGroup/MySubGroup", filepath="/MyGroup/MySubGroup")
         group = XcGroup(group_path="/MyGroup", filepath="/MyGroup", groups=set([subgroup]))
         project = XcProject(name="MyProject", targets=set(), groups=set([group]), files=set())
 
-        paths = project.group_paths(filter_mode='empty')
+        groups = project.groups_filtered(filter_mode='empty')
 
+        paths = [g.group_path for g in groups]
         self.assertFalse('/MyGroup' in paths)
     
     # group_paths - project_relative
 
-    def test_group_paths__gives_project_relative_groups__when_filter_project_relative(self):
+    def test_groups_filtered__gives_project_relative_groups__when_filter_project_relative(self):
         group = XcGroup(group_path="/MyGroup", filepath="/MyGroup", is_project_relative=True)
         project = XcProject(name="MyProject", targets=set(), groups=set([group]), files=set())
 
-        paths = project.group_paths(filter_mode='project_relative')
+        groups = project.groups_filtered(filter_mode='project_relative')
         
-        self.assertEqual(len(paths), 1)
+        self.assertEqual(len(groups), 1)
+        paths = [g.group_path for g in groups]
         self.assertTrue('/MyGroup' in paths)
     
-    def test_group_paths__exclude_groups_non_project_relative__when_filter_project_relative(self):
+    def test_groups_filtered__exclude_groups_non_project_relative__when_filter_project_relative(self):
         group = XcGroup(group_path="/MyGroup", filepath="/MyGroup", is_project_relative=False)
         project = XcProject(name="MyProject", targets=set(), groups=set([group]), files=set())
 
-        paths = project.group_paths(filter_mode='project_relative')
+        groups = project.groups_filtered(filter_mode='project_relative')
 
-        self.assertFalse(paths)
+        self.assertFalse(groups)
     
     # group_paths - without_folder
 
-    def test_group_paths__gives_groups_without_folder__when_filter_without_folder(self):
+    def test_groups_filtered__gives_groups_without_folder__when_filter_without_folder(self):
         group_relative_group = XcGroup(group_path="/Parent/Group1", filepath="/Parent", is_project_relative=False)
         project_relative_group = XcGroup(group_path="/Parent/Group2", filepath="/Parent", is_project_relative=True)
         project = XcProject(name="MyProject", targets=set(), groups=[group_relative_group, project_relative_group], files=set())
 
-        paths = project.group_paths(filter_mode='without_folder')
+        groups = project.groups_filtered(filter_mode='without_folder')
 
-        self.assertEqual(len(paths), 2)
+        self.assertEqual(len(groups), 2)
     
-    def test_group_paths__excludes_groups_with_folder__when_filter_without_folder(self):
+    def test_groups_filtered__excludes_groups_with_folder__when_filter_without_folder(self):
         group_relative_group = XcGroup(group_path="/Parent/Group1", filepath="/Parent/Group1", is_project_relative=False)
         project_relative_group = XcGroup(group_path="/Parent/Group2", filepath="/Parent/Group2", is_project_relative=True)
         project = XcProject(name="MyProject", targets=set(), groups=[group_relative_group, project_relative_group], files=set())
 
-        paths = project.group_paths(filter_mode='without_folder')
+        groups = project.groups_filtered(filter_mode='without_folder')
 
-        self.assertFalse(paths)
+        self.assertFalse(groups)
     
-    def test_group_paths__excludes_variant_groups__when_filter_without_folder(self):
+    def test_groups_filtered__excludes_variant_groups__when_filter_without_folder(self):
         variant_group = XcGroup(group_path="/VariantGroup", filepath="/", is_variant=True)
         project = XcProject(name="MyProject", targets=set(), groups=[variant_group], files=set())
 
-        paths = project.group_paths(filter_mode='without_folder')
+        groups = project.groups_filtered(filter_mode='without_folder')
 
-        self.assertFalse(paths)
+        self.assertFalse(groups)
 
 
 class XcTargetTests(TestCase):
