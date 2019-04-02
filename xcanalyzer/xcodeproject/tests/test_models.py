@@ -333,6 +333,18 @@ class XcTargetTests(TestCase):
 
         self.assertTrue(target_dep in xc_target.dependencies)
     
+    # __init__ - linked_frameworks
+
+    def test_instantiate_xc_target__with_linked_frameworks__has_linked_frameworks(self):
+        linked_framework = self.fixture.any_target(name='MyFmk')
+
+        xc_target = XcTarget(name="MyXcTarget",
+                             target_type=XcTarget.Type.FRAMEWORK,
+                             product_name='MyProduct',
+                             linked_frameworks=set([linked_framework]))
+        
+        self.assertTrue(linked_framework in xc_target.linked_frameworks)
+
     # __init__ - source files
 
     def test_instantiate_xc_target__without__source_files_has_no_source_file(self):

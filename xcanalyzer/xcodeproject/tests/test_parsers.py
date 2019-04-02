@@ -73,6 +73,15 @@ class XcProjectParserTests(TestCase):
         self.assertTrue(core_target in app_target.dependencies)
         self.assertTrue(ui_target in app_target.dependencies)
     
+    def test_xc_project_parser__gives_linked_frameworks_between_targets(self):
+        project_parser = self.fixture.sample_xc_project_parser
+        xcode_project = project_parser.object
+
+        core_target = xcode_project.target_with_name('SampleCore')
+        ui_target = xcode_project.target_with_name('SampleUI')
+
+        self.assertTrue(core_target in ui_target.linked_frameworks)
+    
     # targets files
 
     def test_xc_project_parser__gives_source_files_for_each_target(self):

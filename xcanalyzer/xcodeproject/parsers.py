@@ -186,6 +186,9 @@ class XcProjectParser():
 
         target_dependencies_names = dict()
 
+        product_references = dict()
+        target_linked_framework_refs = dict()
+
         for target in targets:
             # Test modules
             xcode_target_type = self._map_target_type(target)
@@ -197,6 +200,9 @@ class XcProjectParser():
                                     dependencies=set(),
                                     source_files=set())
             xcode_targets.add(xcode_target)
+
+            # Product reference
+            product_references[target.productReference] = xcode_target
 
             # Find target's dependencies
             dependencies_names = set()
@@ -235,11 +241,19 @@ class XcProjectParser():
                         file_ref = self.xcode_project.get_object(build_file.fileRef)
                         xcode_target.header_files.add(self.file_mapping[file_ref])
 
+                # Find target's linked frameworks
+                elif build_phase.isa == 'PBXFrameworksBuildPhase':
+                    target_linked_framework_refs[xcode_target] = [self.xcode_project.get_object(build_file).fileRef for build_file in build_phase.files]
+
         # Set dependencies for each target        
         for target_name, dependencies_names in target_dependencies_names.items():
             target = [t for t in xcode_targets if t.name == target_name][0]
             dependencies_targets = {t for t in xcode_targets if t.name in dependencies_names}
 
             target.dependencies = dependencies_targets
+        
+        # Set linked frameworks for each target
+        for xcode_target, linked_framework_refs in target_linked_framework_refs.items():
+            xcode_target.linked_frameworks = {product_references[ref] for ref in linked_framework_refs}
     
         return xcode_targets

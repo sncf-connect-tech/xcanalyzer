@@ -118,23 +118,26 @@ class XcProjectGraphGenerator():
         targets = self.xcode_project.targets
         targets = sorted(targets, key=lambda t: t.name)
 
-        # Add nodes
-        for xcode_target in targets:
-            # Target
-            graph.node('target_{}'.format(xcode_target.name),
-                       label=xcode_target.name,
-                       style='rounded')
-
-            # Target's product
-            graph.node('product_{}'.format(xcode_target.product_name),
-                       label=xcode_target.product_name,
-                       style='solid')
-
-        # Add edges
         for xcode_target in targets:
             target_id = 'target_{}'.format(xcode_target.name)
             product_id = 'product_{}'.format(xcode_target.product_name)
+
+            # Target node
+            graph.node(target_id, label=xcode_target.name, style='rounded')
+
+            # Product node
+            graph.node(product_id, label=xcode_target.product_name, style='solid')
+
+            # Target => Product edge
             graph.edge(target_id, product_id, style='bold', arrowhead='empty')
+
+        for xcode_target in targets:
+            source_target_id = 'target_{}'.format(xcode_target.name)
+
+            # Target's linked frameworks
+            for linked_framework in xcode_target.linked_frameworks:
+                destination_target_id = 'target_{}'.format(linked_framework.name)
+                graph.edge(source_target_id, destination_target_id)
 
         graph.render(cleanup=True, view=preview)
 
