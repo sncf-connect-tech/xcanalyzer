@@ -140,12 +140,14 @@ class XcTarget():
     def __init__(self,
                  name,
                  target_type,
+                 product_name,
                  dependencies=None,
                  source_files=None,
                  resource_files=None,
                  header_files=None):
         self.name = name
         self.type = target_type
+        self.product_name = product_name
         self.dependencies = dependencies or set()  # Set of targets
         self.source_files = source_files or set()
         self.resource_files = resource_files or set()

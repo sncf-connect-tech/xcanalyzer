@@ -79,6 +79,69 @@ class XcProjectGraphGenerator():
             print(graph.source)
 
         return True
+    
+    def generate_products_graph(self,
+                                output_format='pdf',
+                                preview=False,
+                                display_graph_source=False,
+                                filepath=None,
+                                title=None):
+        if not filepath or not title:
+            return False
+        
+        if output_format not in {'pdf', 'png'}:
+            return False
+
+        graph = Digraph(filename=filepath,
+                        format=output_format,
+                        engine='dot',
+                        graph_attr={
+                            'fontname': 'Courier',
+                            'pack': 'true',
+                        },
+                        node_attr={
+                            'shape': 'box',
+                            'fontname': 'Courier',
+                        },
+                        edge_attr={
+                            'fontname': 'Courier',
+                        })
+
+        title = "{} - {}\n\n".format(self.xcode_project.name, title)
+        graph.attr(label=title)
+
+        graph.attr(labelloc='t')
+        graph.attr(fontsize='26')
+        graph.attr(rankdir='BT')
+
+        # Targets sorted nodes by name
+        targets = self.xcode_project.targets
+        targets = sorted(targets, key=lambda t: t.name)
+
+        # Add nodes
+        for xcode_target in targets:
+            # Target
+            graph.node('target_{}'.format(xcode_target.name),
+                       label=xcode_target.name,
+                       style='rounded')
+
+            # Target's product
+            graph.node('product_{}'.format(xcode_target.product_name),
+                       label=xcode_target.product_name,
+                       style='solid')
+
+        # Add edges
+        for xcode_target in targets:
+            target_id = 'target_{}'.format(xcode_target.name)
+            product_id = 'product_{}'.format(xcode_target.product_name)
+            graph.edge(target_id, product_id, style='bold', arrowhead='empty')
+
+        graph.render(cleanup=True, view=preview)
+
+        if display_graph_source:
+            print(graph.source)
+
+        return True
 
 
 class XcProjReporter():

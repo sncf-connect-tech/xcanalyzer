@@ -310,13 +310,14 @@ class XcTargetTests(TestCase):
     # __init__
 
     def test_instantiate_xc_target(self):
-        xc_target = XcTarget(name="MyXcTarget", target_type=XcTarget.Type.UI_TEST)
+        xc_target = XcTarget(name="MyXcTarget", target_type=XcTarget.Type.UI_TEST, product_name='MyProduct')
 
         self.assertTrue(xc_target)
         self.assertEqual(xc_target.name, "MyXcTarget")
+        self.assertEqual(xc_target.product_name, "MyProduct")
 
     def test_instantiate_xc_target__without_dependencies__has_no_dependency(self):
-        xc_target = XcTarget(name="MyXcTarget", target_type=XcTarget.Type.UI_TEST)
+        xc_target = XcTarget(name="MyXcTarget", target_type=XcTarget.Type.UI_TEST, product_name='MyProduct')
 
         self.assertFalse(xc_target.dependencies)
     
@@ -325,35 +326,44 @@ class XcTargetTests(TestCase):
     def test_instantiate_xc_target__with_dependencies__has_dependencies(self):
         target_dep = self.fixture.any_target(name='MyDep')
 
-        xc_target = XcTarget(name="MyXcTarget", target_type=XcTarget.Type.UI_TEST, dependencies=set([target_dep]))
+        xc_target = XcTarget(name="MyXcTarget",
+                             target_type=XcTarget.Type.UI_TEST,
+                             product_name='MyProduct',
+                             dependencies=set([target_dep]))
 
         self.assertTrue(target_dep in xc_target.dependencies)
     
     # __init__ - source files
 
     def test_instantiate_xc_target__without__source_files_has_no_source_file(self):
-        xc_target = XcTarget(name="MyXcTarget", target_type=XcTarget.Type.UI_TEST)
+        xc_target = XcTarget(name="MyXcTarget", target_type=XcTarget.Type.UI_TEST, product_name='MyProduct')
 
         self.assertFalse(xc_target.source_files)
 
     def test_instantiate_xc_target__with_source_files__has_source_files(self):
         any_file = self.fixture.any_file()
 
-        xc_target = XcTarget(name="MyXcTarget", target_type=XcTarget.Type.UI_TEST, source_files=set([any_file]))
+        xc_target = XcTarget(name="MyXcTarget",
+                             target_type=XcTarget.Type.UI_TEST,
+                             product_name='MyProduct',
+                             source_files=set([any_file]))
 
         self.assertTrue(any_file in xc_target.source_files)
     
     # __init__ - resource files
 
     def test_instantiate_xc_target__without__resource_files_has_no_resource_file(self):
-        xc_target = XcTarget(name="MyXcTarget", target_type=XcTarget.Type.UI_TEST)
+        xc_target = XcTarget(name="MyXcTarget", target_type=XcTarget.Type.UI_TEST, product_name='MyProduct')
 
         self.assertFalse(xc_target.resource_files)
 
     def test_instantiate_xc_target__with_resource_files__has_resource_files(self):
         any_file = self.fixture.any_file()
 
-        xc_target = XcTarget(name="MyXcTarget", target_type=XcTarget.Type.UI_TEST, resource_files=set([any_file]))
+        xc_target = XcTarget(name="MyXcTarget",
+                             target_type=XcTarget.Type.UI_TEST,
+                             product_name='MyProduct',
+                             resource_files=set([any_file]))
 
         self.assertTrue(any_file in xc_target.resource_files)
     
@@ -362,40 +372,43 @@ class XcTargetTests(TestCase):
     def test_instantiate_xc_target__with_header_files__has_header_files(self):
         any_file = self.fixture.any_file()
 
-        xc_target = XcTarget(name="MyXcTarget", target_type=XcTarget.Type.UI_TEST, header_files=set([any_file]))
+        xc_target = XcTarget(name="MyXcTarget",
+                             target_type=XcTarget.Type.UI_TEST,
+                             product_name='MyProduct',
+                             header_files=set([any_file]))
 
         self.assertTrue(any_file in xc_target.header_files)
 
     def test_instantiate_xc_target__without__header_files_has_no_header_file(self):
-        xc_target = XcTarget(name="MyXcTarget", target_type=XcTarget.Type.UI_TEST)
+        xc_target = XcTarget(name="MyXcTarget", target_type=XcTarget.Type.UI_TEST, product_name='MyProduct')
 
         self.assertFalse(xc_target.header_files)
 
     # __eq__
 
     def test_xc_targets_are_not_equal__when_different_type(self):
-        xc_target_1 = XcTarget(name="MyXcTarget", target_type=XcTarget.Type.UI_TEST)
-        xc_target_2 = XcTarget(name="MyXcTarget", target_type=XcTarget.Type.TEST)
+        xc_target_1 = XcTarget(name="MyXcTarget", target_type=XcTarget.Type.UI_TEST, product_name='MyProduct')
+        xc_target_2 = XcTarget(name="MyXcTarget", target_type=XcTarget.Type.TEST, product_name='MyProduct')
 
         self.assertFalse(xc_target_1 == xc_target_2)
 
     def test_xc_targets_are_not_equal__when_different_name(self):
-        xc_target_1 = XcTarget(name="MyXcTarget1", target_type=XcTarget.Type.UI_TEST)
-        xc_target_2 = XcTarget(name="MyXcTarget2", target_type=XcTarget.Type.UI_TEST)
+        xc_target_1 = XcTarget(name="MyXcTarget1", target_type=XcTarget.Type.UI_TEST, product_name='MyProduct')
+        xc_target_2 = XcTarget(name="MyXcTarget2", target_type=XcTarget.Type.UI_TEST, product_name='MyProduct')
 
         self.assertFalse(xc_target_1 == xc_target_2)
     
     def test_xc_targets_are_equal__when_same_name_and_type(self):
-        xc_target_1 = XcTarget(name="MyXcTarget", target_type=XcTarget.Type.UI_TEST)
-        xc_target_2 = XcTarget(name="MyXcTarget", target_type=XcTarget.Type.UI_TEST)
+        xc_target_1 = XcTarget(name="MyXcTarget", target_type=XcTarget.Type.UI_TEST, product_name='MyProduct')
+        xc_target_2 = XcTarget(name="MyXcTarget", target_type=XcTarget.Type.UI_TEST, product_name='MyProduct')
 
         self.assertTrue(xc_target_1 == xc_target_2)
     
     # __hash__
 
     def test_xc_targets_hashes_are_same__when_same_type_and_name(self):
-        xc_target_1 = XcTarget(name="MyXcTarget", target_type=XcTarget.Type.UI_TEST)
-        xc_target_2 = XcTarget(name="MyXcTarget", target_type=XcTarget.Type.UI_TEST)
+        xc_target_1 = XcTarget(name="MyXcTarget", target_type=XcTarget.Type.UI_TEST, product_name='MyProduct')
+        xc_target_2 = XcTarget(name="MyXcTarget", target_type=XcTarget.Type.UI_TEST, product_name='MyProduct')
 
         hash_1 = hash(xc_target_1)
         hash_2 = hash(xc_target_2)
@@ -405,7 +418,7 @@ class XcTargetTests(TestCase):
     # __repr__
 
     def test_xc_target_repr_contain_name(self):
-        xc_target = XcTarget(name="MyXcTarget", target_type=XcTarget.Type.UI_TEST)
+        xc_target = XcTarget(name="MyXcTarget", target_type=XcTarget.Type.UI_TEST, product_name='MyProduct')
 
         representation = str(xc_target)
 

@@ -35,13 +35,27 @@ class XcProjectParserTests(TestCase):
         self.assertTrue(project_parser.object.name, 'SampleiOSApp')
 
     def test_xc_project_parser__loaded__gives_targets(self):
+        # Given
         project_parser = self.fixture.sample_xc_project_parser
+
+        # When
         xcode_project = project_parser.object
 
-        app_target = XcTarget(name='SampleiOSApp', target_type=XcTarget.Type.APPLICATION)
-        test_target = XcTarget(name='SampleiOSAppTests', target_type=XcTarget.Type.TEST)
-        ui_test_target = XcTarget(name='SampleiOSAppUITests', target_type=XcTarget.Type.UI_TEST)
-        framework_target = XcTarget(name='SampleCore', target_type=XcTarget.Type.FRAMEWORK)
+        # Then - expected targets
+        app_target = XcTarget(name='SampleiOSApp',
+                              product_name='SampleiOSApp',
+                              target_type=XcTarget.Type.APPLICATION)
+        test_target = XcTarget(name='SampleiOSAppTests',
+                               product_name='SampleiOSAppTests',
+                               target_type=XcTarget.Type.TEST)
+        ui_test_target = XcTarget(name='SampleiOSAppUITests',
+                                  product_name='SampleiOSAppUITests',
+                                  target_type=XcTarget.Type.UI_TEST)
+        framework_target = XcTarget(name='SampleCore',
+                                    product_name='SampleCore',
+                                    target_type=XcTarget.Type.FRAMEWORK)
+
+        # Then - assertions
         self.assertTrue(app_target in xcode_project.targets)
         self.assertTrue(test_target in xcode_project.targets)
         self.assertTrue(ui_test_target in xcode_project.targets)

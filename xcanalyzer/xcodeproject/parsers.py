@@ -193,6 +193,7 @@ class XcProjectParser():
             # Transform into XcTarget
             xcode_target = XcTarget(target.name,
                                     xcode_target_type,
+                                    product_name=target.productName,
                                     dependencies=set(),
                                     source_files=set())
             xcode_targets.add(xcode_target)
