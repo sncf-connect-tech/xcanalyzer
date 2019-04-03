@@ -14,6 +14,15 @@ argument_parser = argparse.ArgumentParser(description="Generate targets dependen
 # Project folder argument
 argument_parser.add_argument('path', help='Path of the folder containing your `.xcodeproj` folder.')
 
+# Dependency type
+argument_parser.add_argument('-t', '--dependency-type',
+                             choices=['build', 'framework'],
+                             dest='dependency_type',
+                             required=True,
+                             help="Type of dependency to look for. \
+                                   Available types are target 'build' dependencies \
+                                   and linked 'framework' dependencies.")
+
 # Open graph argument
 argument_parser.add_argument('-p', '--preview',
                              dest='open_preview_graph',
@@ -80,20 +89,31 @@ except XcodeProjectReadException as e:
 # Generator
 graph_generator = XcProjectGraphGenerator(xcode_project_reader.object)
 
+# Default file path and title
+if args.dependency_type == 'framework':
+    filepath = output_filepath or 'build/framework_dependencies_graph'
+    title = args.title or 'Targets Linked-Framework-Dependencies Graph'
+else:  # args.dependency_type == 'build':
+    filepath = output_filepath or 'build/build_dependencies_graph'
+    title = args.title or 'Targets Build-Dependencies Graph'
+
+if args.framework_only:
+    filepath += '__only_frameworks'
+    title += ' (only frameworks)'
+
+
 # Generate graph
 if args.framework_only:
-    filepath = output_filepath or 'build/framework_targets_dependencies_graph'
-    title = args.title or 'Framework Targets Dependencies Graph'
     graph_generated = graph_generator.generate_targets_dependencies_graph(output_format=args.output_format,
+                                                                          dependency_type=args.dependency_type,
                                                                           preview=args.open_preview_graph,
                                                                           display_graph_source=args.display_graph_source,
                                                                           filepath=filepath,
                                                                           title=title,
                                                                           including_types=set([XcTarget.Type.FRAMEWORK]))
 else:
-    filepath = output_filepath or 'build/all_targets_dependencies_graph'
-    title = args.title or 'All Targets Dependencies Graph'
     graph_generated = graph_generator.generate_targets_dependencies_graph(output_format=args.output_format,
+                                                                          dependency_type=args.dependency_type,
                                                                           preview=args.open_preview_graph,
                                                                           display_graph_source=args.display_graph_source,
                                                                           filepath=filepath,

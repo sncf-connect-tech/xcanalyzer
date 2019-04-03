@@ -10,17 +10,24 @@ class XcProjectGraphGenerator():
         self.xcode_project = xcode_project
     
     def generate_targets_dependencies_graph(self,
-                                            output_format='pdf',
+                                            output_format='pdf',  # 'pdf' or 'png'
+                                            dependency_type=None,  # 'build' or 'framework'
                                             preview=False,
                                             display_graph_source=False,
                                             filepath=None,
                                             title=None,
                                             including_types=set()):
-        if not filepath or not title:
-            return False
+        if not filepath:
+            raise Exception("Missing filepath.")
+
+        if not title:
+            raise Exception("Missing title.")
         
         if output_format not in {'pdf', 'png'}:
-            return False
+            raise Exception("Bad output_format '{}'. Only 'pdf' and 'png' are supported.".format(output_format))
+        
+        if dependency_type not in {'build', 'framework'}:
+            raise Exception("Bad dependency_type '{}'. Only 'build' and 'framework' are supported.".format(output_format))
 
         graph = Digraph(filename=filepath,
                         format=output_format,
@@ -52,7 +59,7 @@ class XcProjectGraphGenerator():
         # Sort nodes by name
         targets = sorted(targets, key=lambda t: t.name)
 
-        # Add nodes
+        # Target nodes
         for xcode_target in targets:
             if xcode_target.type in {XcTarget.Type.TEST, XcTarget.Type.UI_TEST}:
                 style = 'dotted'
@@ -64,17 +71,26 @@ class XcProjectGraphGenerator():
                 style = 'solid'
             graph.node(xcode_target.name, style=style)
 
-        # Add edges
+        # Dependencies edges
         for xcode_target in targets:
-            dependencies_target = sorted(xcode_target.dependencies, key=lambda t: t.name)  # Sort dependencies by name
+            if dependency_type == 'build':
+                dependencies = xcode_target.dependencies
+            elif dependency_type == 'framework':
+                dependencies = xcode_target.linked_frameworks
+            else:
+                raise Exception("Dependency type '{}' not supported.".format(dependency_type))
+
+            dependencies_target = sorted(dependencies, key=lambda t: t.name)  # Sort dependencies by name
             for dependency_target in dependencies_target:
                 if including_types and dependency_target.type not in including_types:
                     continue
 
                 graph.edge(xcode_target.name, dependency_target.name)
 
+        # Render the graph
         graph.render(cleanup=True, view=preview)
 
+        # Display graph source if asked
         if display_graph_source:
             print(graph.source)
 
