@@ -193,10 +193,14 @@ class XcProjectParser():
             # Test modules
             xcode_target_type = self._map_target_type(target)
 
+            # Product name
+            # We don't use target.productName because its seems to not be used by Xcode
+            product_name = self.xcode_project.get_object(target.productReference).path
+
             # Transform into XcTarget
             xcode_target = XcTarget(target.name,
                                     xcode_target_type,
-                                    product_name=target.productName,
+                                    product_name=product_name,
                                     dependencies=set(),
                                     source_files=set())
             xcode_targets.add(xcode_target)
@@ -254,6 +258,11 @@ class XcProjectParser():
         
         # Set linked frameworks for each target
         for xcode_target, linked_framework_refs in target_linked_framework_refs.items():
-            xcode_target.linked_frameworks = {product_references[ref] for ref in linked_framework_refs}
+            xcode_target.linked_frameworks = set()
+
+            for linked_framework_ref in linked_framework_refs:
+                # We avoid frameworks that are not a product of one project's target
+                if linked_framework_ref in product_references:
+                    xcode_target.linked_frameworks.add(product_references[linked_framework_ref])
     
         return xcode_targets

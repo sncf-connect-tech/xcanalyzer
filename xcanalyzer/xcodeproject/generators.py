@@ -155,7 +155,7 @@ class XcProjReporter():
     def _print_horizontal_line(self):
         print('--------------------')
 
-    def print_targets(self, by_type=True):
+    def print_targets(self, by_type=True, verbose=False):
         if not by_type:
             target_names = [t.name for t in self.xcode_project.targets]
             target_names.sort()
@@ -177,7 +177,11 @@ class XcProjReporter():
 
                 # Targets
                 for target in targets:
-                    print('- {}'.format(target.name))
+                    if verbose:
+                        text = '- {} => {}'.format(target.name, target.product_name)
+                    else:
+                        text = '- {}'.format(target.name)
+                    print(text)
                 
                 self.target_type_counts[target_type] = (target_type_display, len(targets))
     

@@ -3,6 +3,7 @@
 import argparse
 
 from xcanalyzer.xcodeproject.parsers import XcProjectParser
+from xcanalyzer.xcodeproject.exceptions import XcodeProjectReadException
 from xcanalyzer.xcodeproject.generators import XcProjReporter
 
 
@@ -19,6 +20,13 @@ argument_parser.add_argument('-n', '--name-sorted',
                              action='store_true', 
                              help='Give the list of targets sorted by name. So they are not grouped by type.')
 
+# Verbose argument
+argument_parser.add_argument('-v', '--verbose',
+                             dest='verbose',
+                             action='store_true', 
+                             help=".")
+
+
 # --- Parse arguments ---
 args = argument_parser.parse_args()
 
@@ -34,6 +42,6 @@ except XcodeProjectReadException as e:
 
 # Reporter
 reporter = XcProjReporter(xcode_project_reader.object)
-reporter.print_targets(by_type=(not args.sorted_by_name))
+reporter.print_targets(by_type=(not args.sorted_by_name), verbose=args.verbose)
 if not args.sorted_by_name:
     reporter.print_targets_summary()
