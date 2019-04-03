@@ -29,12 +29,34 @@ class XcProjectGraphGeneratorTests(TestCase):
     
     # generate_targets_dependencies_graph
 
-    def test_generate_targets_dependencies_graph(self):
+    def test_generate_targets_dependencies_graph__for_dependency_type_build(self):
         project = XcModelsFixture().any_project()
         generator = XcProjectGraphGenerator(project)
         filepath = self.fixture.any_graph_filepath('pdf_target_dependencies')
 
-        generated = generator.generate_targets_dependencies_graph(filepath=filepath, title='title')
+        generated = generator.generate_targets_dependencies_graph(filepath=filepath, title='title', dependency_type='build')
+
+        graph_filepath = '{}.pdf'.format(filepath)
+        self.assertEqual(generated, True)
+        self.assertTrue(os.path.exists(graph_filepath))
+
+    def test_generate_targets_dependencies_graph__for_dependency_type_linked(self):
+        project = XcModelsFixture().any_project()
+        generator = XcProjectGraphGenerator(project)
+        filepath = self.fixture.any_graph_filepath('pdf_target_dependencies')
+
+        generated = generator.generate_targets_dependencies_graph(filepath=filepath, title='title', dependency_type='linked')
+
+        graph_filepath = '{}.pdf'.format(filepath)
+        self.assertEqual(generated, True)
+        self.assertTrue(os.path.exists(graph_filepath))
+
+    def test_generate_targets_dependencies_graph__for_dependency_type_embed(self):
+        project = XcModelsFixture().any_project()
+        generator = XcProjectGraphGenerator(project)
+        filepath = self.fixture.any_graph_filepath('pdf_target_dependencies')
+
+        generated = generator.generate_targets_dependencies_graph(filepath=filepath, title='title', dependency_type='linked')
 
         graph_filepath = '{}.pdf'.format(filepath)
         self.assertEqual(generated, True)
@@ -45,7 +67,7 @@ class XcProjectGraphGeneratorTests(TestCase):
         generator = XcProjectGraphGenerator(project)
         filepath = self.fixture.any_graph_filepath('png_target_dependencies')
 
-        generated = generator.generate_targets_dependencies_graph(filepath=filepath, title='title', output_format='png')
+        generated = generator.generate_targets_dependencies_graph(filepath=filepath, title='title', dependency_type='linked', output_format='png')
 
         graph_filepath = '{}.png'.format(filepath)
         self.assertEqual(generated, True)
@@ -57,7 +79,7 @@ class XcProjectGraphGeneratorTests(TestCase):
         filepath = self.fixture.any_graph_filepath('png_framework_target_dependencies')
         including_types = {XcTarget.Type.FRAMEWORK}
 
-        generated = generator.generate_targets_dependencies_graph(filepath=filepath, title='title', including_types=including_types)
+        generated = generator.generate_targets_dependencies_graph(filepath=filepath, title='title', dependency_type='linked', including_types=including_types)
 
         graph_filepath = '{}.pdf'.format(filepath)
         self.assertEqual(generated, True)

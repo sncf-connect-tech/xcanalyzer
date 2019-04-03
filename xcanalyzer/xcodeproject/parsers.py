@@ -188,6 +188,7 @@ class XcProjectParser():
 
         product_references = dict()
         target_linked_framework_refs = dict()
+        target_embed_framework_refs = dict()
 
         for target in targets:
             # Test modules
@@ -248,6 +249,10 @@ class XcProjectParser():
                 # Find target's linked frameworks
                 elif build_phase.isa == 'PBXFrameworksBuildPhase':
                     target_linked_framework_refs[xcode_target] = [self.xcode_project.get_object(build_file).fileRef for build_file in build_phase.files]
+                
+                # Find target's embed frameworks
+                elif build_phase.isa == 'PBXCopyFilesBuildPhase':
+                    target_embed_framework_refs[xcode_target] = [self.xcode_project.get_object(build_file).fileRef for build_file in build_phase.files]
 
         # Set dependencies for each target        
         for target_name, dependencies_names in target_dependencies_names.items():
@@ -264,5 +269,14 @@ class XcProjectParser():
                 # We avoid frameworks that are not a product of one project's target
                 if linked_framework_ref in product_references:
                     xcode_target.linked_frameworks.add(product_references[linked_framework_ref])
+    
+        # Set embed frameworks for each target
+        for xcode_target, embed_framework_refs in target_embed_framework_refs.items():
+            xcode_target.embed_frameworks = set()
+
+            for embed_framework_ref in embed_framework_refs:
+                # We avoid frameworks that are not a product of one project's target
+                if embed_framework_ref in product_references:
+                    xcode_target.embed_frameworks.add(product_references[embed_framework_ref])
     
         return xcode_targets

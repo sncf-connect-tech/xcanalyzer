@@ -14,7 +14,7 @@ Then activate the Python 3 virtual environment by:
 
 ## Testing
 
-To launch the tests, activate the ven then type:
+To launch the tests, activate the venv then type:
 
         python -m unittest
 
@@ -28,11 +28,6 @@ To clean the project, runs:
 
 The goals to reach:
 
-- list targets
-        - linked frameworks
-        - embed frameworks
-        - target build dependencies
-
-- find files not used in project
 - find files used in several targets
+- find files not used in project
 - find files with mismatches between xcode path and file path (See `SampleiOSApp` > `Ghost.swift`)

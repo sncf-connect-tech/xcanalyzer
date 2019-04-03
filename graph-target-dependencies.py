@@ -16,12 +16,13 @@ argument_parser.add_argument('path', help='Path of the folder containing your `.
 
 # Dependency type
 argument_parser.add_argument('-t', '--dependency-type',
-                             choices=['build', 'framework'],
+                             choices=['build', 'linked', 'embed'],
                              dest='dependency_type',
                              required=True,
                              help="Type of dependency to look for. \
-                                   Available types are target 'build' dependencies \
-                                   and linked 'framework' dependencies.")
+                                   Available types are target 'build' dependencies, \
+                                   'linked' framework dependencies \
+                                   and 'embed' framework dependencies.")
 
 # Open graph argument
 argument_parser.add_argument('-p', '--preview',
@@ -90,34 +91,34 @@ except XcodeProjectReadException as e:
 graph_generator = XcProjectGraphGenerator(xcode_project_reader.object)
 
 # Default file path and title
-if args.dependency_type == 'framework':
-    filepath = output_filepath or 'build/framework_dependencies_graph'
-    title = args.title or 'Targets Linked-Framework-Dependencies Graph'
-else:  # args.dependency_type == 'build':
+if args.dependency_type == 'build':
     filepath = output_filepath or 'build/build_dependencies_graph'
     title = args.title or 'Targets Build-Dependencies Graph'
+elif args.dependency_type == 'linked':
+    filepath = output_filepath or 'build/linked_dependencies_graph'
+    title = args.title or 'Targets Linked-Framework-Dependencies Graph'
+elif args.dependency_type == 'embed':
+    filepath = output_filepath or 'build/embed_dependencies_graph'
+    title = args.title or 'Targets Embed-Framework-Dependencies Graph'
+else:
+    raise Exception("dependency_type '{}' not supported".format(args.dependency_type))
 
 if args.framework_only:
     filepath += '__only_frameworks'
     title += ' (only frameworks)'
 
+# Including types of frameworks
+including_types = set([XcTarget.Type.FRAMEWORK]) if args.framework_only else set()
 
-# Generate graph
-if args.framework_only:
-    graph_generated = graph_generator.generate_targets_dependencies_graph(output_format=args.output_format,
-                                                                          dependency_type=args.dependency_type,
-                                                                          preview=args.open_preview_graph,
-                                                                          display_graph_source=args.display_graph_source,
-                                                                          filepath=filepath,
-                                                                          title=title,
-                                                                          including_types=set([XcTarget.Type.FRAMEWORK]))
-else:
-    graph_generated = graph_generator.generate_targets_dependencies_graph(output_format=args.output_format,
-                                                                          dependency_type=args.dependency_type,
-                                                                          preview=args.open_preview_graph,
-                                                                          display_graph_source=args.display_graph_source,
-                                                                          filepath=filepath,
-                                                                          title=title)
+
+# --- Generate graph ---
+graph_generated = graph_generator.generate_targets_dependencies_graph(output_format=args.output_format,
+                                                                      dependency_type=args.dependency_type,
+                                                                      preview=args.open_preview_graph,
+                                                                      display_graph_source=args.display_graph_source,
+                                                                      filepath=filepath,
+                                                                      title=title,
+                                                                      including_types=including_types)
 
 if graph_generated:
     if not args.display_graph_source:

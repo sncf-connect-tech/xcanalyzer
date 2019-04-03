@@ -26,8 +26,8 @@ class XcProjectGraphGenerator():
         if output_format not in {'pdf', 'png'}:
             raise Exception("Bad output_format '{}'. Only 'pdf' and 'png' are supported.".format(output_format))
         
-        if dependency_type not in {'build', 'framework'}:
-            raise Exception("Bad dependency_type '{}'. Only 'build' and 'framework' are supported.".format(output_format))
+        if dependency_type not in {'build', 'linked', 'embed'}:
+            raise Exception("Bad dependency_type '{}'. Only 'build', 'linked' and 'embed' are supported.".format(dependency_type))
 
         graph = Digraph(filename=filepath,
                         format=output_format,
@@ -75,8 +75,10 @@ class XcProjectGraphGenerator():
         for xcode_target in targets:
             if dependency_type == 'build':
                 dependencies = xcode_target.dependencies
-            elif dependency_type == 'framework':
+            elif dependency_type == 'linked':
                 dependencies = xcode_target.linked_frameworks
+            elif dependency_type == 'embed':
+                dependencies = xcode_target.embed_frameworks
             else:
                 raise Exception("Dependency type '{}' not supported.".format(dependency_type))
 
@@ -96,72 +98,6 @@ class XcProjectGraphGenerator():
 
         return True
     
-    def generate_products_graph(self,
-                                output_format='pdf',
-                                preview=False,
-                                display_graph_source=False,
-                                filepath=None,
-                                title=None):
-        if not filepath or not title:
-            return False
-        
-        if output_format not in {'pdf', 'png'}:
-            return False
-
-        graph = Digraph(filename=filepath,
-                        format=output_format,
-                        engine='dot',
-                        graph_attr={
-                            'fontname': 'Courier',
-                            'pack': 'true',
-                        },
-                        node_attr={
-                            'shape': 'box',
-                            'fontname': 'Courier',
-                        },
-                        edge_attr={
-                            'fontname': 'Courier',
-                        })
-
-        title = "{} - {}\n\n".format(self.xcode_project.name, title)
-        graph.attr(label=title)
-
-        graph.attr(labelloc='t')
-        graph.attr(fontsize='26')
-        graph.attr(rankdir='BT')
-
-        # Targets sorted nodes by name
-        targets = self.xcode_project.targets
-        targets = sorted(targets, key=lambda t: t.name)
-
-        for xcode_target in targets:
-            target_id = 'target_{}'.format(xcode_target.name)
-            product_id = 'product_{}'.format(xcode_target.product_name)
-
-            # Target node
-            graph.node(target_id, label=xcode_target.name, style='rounded')
-
-            # Product node
-            graph.node(product_id, label=xcode_target.product_name, style='solid')
-
-            # Target => Product edge
-            graph.edge(target_id, product_id, style='bold', arrowhead='empty')
-
-        for xcode_target in targets:
-            source_target_id = 'target_{}'.format(xcode_target.name)
-
-            # Target's linked frameworks
-            for linked_framework in xcode_target.linked_frameworks:
-                destination_target_id = 'target_{}'.format(linked_framework.name)
-                graph.edge(source_target_id, destination_target_id)
-
-        graph.render(cleanup=True, view=preview)
-
-        if display_graph_source:
-            print(graph.source)
-
-        return True
-
 
 class XcProjReporter():
 

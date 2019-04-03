@@ -143,6 +143,7 @@ class XcTarget():
                  product_name,
                  dependencies=None,
                  linked_frameworks=None,
+                 embed_frameworks=None,
                  source_files=None,
                  resource_files=None,
                  header_files=None):
@@ -151,6 +152,7 @@ class XcTarget():
         self.product_name = product_name
         self.dependencies = dependencies or set()  # Set of targets
         self.linked_frameworks = linked_frameworks or set()  # Set of targets
+        self.embed_frameworks = embed_frameworks or set()  # Set of targets
         self.source_files = source_files or set()
         self.resource_files = resource_files or set()
         self.header_files = header_files or set()
