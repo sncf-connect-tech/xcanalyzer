@@ -3,6 +3,9 @@
 import argparse
 import os
 
+from xcanalyzer.xcodeproject.generators import FolderReporter
+
+
 
 # --- Arguments ---
 argument_parser = argparse.ArgumentParser(description="Find all empty sub folders of a folder. Ignore folders named `.git` or `DerivedData`.")
@@ -21,10 +24,16 @@ argument_parser.add_argument('-i', '--ignore-dir',
 # --- Parse arguments ---
 args = argument_parser.parse_args()
 
+# Argument: path => Remove ending slashes from path
+path = args.path
+while path and path[-1] == os.path.sep:
+    path = path[:-1]
+
 # Folder to ignore given as argument
 arged_ignored_folders = set(args.ignored_folders or [])
 ignored_folders = set()
 for folder in arged_ignored_folders:
+    # Remove ending slashes from given ignored folder paths
     while folder and folder[-1] == os.path.sep:
         folder = folder[:-1]
     ignored_folders.add(folder)
@@ -36,47 +45,11 @@ ignored_folders = {
 } | ignored_folders
 
 # Ignored path and folders
-ignored_dirpaths = {f for f in ignored_folders if f.startswith(os.path.sep)}
+ignored_dirpaths = {f for f in ignored_folders if os.path.sep in f}
 ignored_dirs = ignored_folders - ignored_dirpaths
+ignored_dirpaths = set(map(lambda f: f if f.startswith(os.path.sep) else '/{}'.format(f), ignored_dirpaths))
 
-# Remove ending slashes to path
-path = args.path
-while path and path[-1] == os.path.sep:
-    path = path[:-1]
 
-# Walk to find empty folders
-for (dirpath, dirnames, filenames) in os.walk(path):
-    relative_dirpath = dirpath[len(path):]
-
-    # Filter folder to ignore by path
-    continue_to_next_dirpath = False
-    for ignored_dirpath in ignored_dirpaths:
-        if relative_dirpath.startswith(ignored_dirpath):
-            continue_to_next_dirpath = True
-            break
-    if continue_to_next_dirpath:
-        continue
-        
-    # Filter folder to ignore by name
-    folder_parts = set(relative_dirpath.split(os.path.sep))
-    if ignored_dirs & folder_parts:
-        continue
-    
-    if dirnames:
-        continue
-    
-    unhidden_filenames = set([f for f in filenames if not f.startswith('.')])
-    if unhidden_filenames:
-        continue
-    
-    # Hidden files
-    hidden_filenames = list(set(filenames) - unhidden_filenames)
-    hidden_filenames.sort()
-
-    display = relative_dirpath
-
-    if hidden_filenames:
-        hidden_filenames_display = ', '.join([f for f in hidden_filenames])
-        display += ' [{}]'.format(hidden_filenames_display)
-    
-    print(display)
+# Report
+reporter = FolderReporter(path, ignored_dirpaths, ignored_dirs)
+reporter.print_empty_dirs()

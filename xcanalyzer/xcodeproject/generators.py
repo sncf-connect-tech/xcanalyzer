@@ -1,3 +1,5 @@
+import os
+
 from graphviz import Digraph
 from termcolor import cprint
 
@@ -97,7 +99,56 @@ class XcProjectGraphGenerator():
             print(graph.source)
 
         return True
+
+
+class FolderReporter():
+
+    def __init__(self, folder_path, ignored_dirpaths, ignored_dirs):
+        self.folder_path = folder_path
+        self.ignored_dirpaths = ignored_dirpaths
+        self.ignored_dirs = ignored_dirs
     
+    def print_empty_dirs(self):
+        # Walk to find empty folders
+        for (dirpath, dirnames, filenames) in os.walk(self.folder_path):
+            relative_dirpath = dirpath[len(self.folder_path):]
+
+            # Filter folder to ignore by path
+            continue_to_next_dirpath = False
+            for ignored_dirpath in self.ignored_dirpaths:
+                if relative_dirpath.startswith(ignored_dirpath):
+                    continue_to_next_dirpath = True
+                    break
+            if continue_to_next_dirpath:
+                continue
+                
+            # Filter folder to ignore by name
+            folder_parts = set(relative_dirpath.split(os.path.sep))
+            if self.ignored_dirs & folder_parts:
+                continue
+            
+            # Filter folder containing at least one dir
+            if dirnames:
+                continue
+            
+            # Filter folder containing at least an unhidden filename
+            unhidden_filenames = set([f for f in filenames if not f.startswith('.')])
+            if unhidden_filenames:
+                continue
+            
+            # Hidden files
+            hidden_filenames = list(set(filenames) - unhidden_filenames)
+            hidden_filenames.sort()
+
+            display = relative_dirpath
+
+            # Display hidden files for folder with only hidden files
+            if hidden_filenames:
+                hidden_filenames_display = ', '.join([f for f in hidden_filenames])
+                display += ' [{}]'.format(hidden_filenames_display)
+            
+            print(display)
+
 
 class XcProjReporter():
 
