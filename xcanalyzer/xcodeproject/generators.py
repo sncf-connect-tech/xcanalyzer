@@ -165,6 +165,32 @@ class XcProjReporter():
             for filepath in filepaths:
                 print(filepath)
     
+    def print_shared_files(self):
+        # key is a file, value is a set of targets
+        file_targets = dict()
+
+        # Search targets for shared files
+        for target in self.xcode_project.targets:
+            for target_file in target.files:
+                if target_file in file_targets:
+                    file_targets[target_file].add(target)
+                else:
+                    file_targets[target_file] = set([target])
+
+        # Filter files
+        filepath_targets = {f.filepath: targets for (f, targets) in file_targets.items() if len(targets) >= 2}
+
+        # Sort by filepath
+        filepaths = [p for p in filepath_targets.keys()]
+        filepaths.sort()
+
+        # Sort displays
+        for filepath in filepaths:
+            targets = filepath_targets[filepath]
+            targets_display = ', '.join([t.name for t in targets])
+            print('{} [{}]'.format(filepath, targets_display))
+
+
     def print_files_summary(self):
         self._print_horizontal_line()
 

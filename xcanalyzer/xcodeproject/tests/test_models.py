@@ -447,3 +447,21 @@ class XcTargetTests(TestCase):
         representation = str(xc_target)
 
         self.assertEqual(representation, "<XcTarget> MyXcTarget")
+    
+    # files
+
+    def test_files_gives_source_resource_and_header_files(self):
+        source_file = XcFile('/SourceFile')
+        resource_file = XcFile('/ResourceFile')
+        header_file = XcFile('/HeaderFile')
+        xc_target = XcTarget(name="MyXcTarget",
+                        target_type=XcTarget.Type.UI_TEST,
+                        product_name='MyProduct',
+                        source_files=set([source_file]),
+                        resource_files=set([resource_file]),
+                        header_files=set([header_file]))
+        
+        files = xc_target.files
+        
+        expected_files = set([source_file, resource_file, header_file])
+        self.assertEqual(expected_files, files)

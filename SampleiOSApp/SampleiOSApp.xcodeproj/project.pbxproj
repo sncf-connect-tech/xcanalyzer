@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		DF30B739225E2DD3004F18A1 /* LICENCE.md in Resources */ = {isa = PBXBuildFile; fileRef = DF85324E224BCC9600792A18 /* LICENCE.md */; };
+		DF30B73B225E2DD5004F18A1 /* LICENCE.md in Resources */ = {isa = PBXBuildFile; fileRef = DF85324E224BCC9600792A18 /* LICENCE.md */; };
 		DF4ACD4F224C158900984A77 /* View.xib in Resources */ = {isa = PBXBuildFile; fileRef = DF4ACD4E224C158900984A77 /* View.xib */; };
 		DF4ACD52224C17D300984A77 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = DF4ACD54224C17D300984A77 /* Localizable.strings */; };
 		DF4ACD61224CC3E900984A77 /* Core.strings in Resources */ = {isa = PBXBuildFile; fileRef = DF4ACD63224CC3E900984A77 /* Core.strings */; };
@@ -593,6 +595,7 @@
 			files = (
 				DF4ACD52224C17D300984A77 /* Localizable.strings in Resources */,
 				DF4ACD4F224C158900984A77 /* View.xib in Resources */,
+				DF30B739225E2DD3004F18A1 /* LICENCE.md in Resources */,
 				DFB4DB6422397A4A007DB426 /* LaunchScreen.storyboard in Resources */,
 				DFB4DB6122397A4A007DB426 /* Assets.xcassets in Resources */,
 				DFB4DB5F22397A49007DB426 /* Main.storyboard in Resources */,
@@ -633,6 +636,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DF30B73B225E2DD5004F18A1 /* LICENCE.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

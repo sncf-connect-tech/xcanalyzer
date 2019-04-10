@@ -169,3 +169,7 @@ class XcTarget():
 
     def __repr__(self):
         return "<XcTarget> {}".format(self.name)
+    
+    @property
+    def files(self):
+        return self.source_files | self.resource_files | self.header_files

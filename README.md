@@ -28,6 +28,5 @@ To clean the project, runs:
 
 The goals to reach:
 
-- find files used in several targets
 - find files not used in project
 - find files with mismatches between xcode path and file path (See `SampleiOSApp` > `Ghost.swift`)

@@ -13,6 +13,12 @@ argument_parser = argparse.ArgumentParser(description="List all targets and file
 argument_parser.add_argument('path',
                              help='Path of the folder containing your `.xcodeproj` folder.')
 
+# Only "shared" files between targets
+argument_parser.add_argument('-s', '--only-shared',
+                             dest='only_shared',
+                             action='store_true', 
+                             help='Give the list of files used by multiple targets.')
+
 
 # --- Parse arguments ---
 args = argument_parser.parse_args()
@@ -29,5 +35,8 @@ except XcodeProjectReadException as e:
 
 # Reporter
 reporter = XcProjReporter(xcode_project_reader.object)
-reporter.print_files_by_targets()
-reporter.print_files_summary()
+if args.only_shared:
+    reporter.print_shared_files()
+else:
+    reporter.print_files_by_targets()
+    reporter.print_files_summary()
