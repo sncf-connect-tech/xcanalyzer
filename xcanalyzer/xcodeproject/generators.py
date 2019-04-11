@@ -306,10 +306,6 @@ class XcProjReporter():
         for (dirpath, dirnames, filenames) in os.walk(self.xcode_project.dirpath):
             relative_dirpath = dirpath[len(self.xcode_project.dirpath):]
 
-            # Filter root folder
-            if not relative_dirpath:
-                continue
-
             # Filter folder to ignore by path
             continue_to_next_dirpath = False
             for ignored_dirpath in ignored_dirpaths:
@@ -326,6 +322,10 @@ class XcProjReporter():
 
             # Filter xcodeproj itself
             if '.xcodeproj' in relative_dirpath:
+                continue
+            
+            # Filter xcworkspace
+            if '.xcworkspace' in relative_dirpath:
                 continue
             
             # Detect xcassets folders

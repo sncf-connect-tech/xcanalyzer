@@ -105,6 +105,14 @@ class XcProjectParserTests(TestCase):
         self.assertTrue(XcFile('/SampleCore/SampleCore.swift') in target.source_files)
         self.assertFalse(XcFile('/SampleiOSApp/AppDelegate.swift') in target.source_files)
     
+    def test_xc_project_parser__reduces_double_dot_path_parts__for_files(self):
+        project_parser = self.fixture.sample_xc_project_parser
+        xcode_project = project_parser.object
+
+        target = xcode_project.target_with_name('SampleCore')
+
+        self.assertTrue(XcFile('/ViewBadPlaced.xib') in target.resource_files)
+    
     def test_xc_project_parser__gives_intentdefinition_as_source_file(self):
         project_parser = self.fixture.sample_xc_project_parser
         xcode_project = project_parser.object

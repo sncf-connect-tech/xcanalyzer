@@ -107,11 +107,27 @@ class XcProjectParser():
             child = self.xcode_project.get_object(child_key)
             if child.isa == 'PBXFileReference':
                 filename = self._file_name_for_file_ref(child)
-                xc_file = XcFile(filepath='/{}'.format(filename))
+                filepath = self._reduce_double_dot_filepath_part('/{}'.format(filename))
+                xc_file = XcFile(filepath=filepath)
                 results.add(xc_file)
                 self.file_mapping[child] = xc_file
 
         return results
+
+    def _reduce_double_dot_filepath_part(self, filepath):
+        new_parts = []
+
+        parts = filepath.split('/')
+        new_parts.append(parts.pop())
+        while parts:
+            part = parts.pop()
+            if part == '..':
+                parts.pop()  # Remove previous part also
+                continue
+            new_parts.append(part)
+        
+        new_parts.reverse()
+        return '/'.join(new_parts)
 
     def _parse_groups(self):
         # key is a child key reference
@@ -174,6 +190,8 @@ class XcProjectParser():
             
                 elif current_child.sourceTree == 'SOURCE_ROOT':  # Relative to project
                     current_filepath = '/{}'.format(current_child.path)
+
+                current_filepath = self._reduce_double_dot_filepath_part(current_filepath)
 
                 xc_file = XcFile(filepath=current_filepath)
                 parent_group.files.add(xc_file)
