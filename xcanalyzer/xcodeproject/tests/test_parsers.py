@@ -104,6 +104,26 @@ class XcProjectParserTests(TestCase):
         self.assertTrue(target.source_files)
         self.assertTrue(XcFile('/SampleCore/SampleCore.swift') in target.source_files)
         self.assertFalse(XcFile('/SampleiOSApp/AppDelegate.swift') in target.source_files)
+    
+    def test_xc_project_parser__gives_intentdefinition_as_source_file(self):
+        project_parser = self.fixture.sample_xc_project_parser
+        xcode_project = project_parser.object
+
+        target = xcode_project.target_with_name('SampleUI')
+
+        self.assertTrue(target.source_files)
+        self.assertTrue(XcFile('/SampleUI/MyIntents.intentdefinition') in target.source_files)
+
+    def test_xc_project_parser__gives_localized_intentdefinition_as_source_file(self):
+        project_parser = self.fixture.sample_xc_project_parser
+        xcode_project = project_parser.object
+
+        target = xcode_project.target_with_name('SampleUI')
+
+        self.assertTrue(target.source_files)
+        self.assertTrue(XcFile('/SampleUI/Base.lproj/LocalizedIntents.intentdefinition') in target.source_files)
+        self.assertTrue(XcFile('/SampleUI/en.lproj/LocalizedIntents.strings') in target.source_files)
+        self.assertTrue(XcFile('/SampleUI/fr.lproj/LocalizedIntents.strings') in target.source_files)
 
     def test_xc_project_parser__gives_resource_files_for_each_target(self):
         project_parser = self.fixture.sample_xc_project_parser
@@ -180,7 +200,6 @@ class XcProjectParserTests(TestCase):
         self.assertEqual(normal_group.is_project_relative, False)
         self.assertEqual(project_relative_group.is_project_relative, True)
         self.assertEqual(project_relative_without_folder_group.is_project_relative, True)
-
 
     # files
 

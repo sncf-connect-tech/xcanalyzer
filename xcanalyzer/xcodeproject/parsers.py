@@ -228,7 +228,13 @@ class XcProjectParser():
                     for build_file_key in build_phase.files:
                         build_file = self.xcode_project.get_object(build_file_key)
                         file_ref = self.xcode_project.get_object(build_file.fileRef)
-                        xcode_target.source_files.add(self.file_mapping[file_ref])
+
+                        if file_ref.isa == 'PBXVariantGroup':  # Localized source files (ex: intentdefinition)
+                            for child in file_ref.children:
+                                variant_file_ref = self.xcode_project.get_object(child)
+                                xcode_target.source_files.add(self.file_mapping[variant_file_ref])
+                        else:
+                            xcode_target.source_files.add(self.file_mapping[file_ref])
 
                 # Resources files
                 elif build_phase.isa == 'PBXResourcesBuildPhase':

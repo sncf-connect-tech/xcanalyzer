@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		DF186B56225F49F7005C5DC7 /* MyIntents.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = DF186B54225F49E2005C5DC7 /* MyIntents.intentdefinition */; };
+		DF186B57225F49FC005C5DC7 /* MyIntents.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = DF186B54225F49E2005C5DC7 /* MyIntents.intentdefinition */; settings = {ATTRIBUTES = (no_codegen, ); }; };
+		DF186B5B225F4A3A005C5DC7 /* LocalizedIntents.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = DF186B5E225F4A3A005C5DC7 /* LocalizedIntents.intentdefinition */; settings = {ATTRIBUTES = (no_codegen, ); }; };
+		DF186B5C225F4A3A005C5DC7 /* LocalizedIntents.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = DF186B5E225F4A3A005C5DC7 /* LocalizedIntents.intentdefinition */; };
 		DF30B739225E2DD3004F18A1 /* LICENCE.md in Resources */ = {isa = PBXBuildFile; fileRef = DF85324E224BCC9600792A18 /* LICENCE.md */; };
 		DF30B73B225E2DD5004F18A1 /* LICENCE.md in Resources */ = {isa = PBXBuildFile; fileRef = DF85324E224BCC9600792A18 /* LICENCE.md */; };
 		DF4ACD4F224C158900984A77 /* View.xib in Resources */ = {isa = PBXBuildFile; fileRef = DF4ACD4E224C158900984A77 /* View.xib */; };
@@ -107,6 +111,11 @@
 
 /* Begin PBXFileReference section */
 		DF1507532248D3EA009D0B98 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		DF186B54225F49E2005C5DC7 /* MyIntents.intentdefinition */ = {isa = PBXFileReference; lastKnownFileType = file.intentdefinition; path = MyIntents.intentdefinition; sourceTree = "<group>"; };
+		DF186B5D225F4A3A005C5DC7 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.intentdefinition; name = Base; path = Base.lproj/LocalizedIntents.intentdefinition; sourceTree = "<group>"; };
+		DF186B60225F4A3C005C5DC7 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/LocalizedIntents.strings; sourceTree = "<group>"; };
+		DF186B62225F4A3F005C5DC7 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/LocalizedIntents.strings; sourceTree = "<group>"; };
+		DF186B64225F4AA5005C5DC7 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Main.strings; sourceTree = "<group>"; };
 		DF4ACD4E224C158900984A77 /* View.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = View.xib; sourceTree = "<group>"; };
 		DF4ACD53224C17D300984A77 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		DF4ACD55224C17E700984A77 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -363,6 +372,8 @@
 			children = (
 				DFB4DBB1223997E6007DB426 /* SampleUI.h */,
 				DFB4DBB2223997E6007DB426 /* Info.plist */,
+				DF186B54225F49E2005C5DC7 /* MyIntents.intentdefinition */,
+				DF186B5E225F4A3A005C5DC7 /* LocalizedIntents.intentdefinition */,
 			);
 			path = SampleUI;
 			sourceTree = "<group>";
@@ -655,6 +666,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				DFB4DB5C22397A49007DB426 /* ViewController.swift in Sources */,
+				DF186B57225F49FC005C5DC7 /* MyIntents.intentdefinition in Sources */,
+				DF186B5B225F4A3A005C5DC7 /* LocalizedIntents.intentdefinition in Sources */,
 				DFB4DB5A22397A49007DB426 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -699,6 +712,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DF186B5C225F4A3A005C5DC7 /* LocalizedIntents.intentdefinition in Sources */,
+				DF186B56225F49F7005C5DC7 /* MyIntents.intentdefinition in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -751,6 +766,16 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
+		DF186B5E225F4A3A005C5DC7 /* LocalizedIntents.intentdefinition */ = {
+			isa = PBXVariantGroup;
+			children = (
+				DF186B5D225F4A3A005C5DC7 /* Base */,
+				DF186B60225F4A3C005C5DC7 /* en */,
+				DF186B62225F4A3F005C5DC7 /* fr */,
+			);
+			name = LocalizedIntents.intentdefinition;
+			sourceTree = "<group>";
+		};
 		DF4ACD54224C17D300984A77 /* Localizable.strings */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -774,6 +799,7 @@
 			children = (
 				DFB4DB5E22397A49007DB426 /* Base */,
 				DFAC5E9222413D89002C424B /* en */,
+				DF186B64225F4AA5005C5DC7 /* fr */,
 			);
 			name = Main.storyboard;
 			sourceTree = "<group>";
