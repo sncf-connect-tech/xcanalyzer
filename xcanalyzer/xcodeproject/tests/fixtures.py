@@ -14,12 +14,16 @@ for i in range(0, 4):
 
 class XcModelsFixture():
 
-    def any_target(self, name='MyXcTarget', target_type=XcTarget.Type.APPLICATION, product_name='MyXcProduct'):
-        return XcTarget(name=name, target_type=target_type, product_name=product_name)
+    def any_target(self,
+                   name='MyXcTarget',
+                   target_type=XcTarget.Type.APPLICATION,
+                   product_name='MyXcProduct',
+                   resource_files=set()):
+        return XcTarget(name=name, target_type=target_type, product_name=product_name, resource_files=resource_files)
     
     def any_project(self):
         targets = set([self.any_target()])
-        return XcProject('MyXcProject', targets=targets, groups=set(), files=set())
+        return XcProject('/', 'MyXcProject', targets=targets, groups=set(), files=set())
     
     def any_group(self):
         return XcGroup('/MyGroup', '/MyGroup')

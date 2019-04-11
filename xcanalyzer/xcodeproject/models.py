@@ -45,7 +45,8 @@ class XcGroup():
 
 class XcProject():
 
-    def __init__(self, name, targets, groups, files):
+    def __init__(self, dirpath, name, targets, groups, files):
+        self.dirpath = dirpath
         self.name = name
         self.targets = targets
         self.groups = groups
@@ -67,6 +68,15 @@ class XcProject():
     def targets_sorted_by_name(self):
         results = list(self.targets)
         return sorted(results, key=lambda t: t.name)
+    
+    @property
+    def target_files(self):
+        results = set()
+
+        for target in self.targets:
+            results |= target.files
+        
+        return results
     
     def groups_filtered(self, filter_mode=None):
         """ Returns the list of path sorted by name of all groups in the project. """

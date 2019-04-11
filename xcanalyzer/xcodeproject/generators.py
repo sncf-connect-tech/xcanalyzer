@@ -113,6 +113,10 @@ class FolderReporter():
         for (dirpath, dirnames, filenames) in os.walk(self.folder_path):
             relative_dirpath = dirpath[len(self.folder_path):]
 
+            # Filter root folder
+            if not relative_dirpath:
+                continue
+
             # Filter folder to ignore by path
             continue_to_next_dirpath = False
             for ignored_dirpath in self.ignored_dirpaths:
@@ -241,7 +245,6 @@ class XcProjReporter():
             targets_display = ', '.join([t.name for t in targets])
             print('{} [{}]'.format(filepath, targets_display))
 
-
     def print_files_summary(self):
         self._print_horizontal_line()
 
@@ -295,3 +298,55 @@ class XcProjReporter():
         print('{:>2} Variant groups'.format(variant_groups_count))
         print('{:>2} Other groups'.format(other_groups_count))
         cprint('{:>2} Groups in total'.format(total_groups_count), attrs=['bold'])
+    
+    def print_orphan_files(self, ignored_dirpaths, ignored_dirs):
+        # Folder's filepaths
+        folder_filepaths = set()
+
+        for (dirpath, dirnames, filenames) in os.walk(self.xcode_project.dirpath):
+            relative_dirpath = dirpath[len(self.xcode_project.dirpath):]
+
+            # Filter root folder
+            if not relative_dirpath:
+                continue
+
+            # Filter folder to ignore by path
+            continue_to_next_dirpath = False
+            for ignored_dirpath in ignored_dirpaths:
+                if relative_dirpath.startswith(ignored_dirpath):
+                    continue_to_next_dirpath = True
+                    break
+            if continue_to_next_dirpath:
+                continue
+                
+            # Filter folder to ignore by name
+            folder_parts = set(relative_dirpath.split(os.path.sep))
+            if ignored_dirs & folder_parts:
+                continue
+
+            # Filter xcodeproj itself
+            if '.xcodeproj' in relative_dirpath:
+                continue
+            
+            # Detect xcassets folders
+            if relative_dirpath.endswith('.xcassets'):
+                folder_filepaths.add(relative_dirpath)
+
+            elif '.xcassets' in relative_dirpath:
+                # Ignore Subfolder of a xcasset folder
+                pass
+
+            else:
+                for filename in filenames:
+                    if filename not in {'.DS_Store'}:
+                        folder_filepaths.add('{}/{}'.format(relative_dirpath, filename))
+        
+        # Targets' filepaths
+        target_filepaths = {target_file.filepath for target_file in self.xcode_project.target_files}
+
+        # Orphan filepaths
+        filepaths = list(folder_filepaths - target_filepaths)
+        filepaths.sort()
+
+        for filepath in filepaths:
+            print(filepath)

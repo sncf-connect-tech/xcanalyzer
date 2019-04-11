@@ -37,7 +37,11 @@ class XcProjectParser():
         root_files = self._find_root_files()
 
         # Output object
-        self.object = XcProject(xcode_proj_name, targets=set(), groups=list(), files=root_files)
+        self.object = XcProject(self.project_folder_path,
+                                xcode_proj_name,
+                                targets=set(),
+                                groups=list(),
+                                files=root_files)
 
         # Groups
         if self.verbose:

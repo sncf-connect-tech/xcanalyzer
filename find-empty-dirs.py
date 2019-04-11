@@ -3,12 +3,13 @@
 import argparse
 import os
 
+from xcanalyzer.argparse import parse_ignored_folders
 from xcanalyzer.xcodeproject.generators import FolderReporter
 
 
 
 # --- Arguments ---
-argument_parser = argparse.ArgumentParser(description="Find all empty sub folders of a folder. Ignore folders named `.git` or `DerivedData`.")
+argument_parser = argparse.ArgumentParser(description="Find all empty sub folders of a folder. Ignore folders named `.git` and `DerivedData`.")
 
 # Project folder argument
 argument_parser.add_argument('path', help='Path of the folder containing your `.xcodeproj` folder.')
@@ -29,25 +30,12 @@ path = args.path
 while path and path[-1] == os.path.sep:
     path = path[:-1]
 
-# Folder to ignore given as argument
-arged_ignored_folders = set(args.ignored_folders or [])
-ignored_folders = set()
-for folder in arged_ignored_folders:
-    # Remove ending slashes from given ignored folder paths
-    while folder and folder[-1] == os.path.sep:
-        folder = folder[:-1]
-    ignored_folders.add(folder)
-
-# Forced folders to ignore
-ignored_folders = {
+# Parse ignored folders
+ignored_folders = set(args.ignored_folders or []) | {
     'DerivedData',
     '.git',
-} | ignored_folders
-
-# Ignored path and folders
-ignored_dirpaths = {f for f in ignored_folders if os.path.sep in f}
-ignored_dirs = ignored_folders - ignored_dirpaths
-ignored_dirpaths = set(map(lambda f: f if f.startswith(os.path.sep) else '/{}'.format(f), ignored_dirpaths))
+}
+ignored_dirpaths, ignored_dirs = parse_ignored_folders(ignored_folders)
 
 
 # Report
