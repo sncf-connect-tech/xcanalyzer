@@ -336,6 +336,14 @@ class XcProjReporter():
                 # Ignore Subfolder of a xcasset folder
                 pass
 
+            # Detect xcstickers folders
+            elif relative_dirpath.endswith('.xcstickers'):
+                folder_filepaths.add(relative_dirpath)
+
+            elif '.xcstickers' in relative_dirpath:
+                # Ignore Subfolder of a xcstickers folder
+                pass
+
             else:
                 for filename in filenames:
                     if filename not in {'.DS_Store'}:
