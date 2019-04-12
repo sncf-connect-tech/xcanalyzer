@@ -299,7 +299,7 @@ class XcProjReporter():
         print('{:>2} Other groups'.format(other_groups_count))
         cprint('{:>2} Groups in total'.format(total_groups_count), attrs=['bold'])
     
-    def print_orphan_files(self, ignored_dirpaths, ignored_dirs, ignore_info_plist=False):
+    def print_orphan_files(self, ignored_dirpaths, ignored_dirs, ignore_info_plist=False, ignore_headers=False):
         # Folder's filepaths
         folder_filepaths = set()
 
@@ -358,6 +358,12 @@ class XcProjReporter():
 
         # Orphan filepaths
         filepaths = list(folder_filepaths - target_filepaths)
+
+        # Filter headers files
+        if ignore_headers:
+            filepaths = [p for p in filepaths if not p.endswith('.h')]
+
+        # Sort filepaths
         filepaths.sort()
 
         for filepath in filepaths:

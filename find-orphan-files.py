@@ -29,6 +29,12 @@ argument_parser.add_argument('-i', '--ignore-info-plist',
                              action='store_true', 
                              help='Ignore Info.plist files.')
 
+# Ignore header files
+argument_parser.add_argument('-o', '--ignore-headers',
+                             dest='ignore_headers',
+                             action='store_true', 
+                             help='Ignore header files.')
+
 
 # --- Parse arguments ---
 args = argument_parser.parse_args()
@@ -57,4 +63,8 @@ except XcodeProjectReadException as e:
 
 # Reporter
 reporter = XcProjReporter(xcode_project_reader.object)
-reporter.print_orphan_files(ignored_dirpaths, ignored_dirs, args.ignore_info_plist)
+reporter.print_orphan_files(ignored_dirpaths,
+                            ignored_dirs,
+                            args.ignore_info_plist,
+                            args.ignore_headers)
+
