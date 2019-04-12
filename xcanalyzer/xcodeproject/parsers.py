@@ -116,15 +116,25 @@ class XcProjectParser():
 
     def _reduce_double_dot_filepath_part(self, filepath):
         new_parts = []
-
         parts = filepath.split('/')
+
+        # Last part: filename
         new_parts.append(parts.pop())
+
+        double_dot_count = 0
+
         while parts:
-            part = parts.pop()
+            part = parts.pop()  # Right most part
+
             if part == '..':
-                parts.pop()  # Remove previous part also
-                continue
-            new_parts.append(part)
+                double_dot_count += 1
+
+                # Check that previous parts are sufficiently numerous
+                assert double_dot_count <= len(parts)
+            elif double_dot_count != 0:
+                double_dot_count -= 1
+            else:
+                new_parts.append(part)
         
         new_parts.reverse()
         return '/'.join(new_parts)
