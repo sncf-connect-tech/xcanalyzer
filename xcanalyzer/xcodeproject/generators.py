@@ -299,7 +299,7 @@ class XcProjReporter():
         print('{:>2} Other groups'.format(other_groups_count))
         cprint('{:>2} Groups in total'.format(total_groups_count), attrs=['bold'])
     
-    def print_orphan_files(self, ignored_dirpaths, ignored_dirs):
+    def print_orphan_files(self, ignored_dirpaths, ignored_dirs, ignore_info_plist=False):
         # Folder's filepaths
         folder_filepaths = set()
 
@@ -345,8 +345,12 @@ class XcProjReporter():
                 pass
 
             else:
+                ignored_files = {'.DS_Store'}
+                if ignore_info_plist:
+                    ignored_files.add('Info.plist')
+
                 for filename in filenames:
-                    if filename not in {'.DS_Store'}:
+                    if filename not in ignored_files:
                         folder_filepaths.add('{}/{}'.format(relative_dirpath, filename))
         
         # Targets' filepaths

@@ -17,11 +17,17 @@ argument_parser.add_argument('path',
                              help='Path of the folder containing your `.xcodeproj` folder.')
 
 # Ignore folders argument
-argument_parser.add_argument('-i', '--ignore-dir',
+argument_parser.add_argument('-d', '--ignore-dir',
                              action='append',
                              dest='ignored_folders',
                              metavar='<dirpath>',
-                             help='Path of a folder to ignore.')
+                             help='Path or name of a folder to ignore.')
+
+# Ignore Info.plist files
+argument_parser.add_argument('-i', '--ignore-info-plist',
+                             dest='ignore_info_plist',
+                             action='store_true', 
+                             help='Ignore Info.plist files.')
 
 
 # --- Parse arguments ---
@@ -51,4 +57,4 @@ except XcodeProjectReadException as e:
 
 # Reporter
 reporter = XcProjReporter(xcode_project_reader.object)
-reporter.print_orphan_files(ignored_dirpaths, ignored_dirs)
+reporter.print_orphan_files(ignored_dirpaths, ignored_dirs, args.ignore_info_plist)
