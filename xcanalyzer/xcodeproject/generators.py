@@ -299,8 +299,7 @@ class XcProjReporter():
         print('{:>2} Other groups'.format(other_groups_count))
         cprint('{:>2} Groups in total'.format(total_groups_count), attrs=['bold'])
     
-    def print_orphan_files(self, ignored_dirpaths, ignored_dirs, ignore_info_plist=False, ignore_headers=False):
-        # Folder's filepaths
+    def _find_folder_filepaths(self, ignored_dirpaths, ignored_dirs, ignored_files={'.DS_Store'}):
         folder_filepaths = set()
 
         for (dirpath, dirnames, filenames) in os.walk(self.xcode_project.dirpath):
@@ -345,24 +344,33 @@ class XcProjReporter():
                 pass
 
             else:
-                ignored_files = {'.DS_Store'}
-                if ignore_info_plist:
-                    ignored_files.add('Info.plist')
-
                 for filename in filenames:
                     if filename not in ignored_files:
                         folder_filepaths.add('{}/{}'.format(relative_dirpath, filename))
         
-        # Targets' filepaths
-        target_filepaths = {target_file.filepath for target_file in self.xcode_project.target_files}
+        return folder_filepaths
+
+    def print_orphan_files(self, ignored_dirpaths, ignored_dirs, mode):
+        # Folder's filepaths
+        folder_filepaths = self._find_folder_filepaths(ignored_dirpaths, ignored_dirs)
 
         # Orphan filepaths
-        filepaths = list(folder_filepaths - target_filepaths)
-
-        # Filter headers files
-        if ignore_headers:
-            filepaths = [p for p in filepaths if not p.endswith('.h')]
-
+        if mode == 'all':
+            target_filepaths = {f.filepath for f in self.xcode_project.target_files}
+            filepaths = list(folder_filepaths - target_filepaths)
+        
+        elif mode == 'project':
+            project_filepaths = {f.filepath for f in self.xcode_project.files}
+            filepaths = list(folder_filepaths - project_filepaths)
+        
+        elif mode == 'target':
+            target_less_files = self.xcode_project.files - self.xcode_project.target_files
+            target_less_filepaths = {f.filepath for f in target_less_files}
+            filepaths = list(target_less_filepaths)
+        
+        else:
+            raise ValueError("Not supported orphan mode: '{}'.".format(mode))
+        
         # Sort filepaths
         filepaths.sort()
 

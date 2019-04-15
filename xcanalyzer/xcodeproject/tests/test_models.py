@@ -322,6 +322,52 @@ class XcProjectTests(TestCase):
         self.assertEqual(len(target_files), 2)
         self.assertTrue(file_1 in target_files)
         self.assertTrue(file_2 in target_files)
+    
+    # group_files
+
+    def test_group_files(self):
+        # Given
+        file_2 = XcFile('/MyFile2')
+        group_2 = self.fixture.any_group(group_path='/MyGroup2',
+                                         filepath='/MyGroup2',
+                                         files=set([file_2]))
+
+        file_1 = XcFile('/MyFile1')
+        group_1 = self.fixture.any_group(group_path='/MyGroup1',
+                                         filepath='/MyGroup1',
+                                         files=set([file_1]),
+                                         groups=[group_2])
+
+        project = XcProject(dirpath='/', name="MyProject", targets=set(), groups=[group_1, group_2], files=set())
+
+        # When
+        group_files = project.group_files
+
+        # Then
+        self.assertEqual(len(group_files), 2)
+        self.assertTrue(file_1 in group_files)
+        self.assertTrue(file_2 in group_files)
+    
+    # files
+    
+    def test_files__gives_group_files__and_root_files(self):
+        # Given
+        root_file = XcFile('/MyRootFile')
+
+        group_file = XcFile('/MyGroupFile')
+        group = self.fixture.any_group(group_path='/MyGroup1',
+                                         filepath='/MyGroup1',
+                                         files=set([group_file]))
+
+        project = XcProject(dirpath='/', name="MyProject", targets=set(), groups=[group], files=set([root_file]))
+
+        # When
+        files = project.files
+
+        # Then
+        self.assertEqual(len(files), 2)
+        self.assertTrue(root_file in files)
+        self.assertTrue(group_file in files)
 
 
 class XcTargetTests(TestCase):

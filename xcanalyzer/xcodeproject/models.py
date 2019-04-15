@@ -50,7 +50,7 @@ class XcProject():
         self.name = name
         self.targets = targets
         self.groups = groups
-        self.files = files
+        self.root_files = files
     
     def targets_of_type(self, target_type):
         results = {t for t in self.targets if t.type == target_type}
@@ -77,6 +77,23 @@ class XcProject():
             results |= target.files
         
         return results
+    
+    @property
+    def group_files(self):
+        results = set()
+
+        groups = self.groups.copy()
+
+        while groups:
+            group = groups.pop()
+            results |= group.files
+            groups += group.groups
+        
+        return results
+    
+    @property
+    def files(self):
+        return self.root_files | self.group_files
     
     def groups_filtered(self, filter_mode=None):
         """ Returns the list of path sorted by name of all groups in the project. """

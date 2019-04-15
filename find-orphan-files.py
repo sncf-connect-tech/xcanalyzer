@@ -23,17 +23,15 @@ argument_parser.add_argument('-d', '--ignore-dir',
                              metavar='<dirpath>',
                              help='Path or name of a folder to ignore.')
 
-# Ignore Info.plist files
-argument_parser.add_argument('-i', '--ignore-info-plist',
-                             dest='ignore_info_plist',
-                             action='store_true', 
-                             help='Ignore Info.plist files.')
-
-# Ignore header files
-argument_parser.add_argument('-o', '--ignore-headers',
-                             dest='ignore_headers',
-                             action='store_true', 
-                             help='Ignore header files.')
+# Mode
+argument_parser.add_argument('-m', '--mode',
+                             choices=['all', 'project', 'target'],
+                             dest='orphan_mode',
+                             default='all',
+                             help="Orphan mode: \
+                                   'project' means all files in the folder but not referenced in the project.\
+                                   'target' means all files in the project but not referenced by any target.\
+                                   'all' (default) means all files in the folder but not referenced by any target (neither the project).")
 
 
 # --- Parse arguments ---
@@ -65,6 +63,4 @@ except XcodeProjectReadException as e:
 reporter = XcProjReporter(xcode_project_reader.object)
 reporter.print_orphan_files(ignored_dirpaths,
                             ignored_dirs,
-                            args.ignore_info_plist,
-                            args.ignore_headers)
-
+                            mode=args.orphan_mode)
