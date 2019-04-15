@@ -204,6 +204,7 @@ class XcProjReporter():
 
     def print_files_by_targets(self):
         for target in self.xcode_project.targets_sorted_by_name:
+
             counters = [
                 '{} source files'.format(len(target.source_files)),
                 '{} resource files'.format(len(target.resource_files)),
@@ -304,6 +305,7 @@ class XcProjReporter():
 
         for (dirpath, dirnames, filenames) in os.walk(self.xcode_project.dirpath):
             relative_dirpath = dirpath[len(self.xcode_project.dirpath):]
+            folder_parts = relative_dirpath.split(os.path.sep)
 
             # Filter folder to ignore by path
             continue_to_next_dirpath = False
@@ -313,12 +315,11 @@ class XcProjReporter():
                     break
             if continue_to_next_dirpath:
                 continue
-                
-            # Filter folder to ignore by name
-            folder_parts = set(relative_dirpath.split(os.path.sep))
-            if ignored_dirs & folder_parts:
-                continue
 
+            # Filter folder to ignore by name
+            if ignored_dirs & set(folder_parts):
+                continue
+            
             # Filter xcodeproj itself
             if '.xcodeproj' in relative_dirpath:
                 continue
@@ -339,9 +340,18 @@ class XcProjReporter():
             elif relative_dirpath.endswith('.xcstickers'):
                 folder_filepaths.add(relative_dirpath)
 
+            # Ignore Subfolder of a xcstickers folder
             elif '.xcstickers' in relative_dirpath:
-                # Ignore Subfolder of a xcstickers folder
                 pass
+
+            # Add as file folder considered as file by Xcode,
+            # and don not add its inner files.
+            elif folder_parts[-1].endswith('.bundle'):
+                folder_filepaths.add(relative_dirpath)
+            
+            # Filter folder inside folder considered as files (by Xcode)
+            elif [p for p in folder_parts if p.endswith('.bundle')]:
+                continue
 
             else:
                 for filename in filenames:

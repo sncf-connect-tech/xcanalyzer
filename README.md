@@ -30,5 +30,4 @@ The goals to reach:
 
 - find files not used in project
   - Linked librairies: libUnderscoreUniversal.a
-  - Settings.bundle
 - find files with mismatches between xcode path and file path (See `SampleiOSApp` > `Ghost.swift`)
