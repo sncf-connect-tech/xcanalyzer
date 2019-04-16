@@ -475,6 +475,23 @@ class XcTargetTests(TestCase):
 
         self.assertFalse(xc_target.header_files)
 
+    # __init__ - linked files
+
+    def test_instantiate_xc_target__with_linked_files__has_linked_files(self):
+        any_file = self.fixture.any_file()
+
+        xc_target = XcTarget(name="MyXcTarget",
+                             target_type=XcTarget.Type.UI_TEST,
+                             product_name='MyProduct',
+                             linked_files=set([any_file]))
+
+        self.assertTrue(any_file in xc_target.linked_files)
+
+    def test_instantiate_xc_target__without__linked_files_has_no_linked_file(self):
+        xc_target = XcTarget(name="MyXcTarget", target_type=XcTarget.Type.UI_TEST, product_name='MyProduct')
+
+        self.assertFalse(xc_target.linked_files)
+
     # __eq__
 
     def test_xc_targets_are_not_equal__when_different_type(self):
@@ -521,14 +538,16 @@ class XcTargetTests(TestCase):
         source_file = XcFile('/SourceFile')
         resource_file = XcFile('/ResourceFile')
         header_file = XcFile('/HeaderFile')
+        linked_file = XcFile('/LinkedFile')
         xc_target = XcTarget(name="MyXcTarget",
                         target_type=XcTarget.Type.UI_TEST,
                         product_name='MyProduct',
                         source_files=set([source_file]),
                         resource_files=set([resource_file]),
-                        header_files=set([header_file]))
+                        header_files=set([header_file]),
+                        linked_files=set([linked_file]))
         
         files = xc_target.files
         
-        expected_files = set([source_file, resource_file, header_file])
+        expected_files = {source_file, resource_file, header_file, linked_file}
         self.assertEqual(expected_files, files)

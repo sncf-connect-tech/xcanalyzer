@@ -173,7 +173,8 @@ class XcTarget():
                  embed_frameworks=None,
                  source_files=None,
                  resource_files=None,
-                 header_files=None):
+                 header_files=None,
+                 linked_files=None):
         self.name = name
         self.type = target_type
         self.product_name = product_name
@@ -183,6 +184,7 @@ class XcTarget():
         self.source_files = source_files or set()
         self.resource_files = resource_files or set()
         self.header_files = header_files or set()
+        self.linked_files = linked_files or set()
 
     def __eq__(self, other):
         if self.type != other.type:
@@ -199,4 +201,4 @@ class XcTarget():
     
     @property
     def files(self):
-        return self.source_files | self.resource_files | self.header_files
+        return self.source_files | self.resource_files | self.header_files | self.linked_files

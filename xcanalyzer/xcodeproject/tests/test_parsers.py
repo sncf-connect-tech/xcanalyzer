@@ -172,6 +172,16 @@ class XcProjectParserTests(TestCase):
         self.assertTrue(target.header_files)
         self.assertTrue(XcFile('/SampleCore/SampleCore.h') in target.header_files)
 
+    def test_xc_project_parser__gives_linked_files_for_each_target(self):
+        project_parser = self.fixture.sample_xc_project_parser
+        xcode_project = project_parser.object
+
+        target = xcode_project.target_with_name('SampleiOSApp')
+
+        self.assertTrue(target.linked_files)
+        self.assertTrue(XcFile('/SampleiOSApp/libTouchJSONUniversal.a') in target.linked_files)
+        self.assertTrue(XcFile('/SampleiOSApp/libTouchJSONUniversal2.a') in target.linked_files)
+
     # groups
 
     def test_xc_project_parser__gives_root_groups(self):

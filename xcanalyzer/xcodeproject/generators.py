@@ -209,14 +209,13 @@ class XcProjReporter():
                 '{} source files'.format(len(target.source_files)),
                 '{} resource files'.format(len(target.resource_files)),
                 '{} header files'.format(len(target.header_files)),
+                '{} linked files'.format(len(target.linked_files)),
             ]
             target_display = '{} [{}]:'.format(target.name, ', '.join(counters))
             cprint(target_display, attrs=['bold'])
 
-            # Resource and source files of the target
-            files = list(target.source_files) + list(target.resource_files) + list(target.header_files)
-
-            filepaths = [f.filepath for f in files]
+            # Files of the target
+            filepaths = [f.filepath for f in list(target.files)]
             filepaths.sort()
             for filepath in filepaths:
                 print(filepath)

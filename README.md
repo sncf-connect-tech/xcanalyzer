@@ -28,6 +28,4 @@ To clean the project, runs:
 
 The goals to reach:
 
-- find files not used in project
-  - Linked librairies: libUnderscoreUniversal.a
 - find files with mismatches between xcode path and file path (See `SampleiOSApp` > `Ghost.swift`)

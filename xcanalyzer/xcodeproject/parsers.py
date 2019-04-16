@@ -286,7 +286,19 @@ class XcProjectParser():
 
                 # Find target's linked frameworks
                 elif build_phase.isa == 'PBXFrameworksBuildPhase':
-                    target_linked_framework_refs[xcode_target] = [self.xcode_project.get_object(build_file).fileRef for build_file in build_phase.files]
+                    target_linked_framework_refs[xcode_target] = []
+                    
+                    for build_file_key in build_phase.files:
+                        build_file = self.xcode_project.get_object(build_file_key)
+                        
+                        # Store for linked framework target dependencies
+                        target_linked_framework_refs[xcode_target].append(build_file.fileRef)
+                        
+                        file_ref = self.xcode_project.get_object(build_file.fileRef)
+                        
+                        # Store as a library linked with binary of the target
+                        if file_ref.sourceTree in {'<group>', 'SOURCE_ROOT'}:
+                            xcode_target.linked_files.add(self.file_mapping[file_ref])
                 
                 # Find target's embed frameworks
                 elif build_phase.isa == 'PBXCopyFilesBuildPhase':
