@@ -15,6 +15,7 @@
 		DF186B692260F186005C5DC7 /* FileInsideBadPlacedGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF186B682260F186005C5DC7 /* FileInsideBadPlacedGroup.swift */; };
 		DF186B6B2260F25F005C5DC7 /* BadPlacedRootFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF186B6A2260F25F005C5DC7 /* BadPlacedRootFile.swift */; };
 		DF186B6D2264D956005C5DC7 /* CoreBundle.bundle in Resources */ = {isa = PBXBuildFile; fileRef = DF186B6C2264D956005C5DC7 /* CoreBundle.bundle */; };
+		DF186B6F2265BA53005C5DC7 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = DFB4DB9D223997A4007DB426 /* Info.plist */; };
 		DF30B739225E2DD3004F18A1 /* LICENCE.md in Resources */ = {isa = PBXBuildFile; fileRef = DF85324E224BCC9600792A18 /* LICENCE.md */; };
 		DF30B73B225E2DD5004F18A1 /* LICENCE.md in Resources */ = {isa = PBXBuildFile; fileRef = DF85324E224BCC9600792A18 /* LICENCE.md */; };
 		DF4ACD4F224C158900984A77 /* View.xib in Resources */ = {isa = PBXBuildFile; fileRef = DF4ACD4E224C158900984A77 /* View.xib */; };
@@ -124,6 +125,7 @@
 		DF186B682260F186005C5DC7 /* FileInsideBadPlacedGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileInsideBadPlacedGroup.swift; sourceTree = "<group>"; };
 		DF186B6A2260F25F005C5DC7 /* BadPlacedRootFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = BadPlacedRootFile.swift; path = ../../BadPlacedRootFile.swift; sourceTree = "<group>"; };
 		DF186B6C2264D956005C5DC7 /* CoreBundle.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = CoreBundle.bundle; sourceTree = "<group>"; };
+		DF186B6E2265B5C6005C5DC7 /* SampleiOSApp.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SampleiOSApp.h; sourceTree = "<group>"; };
 		DF4ACD4E224C158900984A77 /* View.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = View.xib; sourceTree = "<group>"; };
 		DF4ACD53224C17D300984A77 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		DF4ACD55224C17E700984A77 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -337,6 +339,7 @@
 				DFB4DB6522397A4A007DB426 /* Info.plist */,
 				DF4ACD4E224C158900984A77 /* View.xib */,
 				DF4ACD54224C17D300984A77 /* Localizable.strings */,
+				DF186B6E2265B5C6005C5DC7 /* SampleiOSApp.h */,
 			);
 			path = SampleiOSApp;
 			sourceTree = "<group>";
@@ -663,6 +666,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DF186B6F2265BA53005C5DC7 /* Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
