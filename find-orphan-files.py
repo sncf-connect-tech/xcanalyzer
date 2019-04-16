@@ -28,8 +28,8 @@ argument_parser.add_argument('-m', '--mode',
                              choices=['all', 'project', 'target', 'referenced'],
                              dest='orphan_mode',
                              default='all',
-                             help="Orphan mode: \
-                                   'referenced' means all '*Info.plist' and '*.h' files referenced by at least one target \
+                             help="Orphan mode:\
+                                   'referenced' means all '*Info.plist' and '*.h' files referenced by at least one target.\
                                    'project' means all files in the folder but not referenced in the project.\
                                    'target' means all files in the project but not referenced by any target.\
                                    'all' (default) means all files in the folder but not referenced by any target (neither the project).")

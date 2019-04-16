@@ -381,8 +381,24 @@ class XcProjReporter():
                 # In this mode we ignore .h files and Info.plist files
                 if target_file.filepath.endswith('Info.plist'):
                     continue
+                
                 if target_file.filepath.endswith('.h'):
                     continue
+                
+                # Filter ignored dirpaths
+                ignore_current_file = False
+                for ignored_dirpath in ignored_dirpaths:
+                    if target_file.filepath.startswith(ignored_dirpath):
+                        ignore_current_file = True
+                        break
+                if ignore_current_file:
+                    continue
+
+                # Filter folder to ignore by name
+                folder_parts = target_file.filepath.split('/')[:-1]
+                if ignored_dirs & set(folder_parts):
+                    continue
+            
                 filepaths.append(target_file.filepath)
         
         elif mode == 'referenced':
