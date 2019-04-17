@@ -200,6 +200,10 @@ class XcProjectParser():
             
                 elif current_child.sourceTree == 'SOURCE_ROOT':  # Relative to project
                     current_filepath = '/{}'.format(current_child.path)
+                
+                else:
+                    # Ignore other files (ex: *.app from build product dir)
+                    continue
 
                 current_filepath = self._reduce_double_dot_filepath_part(current_filepath)
 

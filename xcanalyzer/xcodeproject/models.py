@@ -46,6 +46,8 @@ class XcGroup():
 class XcProject():
 
     def __init__(self, dirpath, name, targets, groups, files):
+        assert type(groups) == list
+
         self.dirpath = dirpath
         self.name = name
         self.targets = targets
@@ -91,6 +93,26 @@ class XcProject():
         
         return results
     
+    @property
+    def nonregular_files(self):
+        results = list()
+
+        groups = self.groups.copy()
+
+        while groups:
+            group = groups.pop()
+
+            if group.is_variant:
+                continue
+            
+            for group_file in group.files:
+                if not group_file.filepath.startswith(group.group_path):
+                    results.append((group_file, group))
+
+            groups += group.groups
+        
+        return results
+
     @property
     def files(self):
         return self.root_files | self.group_files

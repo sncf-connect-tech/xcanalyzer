@@ -417,3 +417,17 @@ class XcProjReporter():
 
         for filepath in filepaths:
             print(filepath)
+    
+    def print_nonregular_files(self):
+        # Sort by filepath the results
+        file_group_paths = dict()
+
+        for group_file, group in self.xcode_project.nonregular_files:
+            file_group_paths[group_file.filepath] = group.group_path
+        
+        filepaths = list(file_group_paths.keys())
+        filepaths.sort()
+
+        # Display filepaths and group paths
+        for filepath in filepaths:
+            print("{} [{}]".format(filepath, file_group_paths[filepath]))

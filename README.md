@@ -28,4 +28,9 @@ To clean the project, runs:
 
 The goals to reach:
 
-- find files with mismatches between xcode path and file path (See `SampleiOSApp` > `Ghost.swift`)
+- List by targets:
+  - protocols
+  - extensions (by extended type)
+  - structs
+  - enum
+  - classes
