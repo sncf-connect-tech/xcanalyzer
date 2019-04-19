@@ -257,6 +257,19 @@ class XcProjReporter():
             resource_files |= target.resource_files
             header_files |= target.header_files
 
+        # Source files
+        swift_source_files = set()
+        objc_source_files = set()
+        other_source_files = set()
+        
+        for source_file in source_files:
+            if source_file.filepath.endswith('.swift'):
+                swift_source_files.add(source_file)
+            elif source_file.filepath.endswith('.m'):
+                objc_source_files.add(source_file)
+            else:
+                other_source_files.add(source_file)
+
         # Counter
         source_files_count = len(source_files)
         resource_files_count = len(resource_files)
@@ -264,7 +277,11 @@ class XcProjReporter():
 
         total_files_count = source_files_count + resource_files_count + header_files_count
 
-        print('{:>2} Source files'.format(source_files_count))
+        # Display
+        print('{:>2} Source files whose:'.format(source_files_count))
+        print('   {:>2} Swift files (.swift)'.format(len(swift_source_files)))
+        print('   {:>2} Objective-C files (.m)'.format(len(objc_source_files)))
+        print('   {:>2} other source files'.format(len(other_source_files)))
         print('{:>2} Resource files'.format(resource_files_count))
         print('{:>2} Header files'.format(header_files_count))
         cprint('{:>2} Files in total'.format(total_files_count), attrs=['bold'])
