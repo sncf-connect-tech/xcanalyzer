@@ -8,7 +8,7 @@
 
 protocol MyProtocol {}
 
-extension String {
+internal extension String {
 
     func stringMethod() {
         let myObjcClass = MyObjcClass()

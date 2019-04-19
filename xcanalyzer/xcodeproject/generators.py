@@ -3,6 +3,7 @@ import os
 from graphviz import Digraph
 from termcolor import cprint
 
+from .parsers import SwiftFileParser
 from .models import XcTarget
 
 
@@ -204,7 +205,6 @@ class XcProjReporter():
 
     def print_files_by_targets(self):
         for target in self.xcode_project.targets_sorted_by_name:
-
             counters = [
                 '{} source files'.format(len(target.source_files)),
                 '{} resource files'.format(len(target.resource_files)),
@@ -220,6 +220,59 @@ class XcProjReporter():
             for filepath in filepaths:
                 print(filepath)
     
+    def print_types_by_file(self):
+        # Swift types
+        for target in self.xcode_project.targets_sorted_by_name:
+            for swift_file in target.swift_files:
+                parser = SwiftFileParser(project_folder_path=self.xcode_project.dirpath,
+                                         xc_file=swift_file)
+                parser.parse()
+                
+                cprint(swift_file.filepath, attrs=['bold'])
+                for swift_type in swift_file.swift_types:
+                    print(swift_type)
+    
+    def print_types_summary(self):
+        self._print_horizontal_line()
+
+        # Counters
+        counters = {
+            'protocol': 0,
+            'extension': 0,
+            'struct': 0,
+            'enum': 0,
+            'class': 0,
+        }
+        other_count = 0
+
+        for target in self.xcode_project.targets_sorted_by_name:
+            for swift_file in target.swift_files:
+                parser = SwiftFileParser(project_folder_path=self.xcode_project.dirpath,
+                                         xc_file=swift_file)
+                parser.parse()
+
+                for swift_type in swift_file.swift_types:
+                    if swift_type.type_identifier in counters:
+                        counters[swift_type.type_identifier] += 1
+                    else:
+                        other_count += 1
+
+        # Total types count
+        total_files_count = 0
+        for count in counters.values():
+            total_files_count += count
+        total_files_count += other_count
+
+        # Display
+        print('{:>3} protocols'.format(counters['protocol']))
+        print('{:>3} extensions'.format(counters['extension']))
+        print('{:>3} structs'.format(counters['struct']))
+        print('{:>3} enums'.format(counters['enum']))
+        print('{:>3} classes'.format(counters['class']))
+        
+        print('{:>3} other types'.format(other_count))
+        cprint('{:>3} types in total'.format(total_files_count), attrs=['bold'])
+
     def print_shared_files(self):
         # key is a file, value is a set of targets
         file_targets = dict()

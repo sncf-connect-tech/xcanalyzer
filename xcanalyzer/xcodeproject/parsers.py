@@ -1,7 +1,11 @@
+import json
 import os
+import subprocess
 
 import openstep_parser as osp
 from pbxproj import XcodeProject
+
+from ..swift.models import SwiftType, SwiftTypeType, SwiftAccessibility
 
 from .exceptions import XcodeProjectReadException
 from .models import XcTarget, XcProject, XcGroup, XcFile
@@ -334,3 +338,45 @@ class XcProjectParser():
                     xcode_target.embed_frameworks.add(product_references[embed_framework_ref])
     
         return xcode_targets
+
+
+class SwiftFileParser():
+
+    SWIFT_TYPE_TYPE_MAPPING = {
+        'source.lang.swift.decl.protocol': SwiftTypeType.PROTOCOL,
+        'source.lang.swift.decl.extension': SwiftTypeType.EXTENSION,
+        'source.lang.swift.decl.struct': SwiftTypeType.STRUCT,
+        'source.lang.swift.decl.enum': SwiftTypeType.ENUM,
+        'source.lang.swift.decl.class': SwiftTypeType.CLASS,
+    }
+
+    def __init__(self, project_folder_path, xc_file):
+        self.project_folder_path = project_folder_path
+        self.xc_file = xc_file
+    
+    def parse(self):
+        if self.xc_file.swift_types is not None:
+            return
+
+        filepath = '{}{}'.format(self.project_folder_path, self.xc_file.filepath)
+        command = ['sourcekitten', 'structure', '--file', filepath]
+        result = subprocess.run(command, capture_output=True)
+        self.object = json.loads(result.stdout)
+
+        self.xc_file.swift_types = set()
+
+        substructures = self.object.get('key.substructure')
+        for substructure in substructures:
+            # Swift type's type
+            type_identifier = SwiftFileParser.SWIFT_TYPE_TYPE_MAPPING.get(substructure.get('key.kind'))
+            if not type_identifier:
+                continue
+
+            # Accessibility
+            if 'key.accessibility' in substructure:
+                accessibility = substructure['key.accessibility'].split('.')[-1]
+            else:
+                accessibility = SwiftAccessibility.INTERNAL
+
+            swift_type = SwiftType(type_identifier=type_identifier, name=substructure.get('key.name'), accessibility=accessibility)
+            self.xc_file.swift_types.add(swift_type)

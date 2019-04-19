@@ -2,6 +2,7 @@ class XcFile():
 
     def __init__(self, filepath):
         self.filepath = filepath
+        self.swift_types = None
 
     def __eq__(self, other):
         return self.filepath == other.filepath
@@ -11,7 +12,7 @@ class XcFile():
 
     def __repr__(self):
         return "<XcFile> {}".format(self.filepath)
-
+    
 
 class XcGroup():
 
@@ -224,3 +225,7 @@ class XcTarget():
     @property
     def files(self):
         return self.source_files | self.resource_files | self.header_files | self.linked_files
+    
+    @property
+    def swift_files(self):
+        return [f for f in self.source_files if f.filepath.endswith('.swift')]
