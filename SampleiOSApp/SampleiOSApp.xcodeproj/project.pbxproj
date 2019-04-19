@@ -19,13 +19,16 @@
 		DF186B712265D39C005C5DC7 /* libTouchJSONUniversal.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DF186B702265D39C005C5DC7 /* libTouchJSONUniversal.a */; };
 		DF186B732265E42F005C5DC7 /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DF186B722265E42F005C5DC7 /* AddressBook.framework */; };
 		DF186B752265FF71005C5DC7 /* libTouchJSONUniversal2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DF186B742265FF70005C5DC7 /* libTouchJSONUniversal2.a */; };
+		DF186B7722670FCE005C5DC7 /* MyTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF186B7622670FCE005C5DC7 /* MyTypes.swift */; };
+		DF186B7A22690AFF005C5DC7 /* MyObjcClass.h in Headers */ = {isa = PBXBuildFile; fileRef = DF186B7822690AFF005C5DC7 /* MyObjcClass.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		DF186B7B22690AFF005C5DC7 /* MyObjcClass.m in Sources */ = {isa = PBXBuildFile; fileRef = DF186B7922690AFF005C5DC7 /* MyObjcClass.m */; };
 		DF30B739225E2DD3004F18A1 /* LICENCE.md in Resources */ = {isa = PBXBuildFile; fileRef = DF85324E224BCC9600792A18 /* LICENCE.md */; };
 		DF30B73B225E2DD5004F18A1 /* LICENCE.md in Resources */ = {isa = PBXBuildFile; fileRef = DF85324E224BCC9600792A18 /* LICENCE.md */; };
 		DF4ACD4F224C158900984A77 /* View.xib in Resources */ = {isa = PBXBuildFile; fileRef = DF4ACD4E224C158900984A77 /* View.xib */; };
 		DF4ACD52224C17D300984A77 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = DF4ACD54224C17D300984A77 /* Localizable.strings */; };
 		DF4ACD61224CC3E900984A77 /* Core.strings in Resources */ = {isa = PBXBuildFile; fileRef = DF4ACD63224CC3E900984A77 /* Core.strings */; };
 		DF4ACD66224D1E4800984A77 /* InsideRelativeToProject.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF4ACD65224D1E4800984A77 /* InsideRelativeToProject.swift */; };
-		DF4ACD67224E1C2F00984A77 /* SampleCore.h in Headers */ = {isa = PBXBuildFile; fileRef = DFB4DB8E223997A4007DB426 /* SampleCore.h */; };
+		DF4ACD67224E1C2F00984A77 /* SampleCore.h in Headers */ = {isa = PBXBuildFile; fileRef = DFB4DB8E223997A4007DB426 /* SampleCore.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		DF4ACD68224E236D00984A77 /* LICENCE.md in Resources */ = {isa = PBXBuildFile; fileRef = DF85324E224BCC9600792A18 /* LICENCE.md */; };
 		DF4ACD6A224E2C2300984A77 /* SampleCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DFB4DB8C223997A4007DB426 /* SampleCore.framework */; };
 		DFAC5E7B22401710002C424B /* SampleCore.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFAC5E7A22401710002C424B /* SampleCore.swift */; };
@@ -132,6 +135,9 @@
 		DF186B702265D39C005C5DC7 /* libTouchJSONUniversal.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libTouchJSONUniversal.a; sourceTree = "<group>"; };
 		DF186B722265E42F005C5DC7 /* AddressBook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBook.framework; path = System/Library/Frameworks/AddressBook.framework; sourceTree = SDKROOT; };
 		DF186B742265FF70005C5DC7 /* libTouchJSONUniversal2.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libTouchJSONUniversal2.a; path = SampleiOSApp/libTouchJSONUniversal2.a; sourceTree = SOURCE_ROOT; };
+		DF186B7622670FCE005C5DC7 /* MyTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyTypes.swift; sourceTree = "<group>"; };
+		DF186B7822690AFF005C5DC7 /* MyObjcClass.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MyObjcClass.h; sourceTree = "<group>"; };
+		DF186B7922690AFF005C5DC7 /* MyObjcClass.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MyObjcClass.m; sourceTree = "<group>"; };
 		DF4ACD4E224C158900984A77 /* View.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = View.xib; sourceTree = "<group>"; };
 		DF4ACD53224C17D300984A77 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		DF4ACD55224C17E700984A77 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -285,6 +291,9 @@
 				DF1507522248C5A1009D0B98 /* GrandChildGroup */,
 				DFAC5E7D22401BFA002C424B /* InsideNormal.swift */,
 				DF186B6A2260F25F005C5DC7 /* BadPlacedRootFile.swift */,
+				DF186B7622670FCE005C5DC7 /* MyTypes.swift */,
+				DF186B7822690AFF005C5DC7 /* MyObjcClass.h */,
+				DF186B7922690AFF005C5DC7 /* MyObjcClass.m */,
 			);
 			path = Normal;
 			sourceTree = "<group>";
@@ -431,6 +440,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				DF4ACD67224E1C2F00984A77 /* SampleCore.h in Headers */,
+				DF186B7A22690AFF005C5DC7 /* MyObjcClass.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -731,11 +741,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DF186B7B22690AFF005C5DC7 /* MyObjcClass.m in Sources */,
 				DF186B692260F186005C5DC7 /* FileInsideBadPlacedGroup.swift in Sources */,
 				DFAC5E7B22401710002C424B /* SampleCore.swift in Sources */,
 				DFAC5E8022401C11002C424B /* Ghost.swift in Sources */,
 				DF186B6B2260F25F005C5DC7 /* BadPlacedRootFile.swift in Sources */,
 				DF4ACD66224D1E4800984A77 /* InsideRelativeToProject.swift in Sources */,
+				DF186B7722670FCE005C5DC7 /* MyTypes.swift in Sources */,
 				DFAC5E7E22401BFA002C424B /* InsideNormal.swift in Sources */,
 				DFAC5E8522401DC9002C424B /* InsideRelativeToProjectWithoutFolder.swift in Sources */,
 			);
