@@ -1,3 +1,6 @@
+from ..swift.models import SwiftTypeType
+
+
 class XcFile():
 
     def __init__(self, filepath):
@@ -12,6 +15,10 @@ class XcFile():
 
     def __repr__(self):
         return "<XcFile> {}".format(self.filepath)
+    
+    @property
+    def non_extension_swift_types(self):
+        return [t for t in self.swift_types if t.type_identifier != SwiftTypeType.EXTENSION]
     
 
 class XcGroup():

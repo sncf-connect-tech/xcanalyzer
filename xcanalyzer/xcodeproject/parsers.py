@@ -56,6 +56,13 @@ class XcProjectParser():
         if self.verbose:
             print("-> Parse targets")
         self.object.targets = self._parse_targets()
+    
+    def parse_swift_files(self):
+        for target in self.object.targets_sorted_by_name:
+            for swift_file in target.swift_files:
+                parser = SwiftFileParser(project_folder_path=self.object.dirpath,
+                                         xc_file=swift_file)
+                parser.parse()
 
     def _check_folder_path(self):
         if not os.path.isdir(self.project_folder_path):
@@ -378,5 +385,7 @@ class SwiftFileParser():
             else:
                 accessibility = SwiftAccessibility.INTERNAL
 
-            swift_type = SwiftType(type_identifier=type_identifier, name=substructure.get('key.name'), accessibility=accessibility)
+            swift_type = SwiftType(type_identifier=type_identifier,
+                                   name=substructure.get('key.name'),
+                                   accessibility=accessibility)
             self.xc_file.swift_types.add(swift_type)

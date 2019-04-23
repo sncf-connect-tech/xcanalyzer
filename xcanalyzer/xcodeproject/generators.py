@@ -5,6 +5,7 @@ from termcolor import cprint
 
 from .parsers import SwiftFileParser
 from .models import XcTarget
+from ..swift.models import SwiftTypeType
 
 
 class XcProjectGraphGenerator():
@@ -224,10 +225,6 @@ class XcProjReporter():
         # Swift types
         for target in self.xcode_project.targets_sorted_by_name:
             for swift_file in target.swift_files:
-                parser = SwiftFileParser(project_folder_path=self.xcode_project.dirpath,
-                                         xc_file=swift_file)
-                parser.parse()
-                
                 cprint(swift_file.filepath, attrs=['bold'])
                 for swift_type in swift_file.swift_types:
                     print(swift_type)
@@ -238,40 +235,107 @@ class XcProjReporter():
         # Counters
         counters = {
             'protocol': 0,
-            'extension': 0,
+            'extension': {
+                'file_scoped': 0,  # extensions of Swift types defined in the same file
+                'project_scoped': 0,  # extensions of Swift types defined in the project
+                'outer_scoped': 0,  # iOS SDK and third-party libraries
+            },
             'struct': 0,
             'enum': 0,
             'class': 0,
         }
         other_count = 0
 
+        non_extension_project_type_names = set()
+        project_or_outer_extensions = list()
+
+        # Swift types
         for target in self.xcode_project.targets_sorted_by_name:
             for swift_file in target.swift_files:
-                parser = SwiftFileParser(project_folder_path=self.xcode_project.dirpath,
-                                         xc_file=swift_file)
-                parser.parse()
-
                 for swift_type in swift_file.swift_types:
-                    if swift_type.type_identifier in counters:
-                        counters[swift_type.type_identifier] += 1
+                    if swift_type.type_identifier == SwiftTypeType.PROTOCOL:
+                        counters['protocol'] += 1
+                    
+                    elif swift_type.type_identifier == SwiftTypeType.EXTENSION:
+                        if swift_type.name in [t.name for t in swift_file.non_extension_swift_types]:
+                            counters['extension']['file_scoped'] += 1
+                        else:
+                            project_or_outer_extensions.append(swift_type)
+                        
+                        continue
+                    
+                    elif swift_type.type_identifier == SwiftTypeType.STRUCT:
+                        counters['struct'] += 1
+                    
+                    elif swift_type.type_identifier == SwiftTypeType.ENUM:
+                        counters['enum'] += 1
+                    
+                    elif swift_type.type_identifier == SwiftTypeType.CLASS:
+                        counters['class'] += 1
+                    
                     else:
                         other_count += 1
 
+                    # Except for extensions, we keep the type name
+                    non_extension_project_type_names.add(swift_type.name)
+
+        # Projet and outer extensions counts
+        while project_or_outer_extensions:
+            extension = project_or_outer_extensions.pop()
+            if extension.name in non_extension_project_type_names:
+                counters['extension']['project_scoped'] += 1
+            else:
+                counters['extension']['outer_scoped'] += 1
+
+        # Count of project types' extensions
+        extension_count = counters['extension']['file_scoped']\
+            + counters['extension']['project_scoped']\
+            + counters['extension']['outer_scoped']
+
         # Total types count
         total_files_count = 0
-        for count in counters.values():
-            total_files_count += count
+        for counter in counters.values():
+            if type(counter) is int:
+                total_files_count += counter
+            elif type(counter) is dict:
+                for subcounter in counter.values():
+                    total_files_count += subcounter
+            else:
+                raise ValueError("Unsupported type from counters variable.")
         total_files_count += other_count
 
         # Display
-        print('{:>3} protocols'.format(counters['protocol']))
-        print('{:>3} extensions'.format(counters['extension']))
-        print('{:>3} structs'.format(counters['struct']))
-        print('{:>3} enums'.format(counters['enum']))
-        print('{:>3} classes'.format(counters['class']))
+        width = len(str(total_files_count))
+
+        print('{:>{width}} protocols'.format(counters['protocol'], width=width))
+        print('{:>{width}} extensions whose:'.format(extension_count, width=width))
         
-        print('{:>3} other types'.format(other_count))
-        cprint('{:>3} types in total'.format(total_files_count), attrs=['bold'])
+        # Display - extensions counts
+        descriptions = {
+            'file_scoped': '"false extensions": extensions defined for types in the same file as the extension',
+            'project_scoped': 'extensions of types defined somewhere else in the project',
+            'outer_scoped': 'extensions of types defined in standard and 3rd party libraries like Foundation UIKit, etc.',
+        }
+
+        ext_max_count = max([v for v in counters['extension'].values()])
+        ext_width = len(str(ext_max_count)) + width + 1
+
+        print('{:>{ext_width}} file scoped ({})'.format(counters['extension']['file_scoped'],
+                                                        descriptions['file_scoped'],
+                                                        ext_width=ext_width))
+        print('{:>{ext_width}} project scoped ({})'.format(counters['extension']['project_scoped'],                      
+                                              descriptions['project_scoped'],
+                                              ext_width=ext_width))
+        print('{:>{ext_width}} outer scoped ({})'.format(counters['extension']['outer_scoped'],
+                                            descriptions['outer_scoped'],
+                                            ext_width=ext_width))
+        
+        print('{:>{width}} structs'.format(counters['struct'], width=width))
+        print('{:>{width}} enums'.format(counters['enum'], width=width))
+        print('{:>{width}} classes'.format(counters['class'], width=width))
+        
+        print('{:>{width}} other types'.format(other_count, width=width))
+        cprint('{:>{width}} types in total'.format(total_files_count, width=width), attrs=['bold'])
 
     def print_shared_files(self):
         # key is a file, value is a set of targets

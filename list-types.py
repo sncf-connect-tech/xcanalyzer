@@ -30,6 +30,7 @@ xcode_project_reader = XcProjectParser(path)
 # Loading the project
 try:
     xcode_project_reader.load()
+    xcode_project_reader.parse_swift_files()
 except XcodeProjectReadException as e:
     print("An error occurred when loading Xcode project: {}".format(e.message))
     exit()

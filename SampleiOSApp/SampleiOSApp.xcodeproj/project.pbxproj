@@ -32,6 +32,7 @@
 		DF4ACD67224E1C2F00984A77 /* SampleCore.h in Headers */ = {isa = PBXBuildFile; fileRef = DFB4DB8E223997A4007DB426 /* SampleCore.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		DF4ACD68224E236D00984A77 /* LICENCE.md in Resources */ = {isa = PBXBuildFile; fileRef = DF85324E224BCC9600792A18 /* LICENCE.md */; };
 		DF4ACD6A224E2C2300984A77 /* SampleCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DFB4DB8C223997A4007DB426 /* SampleCore.framework */; };
+		DF64A40B226F8F2700B0833F /* MyClass+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF64A40A226F8F2700B0833F /* MyClass+Extension.swift */; };
 		DFAC5E7B22401710002C424B /* SampleCore.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFAC5E7A22401710002C424B /* SampleCore.swift */; };
 		DFAC5E7E22401BFA002C424B /* InsideNormal.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFAC5E7D22401BFA002C424B /* InsideNormal.swift */; };
 		DFAC5E8022401C11002C424B /* Ghost.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFAC5E7F22401C11002C424B /* Ghost.swift */; };
@@ -146,6 +147,7 @@
 		DF4ACD62224CC3E900984A77 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Core.strings; sourceTree = "<group>"; };
 		DF4ACD64224CC3EA00984A77 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Core.strings; sourceTree = "<group>"; };
 		DF4ACD65224D1E4800984A77 /* InsideRelativeToProject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InsideRelativeToProject.swift; sourceTree = "<group>"; };
+		DF64A40A226F8F2700B0833F /* MyClass+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MyClass+Extension.swift"; sourceTree = "<group>"; };
 		DF85324E224BCC9600792A18 /* LICENCE.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = LICENCE.md; sourceTree = SOURCE_ROOT; };
 		DFAC5E7A22401710002C424B /* SampleCore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleCore.swift; sourceTree = "<group>"; };
 		DFAC5E7D22401BFA002C424B /* InsideNormal.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InsideNormal.swift; sourceTree = "<group>"; };
@@ -297,6 +299,7 @@
 				DF186B7822690AFF005C5DC7 /* MyObjcClass.h */,
 				DF186B7922690AFF005C5DC7 /* MyObjcClass.m */,
 				DF186B7D226A0D36005C5DC7 /* Accessors.swift */,
+				DF64A40A226F8F2700B0833F /* MyClass+Extension.swift */,
 			);
 			path = Normal;
 			sourceTree = "<group>";
@@ -745,6 +748,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				DF186B7B22690AFF005C5DC7 /* MyObjcClass.m in Sources */,
+				DF64A40B226F8F2700B0833F /* MyClass+Extension.swift in Sources */,
 				DF186B692260F186005C5DC7 /* FileInsideBadPlacedGroup.swift in Sources */,
 				DFAC5E7B22401710002C424B /* SampleCore.swift in Sources */,
 				DFAC5E8022401C11002C424B /* Ghost.swift in Sources */,

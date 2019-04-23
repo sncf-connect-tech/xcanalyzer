@@ -8,6 +8,10 @@
 
 protocol MyProtocol {}
 
+extension MyProtocol {
+    
+}
+
 internal extension String {
 
     func stringMethod() {
@@ -21,10 +25,23 @@ struct MyStruct {
 
 }
 
+extension MyStruct {
+
+}
+
 enum MyEnum {
     
 }
 
+
+extension MyEnum {
+
+}
+
 class MyClass {
+
+}
+
+extension MyClass {
 
 }

@@ -33,11 +33,7 @@ The goals to reach:
 - .h files without .m
 - .m files without .h
 
+- List obj-c types
+
 - Proportion of types Swift vs Obj-C
 
-- List by targets:
-  - protocols
-  - extensions (by extended type)
-  - structs
-  - enum
-  - classes
