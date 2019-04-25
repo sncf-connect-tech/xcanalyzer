@@ -387,21 +387,33 @@ class XcProjReporter():
             else:
                 other_source_files.add(source_file)
 
-        # Counter
+        # Counters
         source_files_count = len(source_files)
+
+        # Counters - source files
+        swift_source_files_count = len(swift_source_files)
+        objc_source_files_count = len(objc_source_files)
+        other_source_files_count = len(other_source_files)
+
         resource_files_count = len(resource_files)
         header_files_count = len(header_files)
 
         total_files_count = source_files_count + resource_files_count + header_files_count
 
         # Display
-        print('{:>2} Source files whose:'.format(source_files_count))
-        print('   {:>2} Swift files (.swift)'.format(len(swift_source_files)))
-        print('   {:>2} Objective-C files (.m)'.format(len(objc_source_files)))
-        print('   {:>2} other source files'.format(len(other_source_files)))
-        print('{:>2} Resource files'.format(resource_files_count))
-        print('{:>2} Header files'.format(header_files_count))
-        cprint('{:>2} Files in total'.format(total_files_count), attrs=['bold'])
+        width = len(str(total_files_count))
+        max_source_file_count = max([swift_source_files_count, objc_source_files_count, other_source_files_count])
+        src_width = len(str(max_source_file_count)) + width + 1
+
+        print('{:>{width}} source files whose:'.format(source_files_count, width=width))
+        
+        print('{:>{src_width}} swift files (.swift)'.format(swift_source_files_count, src_width=src_width))
+        print('{:>{src_width}} objective-C files (.m)'.format(objc_source_files_count, src_width=src_width))
+        print('{:>{src_width}} other source files'.format(other_source_files_count, src_width=src_width))
+        
+        print('{:>{width}} resource files'.format(resource_files_count, width=width))
+        print('{:>{width}} header files'.format(header_files_count, width=width))
+        cprint('{:>{width}} files in total'.format(total_files_count, width=width), attrs=['bold'])
     
     def print_groups(self, filter_mode=False):
         groups = self.xcode_project.groups_filtered(filter_mode=filter_mode)

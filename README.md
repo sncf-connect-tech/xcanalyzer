@@ -37,3 +37,7 @@ The goals to reach:
 
 - Proportion of types Swift vs Obj-C
 
+- List
+  - view controller types
+  - view model types
+  - service types
