@@ -6,7 +6,7 @@ import subprocess
 import openstep_parser as osp
 from pbxproj import XcodeProject
 
-from ..language.models import SwiftType, SwiftTypeType, SwiftAccessibility, ObjcTypeType, ObjcType
+from ..language.models import SwiftType, SwiftTypeType, SwiftAccessibility, ObjcTypeType, ObjcType, ObjcEnumType
 
 from .exceptions import XcodeProjectReadException
 from .models import XcTarget, XcProject, XcGroup, XcFile
@@ -423,7 +423,7 @@ class ObjcMFileParser():
         with open(m_filepath) as opened_file:
             for line in opened_file:
                 # Objc class
-                for match in re.finditer(r'@implementation ([a-zA-Z0-9]+)( \{)?$', line):
+                for match in re.finditer(r'@implementation ([a-zA-Z0-9_]+)( \{)?$', line):
                     class_name = match.group(1)
 
                     # Add class in objective-C types of the file
@@ -431,7 +431,7 @@ class ObjcMFileParser():
                     self.m_file.objc_types.add(objc_type)
 
                 # Objc category
-                for match in re.finditer(r'@implementation ([a-zA-Z0-9]+) \(([a-zA-Z0-9]*)\)', line):
+                for match in re.finditer(r'@implementation ([a-zA-Z0-9_]+) \(([a-zA-Z0-9]*)\)', line):
                     class_name = match.group(1)
                     category_name = match.group(2)
 
@@ -440,5 +440,11 @@ class ObjcMFileParser():
                     self.m_file.objc_types.add(objc_type)
                 
                 # Objc enum
+                for enum_type in ObjcEnumType.ALL:
+                    regex = r'typedef ' + enum_type + r'\([a-zA-Z0-9_]+, ([a-zA-Z0-9_]+)\)( \{)?'
+                    for match in re.finditer(regex, line):
+                        enum_name = match.group(1)
 
-                
+                        # Add category in objective-C types of the file
+                        objc_type = ObjcType(type_identifier=ObjcTypeType.ENUM, name=enum_name)
+                        self.m_file.objc_types.add(objc_type)

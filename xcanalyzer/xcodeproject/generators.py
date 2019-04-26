@@ -221,33 +221,46 @@ class XcProjReporter():
             filepaths.sort()
             for filepath in filepaths:
                 print(filepath)
+
+    def _print_swift_files(self, target):
+        for swift_file in target.swift_files:
+            cprint(swift_file.filepath, attrs=['bold'])
+            for swift_type in swift_file.swift_types:
+                print(swift_type)
     
-    def print_types_by_file(self):
+    def _print_objc_files(self, target):
+        for m_file in target.m_files:
+            cprint(m_file.filepath, attrs=['bold'])
+            for objc_type in m_file.objc_types:
+                print(objc_type)
+
+    def print_types_by_file(self, languages):
         # Swift types
         for target in self.xcode_project.targets_sorted_by_name:
             # Target
             cprint('=> {}'.format(target.name), attrs=['bold'])
 
             # Swift files
-            for swift_file in target.swift_files:
-                cprint(swift_file.filepath, attrs=['bold'])
-                for swift_type in swift_file.swift_types:
-                    print(swift_type)
+            if 'swift' in languages:
+                self._print_swift_files(target)
             
             # Objective-C .m files
-            for m_file in target.m_files:
-                cprint(m_file.filepath, attrs=['bold'])
-                for objc_type in m_file.objc_types:
-                    print(objc_type)
+            if 'objc' in languages:
+                self._print_objc_files(target)
             
             print()  # Empty line
     
-    def print_types_summary(self):
+    def print_types_summary(self, languages):
         self._print_horizontal_line()
 
-        self._print_swift_types_summary()
-        print()  # Empty line
-        self._print_objc_types_summary()
+        if 'swift' in languages:
+            self._print_swift_types_summary()
+        
+        if languages == {'swift', 'objc'}:
+            print()  # Empty line
+        
+        if 'objc' in languages:
+            self._print_objc_types_summary()
     
     def _print_swift_types_summary(self):
         cprint('=> Swift types', attrs=['bold'])
@@ -361,6 +374,7 @@ class XcProjReporter():
         counters = {
             'class': 0,
             'category': 0,
+            'enum': 0,
         }
 
         # Obj-C types
@@ -371,6 +385,8 @@ class XcProjReporter():
                         counters['class'] += 1
                     elif objc_type.type_identifier == ObjcTypeType.CATEGORY:
                         counters['category'] += 1
+                    elif objc_type.type_identifier == ObjcTypeType.ENUM:
+                        counters['enum'] += 1
                     else:
                         raise ValueError("Unsupported type '{}' from counters variable.".format(objc_type.type_identifier))
 
@@ -385,6 +401,7 @@ class XcProjReporter():
 
         print('{:>{width}} classes'.format(counters['class'], width=width))
         print('{:>{width}} categories'.format(counters['category'], width=width))
+        print('{:>{width}} enums'.format(counters['enum'], width=width))
         cprint('{:>{width}} types in total'.format(total_types_count, width=width), attrs=['bold'])
 
     def print_shared_files(self):

@@ -28,12 +28,17 @@ To clean the project, runs:
 
 The goals to reach:
 
+- List obj-c types:
+  - .h files from target
+  - .h files from project
+  - enum
+  - global constants
+  - protocols
+
 - .h files not present in header files
 
 - .h files without .m
 - .m files without .h
-
-- List obj-c types
 
 - Proportion of types Swift vs Obj-C
 

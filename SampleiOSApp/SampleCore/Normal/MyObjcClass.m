@@ -15,6 +15,13 @@ typedef NS_ENUM(NSInteger, UITableViewCellStyle) {
     UITableViewCellStyleSubtitle
 };
 
+typedef NS_ENUM(NSUInteger, ValidationState)
+{
+    ValidationStateUnknown = 0,
+    ValidationStateSuccess,
+    ValidationStateError
+};
+
 @implementation MyObjcClass
 
 @end

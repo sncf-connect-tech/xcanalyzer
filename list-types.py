@@ -15,6 +15,13 @@ argument_parser = argparse.ArgumentParser(description="List all types (protocols
 argument_parser.add_argument('path',
                              help='Path of the folder containing your `.xcodeproj` folder.')
 
+# Filter languages
+argument_parser.add_argument('-l', '--l',
+                             choices=['all', 'swift', 'objc'],
+                             default='all',
+                             dest='language',
+                             help='Language, Objective-C, Swift or both for which the types are given.')
+
 
 # --- Parse arguments ---
 args = argument_parser.parse_args()
@@ -24,19 +31,26 @@ path = args.path
 while path and path[-1] == os.path.sep:
     path = path[:-1]
 
+if args.language == 'all':
+    languages = {'swift', 'objc'}
+else:
+    languages = {args.language}
+
 # Xcode code project reader
 xcode_project_reader = XcProjectParser(path)
 
 # Loading the project
 try:
     xcode_project_reader.load()
-    xcode_project_reader.parse_swift_files()
-    xcode_project_reader.parse_objc_files()
+    if 'swift' in languages:
+        xcode_project_reader.parse_swift_files()
+    if 'objc' in languages:
+        xcode_project_reader.parse_objc_files()
 except XcodeProjectReadException as e:
     print("An error occurred when loading Xcode project: {}".format(e.message))
     exit()
 
 # Reporter
 reporter = XcProjReporter(xcode_project_reader.object)
-reporter.print_types_by_file()
-reporter.print_types_summary()
+reporter.print_types_by_file(languages=languages)
+reporter.print_types_summary(languages=languages)
