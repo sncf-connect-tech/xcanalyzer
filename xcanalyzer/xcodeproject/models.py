@@ -1,4 +1,4 @@
-from ..swift.models import SwiftTypeType
+from ..language.models import SwiftTypeType
 
 
 class XcFile():
@@ -6,6 +6,7 @@ class XcFile():
     def __init__(self, filepath):
         self.filepath = filepath
         self.swift_types = None
+        self.objc_types = None
 
     def __eq__(self, other):
         return self.filepath == other.filepath
@@ -16,6 +17,10 @@ class XcFile():
     def __repr__(self):
         return "<XcFile> {}".format(self.filepath)
     
+    @property
+    def filename(self):
+        return self.filepath.split('/')[-1]
+
     @property
     def non_extension_swift_types(self):
         return [t for t in self.swift_types if t.type_identifier != SwiftTypeType.EXTENSION]
@@ -124,6 +129,16 @@ class XcProject():
     @property
     def files(self):
         return self.root_files | self.group_files
+    
+    def relative_path_for_file(self, xc_file):
+        return ''.join([self.dirpath, xc_file.filepath])
+    
+    def file_with_name(self, name):
+        for xc_file in self.files:
+            if xc_file.filename == name:
+                return xc_file
+        
+        return None
     
     def groups_filtered(self, filter_mode=None):
         """ Returns the list of path sorted by name of all groups in the project. """
@@ -236,3 +251,7 @@ class XcTarget():
     @property
     def swift_files(self):
         return [f for f in self.source_files if f.filepath.endswith('.swift')]
+
+    @property
+    def m_files(self):
+        return [f for f in self.source_files if f.filepath.endswith('.m')]

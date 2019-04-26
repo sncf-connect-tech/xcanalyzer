@@ -1,11 +1,12 @@
 import json
 import os
+import re
 import subprocess
 
 import openstep_parser as osp
 from pbxproj import XcodeProject
 
-from ..swift.models import SwiftType, SwiftTypeType, SwiftAccessibility
+from ..language.models import SwiftType, SwiftTypeType, SwiftAccessibility, ObjcTypeType, ObjcType
 
 from .exceptions import XcodeProjectReadException
 from .models import XcTarget, XcProject, XcGroup, XcFile
@@ -62,6 +63,13 @@ class XcProjectParser():
             for swift_file in target.swift_files:
                 parser = SwiftFileParser(project_folder_path=self.object.dirpath,
                                          xc_file=swift_file)
+                parser.parse()
+    
+    def parse_objc_files(self):
+        for target in self.object.targets_sorted_by_name:
+            for m_file in target.m_files:
+                parser = ObjcMFileParser(xc_project=self.object,
+                                         m_file=m_file)
                 parser.parse()
 
     def _check_folder_path(self):
@@ -358,6 +366,8 @@ class SwiftFileParser():
     }
 
     def __init__(self, project_folder_path, xc_file):
+        assert xc_file.filename.endswith('.swift')
+
         self.project_folder_path = project_folder_path
         self.xc_file = xc_file
     
@@ -389,3 +399,44 @@ class SwiftFileParser():
                                    name=substructure.get('key.name'),
                                    accessibility=accessibility)
             self.xc_file.swift_types.add(swift_type)
+
+
+class ObjcMFileParser():
+
+    def __init__(self, xc_project, m_file):
+        assert m_file.filename.endswith('.m')
+
+        self.xc_project = xc_project
+        self.m_file = m_file
+    
+    def parse(self):
+        if self.m_file.objc_types is not None:
+            return
+        
+        self.m_file.objc_types = set()
+        
+        m_filepath = self.xc_project.relative_path_for_file(self.m_file)
+
+        # Objc class regex
+        class_regex = re.compile("@implementation ([a-zA-Z]+)")
+
+        with open(m_filepath) as opened_file:
+            for line in opened_file:
+                # Objc class
+                for match in re.finditer('@implementation ([a-zA-Z0-9]+)$', line):
+                    class_name = match.group(1)
+
+                    # Add class in objective-C types of the file
+                    objc_type = ObjcType(type_identifier=ObjcTypeType.CLASS, name=class_name)
+                    self.m_file.objc_types.add(objc_type)
+
+                # Objc category
+                category_matches = re.finditer('@implementation ([a-zA-Z0-9]+) \(([a-zA-Z0-9]*)\)', line)
+                for match in category_matches:
+                    class_name = match.group(1)
+                    category_name = match.group(2)
+
+                    # Add category in objective-C types of the file
+                    objc_type = ObjcType(type_identifier=ObjcTypeType.CATEGORY, name=class_name)
+                    self.m_file.objc_types.add(objc_type)
+                

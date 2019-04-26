@@ -23,6 +23,9 @@
 		DF186B7A22690AFF005C5DC7 /* MyObjcClass.h in Headers */ = {isa = PBXBuildFile; fileRef = DF186B7822690AFF005C5DC7 /* MyObjcClass.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		DF186B7B22690AFF005C5DC7 /* MyObjcClass.m in Sources */ = {isa = PBXBuildFile; fileRef = DF186B7922690AFF005C5DC7 /* MyObjcClass.m */; };
 		DF186B7E226A0D36005C5DC7 /* Accessors.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF186B7D226A0D36005C5DC7 /* Accessors.swift */; };
+		DF1B427D227320DE009B0355 /* NSString+Category.h in Headers */ = {isa = PBXBuildFile; fileRef = DF1B427B227320DE009B0355 /* NSString+Category.h */; };
+		DF1B427E227320DE009B0355 /* NSString+Category.m in Sources */ = {isa = PBXBuildFile; fileRef = DF1B427C227320DE009B0355 /* NSString+Category.m */; };
+		DF1B4280227326D6009B0355 /* MyProtocol.h in Headers */ = {isa = PBXBuildFile; fileRef = DF1B427F227326D6009B0355 /* MyProtocol.h */; };
 		DF30B739225E2DD3004F18A1 /* LICENCE.md in Resources */ = {isa = PBXBuildFile; fileRef = DF85324E224BCC9600792A18 /* LICENCE.md */; };
 		DF30B73B225E2DD5004F18A1 /* LICENCE.md in Resources */ = {isa = PBXBuildFile; fileRef = DF85324E224BCC9600792A18 /* LICENCE.md */; };
 		DF4ACD4F224C158900984A77 /* View.xib in Resources */ = {isa = PBXBuildFile; fileRef = DF4ACD4E224C158900984A77 /* View.xib */; };
@@ -141,6 +144,9 @@
 		DF186B7822690AFF005C5DC7 /* MyObjcClass.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MyObjcClass.h; sourceTree = "<group>"; };
 		DF186B7922690AFF005C5DC7 /* MyObjcClass.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MyObjcClass.m; sourceTree = "<group>"; };
 		DF186B7D226A0D36005C5DC7 /* Accessors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Accessors.swift; sourceTree = "<group>"; };
+		DF1B427B227320DE009B0355 /* NSString+Category.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSString+Category.h"; sourceTree = "<group>"; };
+		DF1B427C227320DE009B0355 /* NSString+Category.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSString+Category.m"; sourceTree = "<group>"; };
+		DF1B427F227326D6009B0355 /* MyProtocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MyProtocol.h; sourceTree = "<group>"; };
 		DF4ACD4E224C158900984A77 /* View.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = View.xib; sourceTree = "<group>"; };
 		DF4ACD53224C17D300984A77 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		DF4ACD55224C17E700984A77 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -298,6 +304,9 @@
 				DF186B7622670FCE005C5DC7 /* MyTypes.swift */,
 				DF186B7822690AFF005C5DC7 /* MyObjcClass.h */,
 				DF186B7922690AFF005C5DC7 /* MyObjcClass.m */,
+				DF1B427B227320DE009B0355 /* NSString+Category.h */,
+				DF1B427C227320DE009B0355 /* NSString+Category.m */,
+				DF1B427F227326D6009B0355 /* MyProtocol.h */,
 				DF186B7D226A0D36005C5DC7 /* Accessors.swift */,
 				DF64A40A226F8F2700B0833F /* MyClass+Extension.swift */,
 			);
@@ -446,6 +455,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				DF4ACD67224E1C2F00984A77 /* SampleCore.h in Headers */,
+				DF1B427D227320DE009B0355 /* NSString+Category.h in Headers */,
+				DF1B4280227326D6009B0355 /* MyProtocol.h in Headers */,
 				DF186B7A22690AFF005C5DC7 /* MyObjcClass.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -754,6 +765,7 @@
 				DFAC5E8022401C11002C424B /* Ghost.swift in Sources */,
 				DF186B7E226A0D36005C5DC7 /* Accessors.swift in Sources */,
 				DF186B6B2260F25F005C5DC7 /* BadPlacedRootFile.swift in Sources */,
+				DF1B427E227320DE009B0355 /* NSString+Category.m in Sources */,
 				DF4ACD66224D1E4800984A77 /* InsideRelativeToProject.swift in Sources */,
 				DF186B7722670FCE005C5DC7 /* MyTypes.swift in Sources */,
 				DFAC5E7E22401BFA002C424B /* InsideNormal.swift in Sources */,

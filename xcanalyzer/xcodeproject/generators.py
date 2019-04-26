@@ -3,9 +3,10 @@ import os
 from graphviz import Digraph
 from termcolor import cprint
 
+from ..language.models import SwiftTypeType, ObjcTypeType
+
 from .parsers import SwiftFileParser
 from .models import XcTarget
-from ..swift.models import SwiftTypeType
 
 
 class XcProjectGraphGenerator():
@@ -224,13 +225,32 @@ class XcProjReporter():
     def print_types_by_file(self):
         # Swift types
         for target in self.xcode_project.targets_sorted_by_name:
+            # Target
+            cprint('=> {}'.format(target.name), attrs=['bold'])
+
+            # Swift files
             for swift_file in target.swift_files:
                 cprint(swift_file.filepath, attrs=['bold'])
                 for swift_type in swift_file.swift_types:
                     print(swift_type)
+            
+            # Objective-C .m files
+            for m_file in target.m_files:
+                cprint(m_file.filepath, attrs=['bold'])
+                for objc_type in m_file.objc_types:
+                    print(objc_type)
+            
+            print()  # Empty line
     
     def print_types_summary(self):
         self._print_horizontal_line()
+
+        self._print_swift_types_summary()
+        print()  # Empty line
+        self._print_objc_types_summary()
+    
+    def _print_swift_types_summary(self):
+        cprint('=> Swift types', attrs=['bold'])
 
         # Counters
         counters = {
@@ -244,7 +264,6 @@ class XcProjReporter():
             'enum': 0,
             'class': 0,
         }
-        other_count = 0
 
         non_extension_project_type_names = set()
         project_or_outer_extensions = list()
@@ -274,7 +293,7 @@ class XcProjReporter():
                         counters['class'] += 1
                     
                     else:
-                        other_count += 1
+                        raise ValueError("Unsupported swift type '{}'.".format(objc_type.type_identifier))
 
                     # Except for extensions, we keep the type name
                     non_extension_project_type_names.add(swift_type.name)
@@ -293,19 +312,18 @@ class XcProjReporter():
             + counters['extension']['outer_scoped']
 
         # Total types count
-        total_files_count = 0
+        total_types_count = 0
         for counter in counters.values():
             if type(counter) is int:
-                total_files_count += counter
+                total_types_count += counter
             elif type(counter) is dict:
                 for subcounter in counter.values():
-                    total_files_count += subcounter
+                    total_types_count += subcounter
             else:
                 raise ValueError("Unsupported type from counters variable.")
-        total_files_count += other_count
 
         # Display
-        width = len(str(total_files_count))
+        width = len(str(total_types_count))
 
         print('{:>{width}} protocols'.format(counters['protocol'], width=width))
         print('{:>{width}} extensions whose:'.format(extension_count, width=width))
@@ -334,8 +352,40 @@ class XcProjReporter():
         print('{:>{width}} enums'.format(counters['enum'], width=width))
         print('{:>{width}} classes'.format(counters['class'], width=width))
         
-        print('{:>{width}} other types'.format(other_count, width=width))
-        cprint('{:>{width}} types in total'.format(total_files_count, width=width), attrs=['bold'])
+        cprint('{:>{width}} swift types in total'.format(total_types_count, width=width), attrs=['bold'])
+
+    def _print_objc_types_summary(self):
+        cprint('=> Objective-C types', attrs=['bold'])
+
+        # Counters
+        counters = {
+            'class': 0,
+            'category': 0,
+        }
+
+        # Obj-C types
+        for target in self.xcode_project.targets_sorted_by_name:
+            for m_file in target.m_files:
+                for objc_type in m_file.objc_types:
+                    if objc_type.type_identifier == ObjcTypeType.CLASS:
+                        counters['class'] += 1
+                    elif objc_type.type_identifier == ObjcTypeType.CATEGORY:
+                        counters['category'] += 1
+                    else:
+                        raise ValueError("Unsupported type '{}' from counters variable.".format(objc_type.type_identifier))
+
+
+        # Total
+        total_types_count = 0
+        for count in counters.values():
+            total_types_count += count
+
+        # Display
+        width = len(str(total_types_count))
+
+        print('{:>{width}} classes'.format(counters['class'], width=width))
+        print('{:>{width}} categories'.format(counters['category'], width=width))
+        cprint('{:>{width}} types in total'.format(total_types_count, width=width), attrs=['bold'])
 
     def print_shared_files(self):
         # key is a file, value is a set of targets

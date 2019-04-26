@@ -31,6 +31,7 @@ xcode_project_reader = XcProjectParser(path)
 try:
     xcode_project_reader.load()
     xcode_project_reader.parse_swift_files()
+    xcode_project_reader.parse_objc_files()
 except XcodeProjectReadException as e:
     print("An error occurred when loading Xcode project: {}".format(e.message))
     exit()
