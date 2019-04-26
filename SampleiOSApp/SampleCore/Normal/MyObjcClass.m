@@ -8,6 +8,13 @@
 
 #import "MyObjcClass.h"
 
+typedef NS_ENUM(NSInteger, UITableViewCellStyle) {
+    UITableViewCellStyleDefault,
+    UITableViewCellStyleValue1,
+    UITableViewCellStyleValue2,
+    UITableViewCellStyleSubtitle
+};
+
 @implementation MyObjcClass
 
 @end

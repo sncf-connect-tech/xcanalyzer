@@ -55,6 +55,24 @@ class ObjcTypeType():
     ALL = {
         CLASS,
         CATEGORY,
+        ENUM,
+    }
+
+
+class ObjcEnumType():
+
+    NS_ENUM = 'NS_ENUM'
+    NS_CLOSED_ENUM = 'NS_CLOSED_ENUM'
+    NS_OPTIONS = 'NS_OPTIONS'
+    NS_TYPED_ENUM = 'NS_TYPED_ENUM'
+    NS_TYPED_EXTENSIBLE_ENUM = 'NS_TYPED_EXTENSIBLE_ENUM'
+
+    ALL = {
+        NS_ENUM,
+        NS_CLOSED_ENUM,
+        NS_OPTIONS,
+        NS_TYPED_ENUM,
+        NS_TYPED_EXTENSIBLE_ENUM,
     }
 
 

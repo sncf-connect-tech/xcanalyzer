@@ -423,7 +423,7 @@ class ObjcMFileParser():
         with open(m_filepath) as opened_file:
             for line in opened_file:
                 # Objc class
-                for match in re.finditer('@implementation ([a-zA-Z0-9]+)$', line):
+                for match in re.finditer(r'@implementation ([a-zA-Z0-9]+)( \{)?$', line):
                     class_name = match.group(1)
 
                     # Add class in objective-C types of the file
@@ -431,12 +431,14 @@ class ObjcMFileParser():
                     self.m_file.objc_types.add(objc_type)
 
                 # Objc category
-                category_matches = re.finditer('@implementation ([a-zA-Z0-9]+) \(([a-zA-Z0-9]*)\)', line)
-                for match in category_matches:
+                for match in re.finditer(r'@implementation ([a-zA-Z0-9]+) \(([a-zA-Z0-9]*)\)', line):
                     class_name = match.group(1)
                     category_name = match.group(2)
 
                     # Add category in objective-C types of the file
                     objc_type = ObjcType(type_identifier=ObjcTypeType.CATEGORY, name=class_name)
                     self.m_file.objc_types.add(objc_type)
+                
+                # Objc enum
+
                 
