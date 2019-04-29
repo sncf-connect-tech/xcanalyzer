@@ -9,5 +9,11 @@
 #ifndef SampleiOSApp_h
 #define SampleiOSApp_h
 
+typedef NS_ENUM(NSInteger, MyObjcEnum) {
+    MyObjcEnum1,
+    MyObjcEnum2,
+    MyObjcEnum3,
+    MyObjcEnum4
+};
 
 #endif /* SampleiOSApp_h */

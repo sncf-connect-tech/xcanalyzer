@@ -29,9 +29,6 @@ To clean the project, runs:
 The goals to reach:
 
 - List obj-c types:
-  - .h files from target
-  - .h files from project
-  - enum
   - global constants
   - protocols
 

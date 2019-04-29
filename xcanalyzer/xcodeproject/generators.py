@@ -222,14 +222,14 @@ class XcProjReporter():
             for filepath in filepaths:
                 print(filepath)
 
-    def _print_swift_files(self, target):
-        for swift_file in target.swift_files:
+    def _print_swift_files(self, swift_files):
+        for swift_file in swift_files:
             cprint(swift_file.filepath, attrs=['bold'])
             for swift_type in swift_file.swift_types:
                 print(swift_type)
     
-    def _print_objc_files(self, target):
-        for objc_file in target.objc_files:
+    def _print_objc_files(self, objc_files):
+        for objc_file in objc_files:
             cprint(objc_file.filepath, attrs=['bold'])
             for objc_type in objc_file.objc_types:
                 print(objc_type)
@@ -242,13 +242,18 @@ class XcProjReporter():
 
             # Swift files
             if 'swift' in languages:
-                self._print_swift_files(target)
+                self._print_swift_files(target.swift_files)
             
             # Objective-C .m files
             if 'objc' in languages:
-                self._print_objc_files(target)
+                self._print_objc_files(target.objc_files)
             
             print()  # Empty line
+        
+        # Objective-C types from project .h files
+        if 'objc' in languages:
+            cprint('=> Project "target less" .h files', attrs=['bold'])
+            self._print_objc_files(self.xcode_project.target_less_h_files)
     
     def print_types_summary(self, languages):
         self._print_horizontal_line()

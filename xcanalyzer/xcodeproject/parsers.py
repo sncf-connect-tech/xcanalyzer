@@ -66,11 +66,18 @@ class XcProjectParser():
                 parser.parse()
     
     def parse_objc_files(self):
+        # Targets' objective-C files
         for target in self.object.targets_sorted_by_name:
             for objc_file in target.objc_files:
                 parser = ObjcFileParser(xc_project=self.object,
                                         xc_file=objc_file)
                 parser.parse()
+        
+        # Target less objective-C files
+        for objc_file in self.object.target_less_h_files:
+            parser = ObjcFileParser(xc_project=self.object,
+                                    xc_file=objc_file)
+            parser.parse()
 
     def _check_folder_path(self):
         if not os.path.isdir(self.project_folder_path):

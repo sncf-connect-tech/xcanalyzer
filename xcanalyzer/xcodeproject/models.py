@@ -94,6 +94,14 @@ class XcProject():
         return results
     
     @property
+    def target_less_files(self):
+        return self.files - self.target_files
+    
+    @property
+    def target_less_h_files(self):
+        return set([f for f in self.target_less_files if f.filepath.endswith('.h')])
+    
+    @property
     def group_files(self):
         results = set()
 

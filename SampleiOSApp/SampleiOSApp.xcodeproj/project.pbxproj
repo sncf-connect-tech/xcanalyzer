@@ -31,6 +31,7 @@
 		DF1B4286227387E5009B0355 /* MySecondObjCClass.m in Sources */ = {isa = PBXBuildFile; fileRef = DF1B42822273853B009B0355 /* MySecondObjCClass.m */; };
 		DF1B428822738819009B0355 /* MySharedSwiftClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF1B428722738819009B0355 /* MySharedSwiftClass.swift */; };
 		DF1B428922738819009B0355 /* MySharedSwiftClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF1B428722738819009B0355 /* MySharedSwiftClass.swift */; };
+		DF1B428B22770FCB009B0355 /* MyObjcClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF1B428A22770FCB009B0355 /* MyObjcClass.swift */; };
 		DF30B739225E2DD3004F18A1 /* LICENCE.md in Resources */ = {isa = PBXBuildFile; fileRef = DF85324E224BCC9600792A18 /* LICENCE.md */; };
 		DF30B73B225E2DD5004F18A1 /* LICENCE.md in Resources */ = {isa = PBXBuildFile; fileRef = DF85324E224BCC9600792A18 /* LICENCE.md */; };
 		DF4ACD4F224C158900984A77 /* View.xib in Resources */ = {isa = PBXBuildFile; fileRef = DF4ACD4E224C158900984A77 /* View.xib */; };
@@ -155,6 +156,7 @@
 		DF1B42812273853B009B0355 /* MySecondObjCClass.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MySecondObjCClass.h; sourceTree = "<group>"; };
 		DF1B42822273853B009B0355 /* MySecondObjCClass.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MySecondObjCClass.m; sourceTree = "<group>"; };
 		DF1B428722738819009B0355 /* MySharedSwiftClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MySharedSwiftClass.swift; sourceTree = "<group>"; };
+		DF1B428A22770FCB009B0355 /* MyObjcClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyObjcClass.swift; sourceTree = "<group>"; };
 		DF4ACD4E224C158900984A77 /* View.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = View.xib; sourceTree = "<group>"; };
 		DF4ACD53224C17D300984A77 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		DF4ACD55224C17E700984A77 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -312,6 +314,7 @@
 				DF186B7622670FCE005C5DC7 /* MyTypes.swift */,
 				DF186B7822690AFF005C5DC7 /* MyObjcClass.h */,
 				DF186B7922690AFF005C5DC7 /* MyObjcClass.m */,
+				DF1B428A22770FCB009B0355 /* MyObjcClass.swift */,
 				DF1B42812273853B009B0355 /* MySecondObjCClass.h */,
 				DF1B42822273853B009B0355 /* MySecondObjCClass.m */,
 				DF1B427B227320DE009B0355 /* NSString+Category.h */,
@@ -774,6 +777,7 @@
 			files = (
 				DF186B7B22690AFF005C5DC7 /* MyObjcClass.m in Sources */,
 				DF64A40B226F8F2700B0833F /* MyClass+Extension.swift in Sources */,
+				DF1B428B22770FCB009B0355 /* MyObjcClass.swift in Sources */,
 				DF186B692260F186005C5DC7 /* FileInsideBadPlacedGroup.swift in Sources */,
 				DFAC5E7B22401710002C424B /* SampleCore.swift in Sources */,
 				DF1B428922738819009B0355 /* MySharedSwiftClass.swift in Sources */,
