@@ -35,6 +35,8 @@ The goals to reach:
   - global constants
   - protocols
 
+- Swift extensions of Obj-C types
+
 - .h files not present in header files
 
 - .h files without .m

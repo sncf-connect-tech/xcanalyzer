@@ -67,9 +67,9 @@ class XcProjectParser():
     
     def parse_objc_files(self):
         for target in self.object.targets_sorted_by_name:
-            for m_file in target.m_files:
-                parser = ObjcMFileParser(xc_project=self.object,
-                                         m_file=m_file)
+            for objc_file in target.objc_files:
+                parser = ObjcFileParser(xc_project=self.object,
+                                        xc_file=objc_file)
                 parser.parse()
 
     def _check_folder_path(self):
@@ -401,26 +401,26 @@ class SwiftFileParser():
             self.xc_file.swift_types.add(swift_type)
 
 
-class ObjcMFileParser():
+class ObjcFileParser():
 
-    def __init__(self, xc_project, m_file):
-        assert m_file.filename.endswith('.m')
+    def __init__(self, xc_project, xc_file):
+        assert xc_file.filename.endswith('.h') or xc_file.filename.endswith('.m')
 
         self.xc_project = xc_project
-        self.m_file = m_file
+        self.xc_file = xc_file
     
     def parse(self):
-        if self.m_file.objc_types is not None:
+        if self.xc_file.objc_types is not None:
             return
         
-        self.m_file.objc_types = set()
+        self.xc_file.objc_types = list()
         
-        m_filepath = self.xc_project.relative_path_for_file(self.m_file)
+        xc_filepath = self.xc_project.relative_path_for_file(self.xc_file)
 
         # Objc class regex
         class_regex = re.compile("@implementation ([a-zA-Z]+)")
 
-        with open(m_filepath) as opened_file:
+        with open(xc_filepath) as opened_file:
             for line in opened_file:
                 # Objc class
                 for match in re.finditer(r'@implementation ([a-zA-Z0-9_]+)( \{)?$', line):
@@ -428,7 +428,7 @@ class ObjcMFileParser():
 
                     # Add class in objective-C types of the file
                     objc_type = ObjcType(type_identifier=ObjcTypeType.CLASS, name=class_name)
-                    self.m_file.objc_types.add(objc_type)
+                    self.xc_file.objc_types.append(objc_type)
 
                 # Objc category
                 for match in re.finditer(r'@implementation ([a-zA-Z0-9_]+) \(([a-zA-Z0-9]*)\)', line):
@@ -437,7 +437,7 @@ class ObjcMFileParser():
 
                     # Add category in objective-C types of the file
                     objc_type = ObjcType(type_identifier=ObjcTypeType.CATEGORY, name=class_name)
-                    self.m_file.objc_types.add(objc_type)
+                    self.xc_file.objc_types.append(objc_type)
                 
                 # Objc enum
                 for enum_type in ObjcEnumType.ALL:
@@ -447,4 +447,4 @@ class ObjcMFileParser():
 
                         # Add category in objective-C types of the file
                         objc_type = ObjcType(type_identifier=ObjcTypeType.ENUM, name=enum_name)
-                        self.m_file.objc_types.add(objc_type)
+                        self.xc_file.objc_types.append(objc_type)

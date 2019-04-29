@@ -1,5 +1,5 @@
 //
-//  MySwiftClass.swift
+//  MySharedSwiftClass.swift
 //  SampleiOSApp
 //
 //  Created by Deffrasnes Ghislain on 26/04/2019.
@@ -8,6 +8,6 @@
 
 import UIKit
 
-class MySwiftClass {
+class MySharedSwiftClass {
 
 }

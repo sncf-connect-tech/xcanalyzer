@@ -10,6 +10,13 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+typedef NS_ENUM(NSUInteger, ValidationState)
+{
+    ValidationStateUnknown = 0,
+    ValidationStateSuccess,
+    ValidationStateError
+};
+
 @interface MyObjcClass : NSObject
 
 @end

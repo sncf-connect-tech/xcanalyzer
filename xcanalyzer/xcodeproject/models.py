@@ -253,5 +253,14 @@ class XcTarget():
         return [f for f in self.source_files if f.filepath.endswith('.swift')]
 
     @property
+    def h_files(self):
+        return set([f for f in self.header_files if f.filepath.endswith('.h')])
+
+    @property
     def m_files(self):
-        return [f for f in self.source_files if f.filepath.endswith('.m')]
+        return set([f for f in self.source_files if f.filepath.endswith('.m')])
+
+    @property
+    def objc_files(self):
+        return self.h_files | self.m_files
+

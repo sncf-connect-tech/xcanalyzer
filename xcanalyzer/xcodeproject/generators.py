@@ -229,9 +229,9 @@ class XcProjReporter():
                 print(swift_type)
     
     def _print_objc_files(self, target):
-        for m_file in target.m_files:
-            cprint(m_file.filepath, attrs=['bold'])
-            for objc_type in m_file.objc_types:
+        for objc_file in target.objc_files:
+            cprint(objc_file.filepath, attrs=['bold'])
+            for objc_type in objc_file.objc_types:
                 print(objc_type)
 
     def print_types_by_file(self, languages):
@@ -379,8 +379,8 @@ class XcProjReporter():
 
         # Obj-C types
         for target in self.xcode_project.targets_sorted_by_name:
-            for m_file in target.m_files:
-                for objc_type in m_file.objc_types:
+            for objc_file in target.objc_files:
+                for objc_type in objc_file.objc_types:
                     if objc_type.type_identifier == ObjcTypeType.CLASS:
                         counters['class'] += 1
                     elif objc_type.type_identifier == ObjcTypeType.CATEGORY:
