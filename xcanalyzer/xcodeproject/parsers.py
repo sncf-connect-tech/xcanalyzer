@@ -428,6 +428,8 @@ class ObjcFileParser():
         class_regex = re.compile("@implementation ([a-zA-Z]+)")
 
         with open(xc_filepath) as opened_file:
+            enum_has_started = False
+
             for line in opened_file:
                 # Objc class
                 for match in re.finditer(r'@implementation ([a-zA-Z0-9_]+)( \{)?$', line):
@@ -455,3 +457,19 @@ class ObjcFileParser():
                         # Add category in objective-C types of the file
                         objc_type = ObjcType(type_identifier=ObjcTypeType.ENUM, name=enum_name)
                         self.xc_file.objc_types.append(objc_type)
+                
+                # Objc 'enum'
+                if xc_filepath.endswith('MyObjcClass.h'):
+                    if enum_has_started:
+                        for match in re.finditer(r'} ([a-zA-Z0-9_]+);', line):
+                            enum_name = match.group(1)
+
+                            # Add category in objective-C types of the file
+                            objc_type = ObjcType(type_identifier=ObjcTypeType.ENUM, name=enum_name)
+                            self.xc_file.objc_types.append(objc_type)
+
+                            enum_has_started = False
+                            break
+                    elif re.findall(r'typedef enum \{', line):
+                        enum_has_started = True
+                        continue
