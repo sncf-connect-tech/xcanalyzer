@@ -58,6 +58,7 @@ class ObjcTypeType():
         CATEGORY,
         ENUM,
         CONSTANT,
+        PROTOCOL,
     }
 
 

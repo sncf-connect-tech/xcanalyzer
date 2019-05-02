@@ -17,6 +17,12 @@ NS_ASSUME_NONNULL_BEGIN
 extern NSString *const myObjcExternConstant;
 static NSString * const myStaticConstant = @"myStaticConstant";
 
+@protocol MyObjcProtocolReference;
+
+@protocol MyObjcProtocol <NSObject>
+@end
+
+
 typedef enum {
     DIRECT_ENUM_1,
     DIRECT_ENUM_2,

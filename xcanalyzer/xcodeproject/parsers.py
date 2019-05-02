@@ -481,3 +481,12 @@ class ObjcFileParser():
                     # Add enum in objective-C types of the file
                     objc_type = ObjcType(type_identifier=ObjcTypeType.CONSTANT, name=constant_name)
                     self.xc_file.objc_types.append(objc_type)
+                
+                # Objc protocol
+                for match in re.finditer(r'@protocol ([a-zA-Z0-9_]+)(;| ).*', line):
+                    protocol_name = match.group(1)
+
+                    # Add enum in objective-C types of the file
+                    objc_type = ObjcType(type_identifier=ObjcTypeType.PROTOCOL, name=protocol_name)
+                    self.xc_file.objc_types.append(objc_type)
+

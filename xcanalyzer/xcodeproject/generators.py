@@ -222,13 +222,13 @@ class XcProjReporter():
             for filepath in filepaths:
                 print(filepath)
 
-    def _print_swift_files(self, swift_files):
+    def _print_swift_types(self, swift_files):
         for swift_file in swift_files:
             cprint(swift_file.filepath, attrs=['bold'])
             for swift_type in swift_file.swift_types:
                 print(swift_type)
     
-    def _print_objc_files(self, objc_files):
+    def _print_objc_types(self, objc_files):
         for objc_file in objc_files:
             cprint(objc_file.filepath, attrs=['bold'])
             for objc_type in objc_file.objc_types:
@@ -242,20 +242,22 @@ class XcProjReporter():
 
             # Swift files
             if 'swift' in languages:
-                self._print_swift_files(target.swift_files)
+                self._print_swift_types(target.swift_files)
             
             # Objective-C .m files
             if 'objc' in languages:
-                self._print_objc_files(target.objc_files)
+                self._print_objc_types(target.objc_files)
             
             print()  # Empty line
         
         # Objective-C types from project .h files
         if 'objc' in languages:
             cprint('=> Project "target less" .h files', attrs=['bold'])
-            self._print_objc_files(self.xcode_project.target_less_h_files)
+            self._print_objc_types(self.xcode_project.target_less_h_files)
     
     def print_types_summary(self, languages):
+        assert languages
+
         self._print_horizontal_line()
 
         if 'swift' in languages:
@@ -266,7 +268,7 @@ class XcProjReporter():
         
         if 'objc' in languages:
             self._print_objc_types_summary()
-    
+
     def _print_swift_types_summary(self):
         cprint('=> Swift types', attrs=['bold'])
 
@@ -381,23 +383,33 @@ class XcProjReporter():
             'category': 0,
             'enum': 0,
             'constant': 0,
+            'protocol': 0,
         }
 
         # Obj-C types
+        objc_files = set()
+
         for target in self.xcode_project.targets_sorted_by_name:
             for objc_file in target.objc_files:
-                for objc_type in objc_file.objc_types:
-                    if objc_type.type_identifier == ObjcTypeType.CLASS:
-                        counters['class'] += 1
-                    elif objc_type.type_identifier == ObjcTypeType.CATEGORY:
-                        counters['category'] += 1
-                    elif objc_type.type_identifier == ObjcTypeType.ENUM:
-                        counters['enum'] += 1
-                    elif objc_type.type_identifier == ObjcTypeType.CONSTANT:
-                        counters['constant'] += 1
-                    else:
-                        raise ValueError("Unsupported type '{}' from counters variable.".format(objc_type.type_identifier))
+                objc_files.add(objc_file)
+        
+        for objc_file in self.xcode_project.target_less_h_files:
+            objc_files.add(objc_file)
 
+        for objc_file in objc_files:
+            for objc_type in objc_file.objc_types:
+                if objc_type.type_identifier == ObjcTypeType.CLASS:
+                    counters['class'] += 1
+                elif objc_type.type_identifier == ObjcTypeType.CATEGORY:
+                    counters['category'] += 1
+                elif objc_type.type_identifier == ObjcTypeType.ENUM:
+                    counters['enum'] += 1
+                elif objc_type.type_identifier == ObjcTypeType.CONSTANT:
+                    counters['constant'] += 1
+                elif objc_type.type_identifier == ObjcTypeType.PROTOCOL:
+                    counters['protocol'] += 1
+                else:
+                    raise ValueError("Unsupported type '{}' from counters variable.".format(objc_type.type_identifier))
 
         # Total
         total_types_count = 0
@@ -411,6 +423,7 @@ class XcProjReporter():
         print('{:>{width}} categories'.format(counters['category'], width=width))
         print('{:>{width}} enums'.format(counters['enum'], width=width))
         print('{:>{width}} constants'.format(counters['constant'], width=width))
+        print('{:>{width}} protocols'.format(counters['protocol'], width=width))
         cprint('{:>{width}} types in total'.format(total_types_count, width=width), attrs=['bold'])
 
     def print_shared_files(self):
