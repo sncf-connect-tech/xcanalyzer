@@ -50,12 +50,14 @@ class ObjcTypeType():
     CLASS = 'class'
     CATEGORY = 'category'
     ENUM = 'enum'
+    CONSTANT = 'constant'
     PROTOCOL = 'protocol'
 
     ALL = {
         CLASS,
         CATEGORY,
         ENUM,
+        CONSTANT,
     }
 
 

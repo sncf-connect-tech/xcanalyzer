@@ -454,7 +454,7 @@ class ObjcFileParser():
                     for match in re.finditer(regex, line):
                         enum_name = match.group(1)
 
-                        # Add category in objective-C types of the file
+                        # Add enum in objective-C types of the file
                         objc_type = ObjcType(type_identifier=ObjcTypeType.ENUM, name=enum_name)
                         self.xc_file.objc_types.append(objc_type)
                 
@@ -464,7 +464,7 @@ class ObjcFileParser():
                         for match in re.finditer(r'} ([a-zA-Z0-9_]+);', line):
                             enum_name = match.group(1)
 
-                            # Add category in objective-C types of the file
+                            # Add enum in objective-C types of the file
                             objc_type = ObjcType(type_identifier=ObjcTypeType.ENUM, name=enum_name)
                             self.xc_file.objc_types.append(objc_type)
 
@@ -473,3 +473,11 @@ class ObjcFileParser():
                     elif re.findall(r'typedef enum \{', line):
                         enum_has_started = True
                         continue
+                
+                # Objc constant
+                for match in re.finditer(r'#define ([a-zA-Z0-9_]+) +', line):
+                    constant_name = match.group(1)
+
+                    # Add enum in objective-C types of the file
+                    objc_type = ObjcType(type_identifier=ObjcTypeType.CONSTANT, name=constant_name)
+                    self.xc_file.objc_types.append(objc_type)

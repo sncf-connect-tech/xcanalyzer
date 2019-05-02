@@ -29,7 +29,6 @@ To clean the project, runs:
 The goals to reach:
 
 - List obj-c types:
-  - global constants
   - protocols
 
 - Swift extensions of Obj-C types

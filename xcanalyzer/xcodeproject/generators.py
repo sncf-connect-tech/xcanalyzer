@@ -380,6 +380,7 @@ class XcProjReporter():
             'class': 0,
             'category': 0,
             'enum': 0,
+            'constant': 0,
         }
 
         # Obj-C types
@@ -392,6 +393,8 @@ class XcProjReporter():
                         counters['category'] += 1
                     elif objc_type.type_identifier == ObjcTypeType.ENUM:
                         counters['enum'] += 1
+                    elif objc_type.type_identifier == ObjcTypeType.CONSTANT:
+                        counters['constant'] += 1
                     else:
                         raise ValueError("Unsupported type '{}' from counters variable.".format(objc_type.type_identifier))
 
@@ -407,6 +410,7 @@ class XcProjReporter():
         print('{:>{width}} classes'.format(counters['class'], width=width))
         print('{:>{width}} categories'.format(counters['category'], width=width))
         print('{:>{width}} enums'.format(counters['enum'], width=width))
+        print('{:>{width}} constants'.format(counters['constant'], width=width))
         cprint('{:>{width}} types in total'.format(total_types_count, width=width), attrs=['bold'])
 
     def print_shared_files(self):
