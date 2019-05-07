@@ -1,4 +1,4 @@
-from ..language.models import SwiftTypeType
+from ..language.models import SwiftTypeType, ObjcTypeType
 
 
 class XcFile():
@@ -192,6 +192,57 @@ class XcProject():
                 remaining_groups.append(subgroup)
         
         return results
+    
+    @property
+    def objc_files(self):
+        """ Union of targets' objc files and target .h files. """
+        results = set()
+
+        # .h and .m targets' files
+        for target in self.targets_sorted_by_name:
+            results |= target.objc_files
+        
+        # .h target less files
+        results |= self.target_less_h_files
+        
+        return results
+    
+    @property
+    def objc_types(self):
+        results = []
+
+        for objc_file in self.objc_files:
+            results += objc_file.objc_types
+        
+        return results
+
+    def objc_types_filtered(self, type_in=set()):
+        try:
+            assert type_in
+        except:
+            import ipdb; ipdb.set_trace()
+        assert type_in.issubset(ObjcTypeType.ALL)
+
+        return [t for t in self.objc_types if t.type_identifier in type_in]
+
+    @property
+    def swift_files(self):
+        """ All targets' swift files. """
+        results = set()
+
+        for target in self.targets_sorted_by_name:
+            results |= target.swift_files
+
+        return results
+
+    @property
+    def swift_types(self):
+        results = []
+        
+        for swift_file in self.swift_files:
+            results += swift_file.swift_types
+        
+        return results
 
 
 class XcTarget():
@@ -258,7 +309,7 @@ class XcTarget():
     
     @property
     def swift_files(self):
-        return [f for f in self.source_files if f.filepath.endswith('.swift')]
+        return set([f for f in self.source_files if f.filepath.endswith('.swift')])
 
     @property
     def h_files(self):

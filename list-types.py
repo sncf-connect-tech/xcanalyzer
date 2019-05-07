@@ -42,10 +42,13 @@ xcode_project_reader = XcProjectParser(path)
 # Loading the project
 try:
     xcode_project_reader.load()
+
+    # Parse Swift files
     if 'swift' in languages:
         xcode_project_reader.parse_swift_files()
-    if 'objc' in languages:
-        xcode_project_reader.parse_objc_files()
+
+    # Parse Objective-C files (always because Swift extension can be of objc types)
+    xcode_project_reader.parse_objc_files()
 except XcodeProjectReadException as e:
     print("An error occurred when loading Xcode project: {}".format(e.message))
     exit()

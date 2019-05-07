@@ -28,11 +28,6 @@ To clean the project, runs:
 
 The goals to reach:
 
-- List obj-c types:
-  - protocols
-
-- Swift extensions of Obj-C types
-
 - .h files not present in header files
 
 - .h files without .m
@@ -40,7 +35,10 @@ The goals to reach:
 
 - Proportion of types Swift vs Obj-C
 
+- Tree of types that use a starting type
+
 - List
   - view controller types
   - view model types
   - service types
+  - localizable keys not used
