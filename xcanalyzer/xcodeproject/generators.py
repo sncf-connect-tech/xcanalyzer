@@ -290,7 +290,7 @@ class XcProjReporter():
         project_or_outer_extensions = list()
 
         # Objc types
-        objc_classes = self.xcode_project.objc_types_filtered(type_in={ObjcTypeType.CLASS})
+        objc_classes = self.xcode_project.objc_types_filtered(type_in={ObjcTypeType.CLASS})[ObjcTypeType.CLASS]
         objc_class_names = [c.name for c in objc_classes]
 
         # Swift types
@@ -388,43 +388,35 @@ class XcProjReporter():
     def _print_objc_types_summary(self):
         cprint('=> Objective-C types', attrs=['bold'])
 
+        # Wordings
+        wordings = [
+            (ObjcTypeType.CLASS, 'classes'),
+            (ObjcTypeType.CATEGORY, 'categories'),
+            (ObjcTypeType.ENUM, 'enums'),
+            (ObjcTypeType.CONSTANT, 'constants'),
+            (ObjcTypeType.PROTOCOL, 'protocols'),
+        ]
+
+        assert len(wordings) == len(ObjcTypeType.ALL)
+
         # Counters
-        counters = {
-            'class': 0,
-            'category': 0,
-            'enum': 0,
-            'constant': 0,
-            'protocol': 0,
-        }
+        counters = dict()
 
         # Obj-C types
-        for objc_type in self.xcode_project.objc_types:
-            if objc_type.type_identifier == ObjcTypeType.CLASS:
-                counters['class'] += 1
-            elif objc_type.type_identifier == ObjcTypeType.CATEGORY:
-                counters['category'] += 1
-            elif objc_type.type_identifier == ObjcTypeType.ENUM:
-                counters['enum'] += 1
-            elif objc_type.type_identifier == ObjcTypeType.CONSTANT:
-                counters['constant'] += 1
-            elif objc_type.type_identifier == ObjcTypeType.PROTOCOL:
-                counters['protocol'] += 1
-            else:
-                raise ValueError("Unsupported type '{}' from counters variable.".format(objc_type.type_identifier))
+        for objc_type_type, objc_types in self.xcode_project.objc_types_filtered().items():
+            counters[objc_type_type] = len(objc_types)
 
         # Total
-        total_types_count = 0
-        for count in counters.values():
-            total_types_count += count
+        total_types_count = len(self.xcode_project.objc_types)
 
         # Display
         width = len(str(total_types_count))
 
-        print('{:>{width}} classes'.format(counters['class'], width=width))
-        print('{:>{width}} categories'.format(counters['category'], width=width))
-        print('{:>{width}} enums'.format(counters['enum'], width=width))
-        print('{:>{width}} constants'.format(counters['constant'], width=width))
-        print('{:>{width}} protocols'.format(counters['protocol'], width=width))
+        for (objc_type_type, wording) in wordings:
+            print('{:>{width}} {wording}'.format(counters[objc_type_type],
+                                                 width=width,
+                                                 wording=wording))
+
         cprint('{:>{width}} types in total'.format(total_types_count, width=width), attrs=['bold'])
 
     def print_shared_files(self):

@@ -216,14 +216,18 @@ class XcProject():
         
         return results
 
-    def objc_types_filtered(self, type_in=set()):
-        try:
-            assert type_in
-        except:
-            import ipdb; ipdb.set_trace()
+    def objc_types_filtered(self, type_in=ObjcTypeType.ALL):
         assert type_in.issubset(ObjcTypeType.ALL)
 
-        return [t for t in self.objc_types if t.type_identifier in type_in]
+        results = {objc_type_type: [] for objc_type_type in type_in}
+        
+        for objc_type in self.objc_types:
+            if objc_type.type_identifier not in type_in:
+                continue
+            
+            results[objc_type.type_identifier].append(objc_type)
+
+        return results
 
     @property
     def swift_files(self):
