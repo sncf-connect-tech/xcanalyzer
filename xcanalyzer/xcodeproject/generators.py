@@ -3,7 +3,7 @@ import os
 from graphviz import Digraph
 from termcolor import cprint
 
-from ..language.models import SwiftTypeType, ObjcTypeType
+from ..language.models import SwiftTypeType, ObjcTypeType, SwiftExtensionScope
 
 from .parsers import SwiftFileParser
 from .models import XcTarget
@@ -269,120 +269,73 @@ class XcProjReporter():
         if 'objc' in languages:
             self._print_objc_types_summary()
 
+    def _print_extension_summary(self, left_padding):
+        # Display - extensions counts
+        descriptions = {
+            SwiftExtensionScope.FILE: '"false extensions": extensions defined for types in the same file as the extension',
+            SwiftExtensionScope.PROJECT_SWIFT: 'extensions of Swift types defined somewhere else in the project',
+            SwiftExtensionScope.PROJECT_OBJC: 'extensions of Objective-C types defined somewhere else in the project',
+            SwiftExtensionScope.OUTER: 'extensions of types defined in standard and 3rd party libraries like Foundation UIKit, etc.',
+        }
+
+        # Counters
+        extensions_by_scope = self.xcode_project.swift_extensions_grouped_by_scope
+        counters = {scope: len(extensions) for scope, extensions in extensions_by_scope.items()}
+
+        ext_max_count = max([v for v in counters.values()])
+        ext_width = len(str(ext_max_count)) + left_padding + 1
+
+        print('{:>{ext_width}} file scoped ({})'.format(counters[SwiftExtensionScope.FILE],
+                                                        descriptions[SwiftExtensionScope.FILE],
+                                                        ext_width=ext_width))
+        print('{:>{ext_width}} project scoped Swift ({})'.format(counters[SwiftExtensionScope.PROJECT_SWIFT],
+                                                                 descriptions[SwiftExtensionScope.PROJECT_SWIFT],
+                                                                 ext_width=ext_width))
+        print('{:>{ext_width}} project scoped Objective-C ({})'.format(counters[SwiftExtensionScope.PROJECT_OBJC],
+                                                                       descriptions[SwiftExtensionScope.PROJECT_OBJC],
+                                                                       ext_width=ext_width))
+        print('{:>{ext_width}} outer scoped ({})'.format(counters[SwiftExtensionScope.OUTER],
+                                                         descriptions[SwiftExtensionScope.OUTER],
+                                                         ext_width=ext_width))
+
     def _print_swift_types_summary(self):
         cprint('=> Swift types', attrs=['bold'])
 
-        # Counters
-        counters = {
-            'protocol': 0,
-            'extension': {
-                'file_scoped': 0,  # extensions of Swift types defined in the same file
-                'project_scoped_swift': 0,  # extensions of Swift types defined in the project
-                'project_scoped_objc': 0,  # extensions of Objective-C types defined in the project
-                'outer_scoped': 0,  # iOS SDK and third-party libraries
-            },
-            'struct': 0,
-            'enum': 0,
-            'class': 0,
-        }
+        # Wordings
+        wordings = [
+            (SwiftTypeType.CLASS, 'classes'),
+            (SwiftTypeType.STRUCT, 'structs'),
+            (SwiftTypeType.ENUM, 'enums'),
+            (SwiftTypeType.PROTOCOL, 'protocols'),
+            (SwiftTypeType.EXTENSION, 'extensions'),
+        ]
 
-        swift_type_names = set()
-        project_or_outer_extensions = list()
+        assert len(wordings) == len(SwiftTypeType.ALL)
+
+        # Counters
+        counters = dict()
 
         # Objc types
         objc_classes = self.xcode_project.objc_types_filtered(type_in={ObjcTypeType.CLASS})[ObjcTypeType.CLASS]
         objc_class_names = [c.name for c in objc_classes]
 
         # Swift types
-        for swift_file in self.xcode_project.swift_files:
-            for swift_type in swift_file.swift_types:
-                if swift_type.type_identifier == SwiftTypeType.PROTOCOL:
-                    counters['protocol'] += 1
-                
-                elif swift_type.type_identifier == SwiftTypeType.EXTENSION:
-                    if swift_type.name in [t.name for t in swift_file.non_extension_swift_types]:
-                        counters['extension']['file_scoped'] += 1
-                    else:
-                        project_or_outer_extensions.append(swift_type)
-                    
-                    continue
-                
-                elif swift_type.type_identifier == SwiftTypeType.STRUCT:
-                    counters['struct'] += 1
-                
-                elif swift_type.type_identifier == SwiftTypeType.ENUM:
-                    counters['enum'] += 1
-                
-                elif swift_type.type_identifier == SwiftTypeType.CLASS:
-                    counters['class'] += 1
-                
-                else:
-                    raise ValueError("Unsupported swift type '{}'.".format(swift_type.type_identifier))
+        for swift_type_type, swift_types in self.xcode_project.swift_types_filtered().items():
+            counters[swift_type_type] = len(swift_types)
 
-                # Except for extensions, we keep the type name
-                swift_type_names.add(swift_type.name)
-
-        # Projet and outer extensions counts
-        while project_or_outer_extensions:
-            extension = project_or_outer_extensions.pop()
-            if extension.name in swift_type_names:
-                counters['extension']['project_scoped_swift'] += 1
-            elif extension.name in objc_class_names:
-                counters['extension']['project_scoped_objc'] += 1
-            else:
-                counters['extension']['outer_scoped'] += 1
-
-        # Count of project types' extensions
-        extension_count = counters['extension']['file_scoped'] \
-            + counters['extension']['project_scoped_swift'] \
-            + counters['extension']['project_scoped_objc'] \
-            + counters['extension']['outer_scoped']
-
-        # Total types count
-        total_types_count = 0
-        for counter in counters.values():
-            if type(counter) is int:
-                total_types_count += counter
-            elif type(counter) is dict:
-                for subcounter in counter.values():
-                    total_types_count += subcounter
-            else:
-                raise ValueError("Unsupported type from counters variable.")
+        # Total
+        total_types_count = len(self.xcode_project.swift_types)
 
         # Display
         width = len(str(total_types_count))
 
-        print('{:>{width}} protocols'.format(counters['protocol'], width=width))
-        print('{:>{width}} extensions whose:'.format(extension_count, width=width))
-        
-        # Display - extensions counts
-        descriptions = {
-            'file_scoped': '"false extensions": extensions defined for types in the same file as the extension',
-            'project_scoped_swift': 'extensions of Swift types defined somewhere else in the project',
-            'project_scoped_objc': 'extensions of Objective-C types defined somewhere else in the project',
-            'outer_scoped': 'extensions of types defined in standard and 3rd party libraries like Foundation UIKit, etc.',
-        }
+        for (swift_type_type, wording) in wordings:
+            print('{:>{width}} {wording}'.format(counters[swift_type_type],
+                                                 width=width,
+                                                 wording=wording))
 
-        ext_max_count = max([v for v in counters['extension'].values()])
-        ext_width = len(str(ext_max_count)) + width + 1
+        self._print_extension_summary(left_padding=width)
 
-        print('{:>{ext_width}} file scoped ({})'.format(counters['extension']['file_scoped'],
-                                                        descriptions['file_scoped'],
-                                                        ext_width=ext_width))
-        print('{:>{ext_width}} project scoped Swift ({})'.format(counters['extension']['project_scoped_swift'],
-                                                                 descriptions['project_scoped_swift'],
-                                                                 ext_width=ext_width))
-        print('{:>{ext_width}} project scoped Objective-C ({})'.format(counters['extension']['project_scoped_objc'],
-                                                                       descriptions['project_scoped_objc'],
-                                                                       ext_width=ext_width))
-        print('{:>{ext_width}} outer scoped ({})'.format(counters['extension']['outer_scoped'],
-                                                         descriptions['outer_scoped'],
-                                                         ext_width=ext_width))
-        
-        print('{:>{width}} structs'.format(counters['struct'], width=width))
-        print('{:>{width}} enums'.format(counters['enum'], width=width))
-        print('{:>{width}} classes'.format(counters['class'], width=width))
-        
         cprint('{:>{width}} swift types in total'.format(total_types_count, width=width), attrs=['bold'])
 
     def _print_objc_types_summary(self):
@@ -417,7 +370,7 @@ class XcProjReporter():
                                                  width=width,
                                                  wording=wording))
 
-        cprint('{:>{width}} types in total'.format(total_types_count, width=width), attrs=['bold'])
+        cprint('{:>{width}} objc types in total'.format(total_types_count, width=width), attrs=['bold'])
 
     def print_shared_files(self):
         # key is a file, value is a set of targets

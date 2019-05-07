@@ -1,4 +1,4 @@
-from ..language.models import SwiftTypeType, ObjcTypeType
+from ..language.models import SwiftTypeType, ObjcTypeType, SwiftExtensionScope
 
 
 class XcFile():
@@ -21,9 +21,14 @@ class XcFile():
     def filename(self):
         return self.filepath.split('/')[-1]
 
+    def swift_types_filtered(self, type_not_in=set()):
+        assert type_not_in.issubset(SwiftTypeType.ALL)
+
+        return [t for t in self.swift_types if t.type_identifier not in type_not_in]
+    
     @property
-    def non_extension_swift_types(self):
-        return [t for t in self.swift_types if t.type_identifier != SwiftTypeType.EXTENSION]
+    def swift_extensions(self):
+        return [t for t in self.swift_types if t.type_identifier == SwiftTypeType.EXTENSION]
     
 
 class XcGroup():
@@ -239,6 +244,34 @@ class XcProject():
 
         return results
 
+    def swift_types_filtered(self, type_in=SwiftTypeType.ALL, type_not_in=set(), flat=False):
+        assert type_in.issubset(SwiftTypeType.ALL)
+        assert type_not_in.issubset(SwiftTypeType.ALL)
+
+        # `type_not_in` has priority
+        if type_not_in:
+            types = SwiftTypeType.ALL - type_not_in
+        else:
+            types = type_in
+
+        grouped_results = {swift_type_type: [] for swift_type_type in types}
+        
+        for swift_type in self.swift_types:
+            if swift_type.type_identifier not in types:
+                continue
+            
+            grouped_results[swift_type.type_identifier].append(swift_type)
+
+        if flat:
+            results = []
+
+            for swift_types in grouped_results.values():
+                results += list(swift_types)
+
+            return results
+        else:
+            return grouped_results
+        
     @property
     def swift_types(self):
         results = []
@@ -247,6 +280,47 @@ class XcProject():
             results += swift_file.swift_types
         
         return results
+    
+    @property
+    def swift_extensions_grouped_by_scope(self):
+        file_scoped_extensions = []
+        remaining_extensions = []
+
+        # File scoped extensions
+        for swift_file in self.swift_files:
+            for swift_extension in swift_file.swift_extensions:
+                non_extension_swift_types = swift_file.swift_types_filtered(type_not_in={SwiftTypeType.EXTENSION})
+
+                if swift_extension.name in [t.name for t in non_extension_swift_types]:
+                    file_scoped_extensions.append(swift_extension)
+                else:
+                    remaining_extensions.append(swift_extension)
+        
+        # Project-scoped extensions: Objc and swift
+        objc_type_names = [t.name for t in self.objc_types]
+        swift_type_names = [t.name for t in self.swift_types_filtered(type_not_in={SwiftTypeType.EXTENSION}, flat=True)]
+
+        objc_scoped_extensions = []
+        swift_scoped_extensions = []
+        outer_extensions = []
+        
+        remaining_extensions.reverse()
+        while remaining_extensions:
+            extension = remaining_extensions.pop()
+            if extension.name in objc_type_names:
+                objc_scoped_extensions.append(extension)
+            elif extension.name in swift_type_names:
+                swift_scoped_extensions.append(extension)
+            else:
+                # Outer scoped extensions
+                outer_extensions.append(extension)
+        
+        return {
+            SwiftExtensionScope.FILE: file_scoped_extensions,
+            SwiftExtensionScope.PROJECT_OBJC: objc_scoped_extensions,
+            SwiftExtensionScope.PROJECT_SWIFT: swift_scoped_extensions,
+            SwiftExtensionScope.OUTER: outer_extensions,
+        }
 
 
 class XcTarget():

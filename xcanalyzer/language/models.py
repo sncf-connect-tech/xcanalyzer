@@ -15,6 +15,21 @@ class SwiftAccessibility():
     }
 
 
+class SwiftExtensionScope():
+
+    FILE = 'file'  # extensions of Swift types defined in the same file
+    PROJECT_SWIFT = 'project_swift'  # extensions of Swift types defined in the project
+    PROJECT_OBJC = 'project_objc'  # extensions of Objective-C types defined in the project
+    OUTER = 'outer'  # iOS SDK and third-party libraries
+
+    ALL = {
+        FILE,
+        PROJECT_SWIFT,
+        PROJECT_OBJC,
+        OUTER,
+    }
+
+
 class SwiftTypeType():
 
     PROTOCOL = 'protocol'
