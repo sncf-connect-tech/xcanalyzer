@@ -28,8 +28,6 @@ To clean the project, runs:
 
 The goals to reach:
 
-- .h files not present in header files
-
 - .h files without .m
 - .m files without .h
 

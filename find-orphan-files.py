@@ -25,13 +25,14 @@ argument_parser.add_argument('-d', '--ignore-dir',
 
 # Mode
 argument_parser.add_argument('-m', '--mode',
-                             choices=['all', 'project', 'target', 'referenced'],
+                             choices=['all', 'project', 'target', 'unreferenced', 'referenced'],
                              dest='orphan_mode',
                              default='all',
                              help="Orphan mode:\
-                                   'referenced' means all '*Info.plist' and '*.h' files referenced by at least one target.\
+                                   'referenced' means all *Info.plist and *.h files referenced by at least one target. \
+                                   'unreferenced' means all *Info.plist and *.h files in the project not referenced by any target. \
                                    'project' means all files in the folder but not referenced in the project.\
-                                   'target' means all files in the project but not referenced by any target.\
+                                   'target' means all files in the project but not referenced by any target (excluding *Info.plist and *.h files).\
                                    'all' (default) means all files in the folder but not referenced by any target (neither the project).")
 
 

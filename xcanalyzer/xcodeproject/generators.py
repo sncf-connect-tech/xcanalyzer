@@ -589,6 +589,15 @@ class XcProjReporter():
                     and not target_file.filepath.endswith('.h'):
                     continue
                 filepaths.append(target_file.filepath)
+        
+        elif mode == 'unreferenced':
+            # Get all '*.Info.plist' and '*.h' files project's target less files set
+            filepaths = []
+            for target_file in self.xcode_project.target_less_files:
+                if not target_file.filepath.endswith('Info.plist') \
+                    and not target_file.filepath.endswith('.h'):
+                    continue
+                filepaths.append(target_file.filepath)
 
         else:
             raise ValueError("Not supported orphan mode: '{}'.".format(mode))
