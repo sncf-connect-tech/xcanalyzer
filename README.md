@@ -28,9 +28,6 @@ To clean the project, runs:
 
 The goals to reach:
 
-- .h files without .m
-- .m files without .h
-
 - Tree of types that use a starting type
 
 - List unused types
@@ -42,3 +39,4 @@ The goals to reach:
   - service types
   - localizable keys not used
 
+- Not overridden build settings (by target)

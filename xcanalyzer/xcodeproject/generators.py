@@ -622,6 +622,24 @@ class XcProjReporter():
         for filepath in filepaths:
             print("{} [{}]".format(filepath, file_group_paths[filepath]))
 
+    def _print_missing_objc_files_summary(self,
+                                          duplicate_h_file_names,
+                                          duplicate_m_file_names,
+                                          missing_h_file_names,
+                                          missing_m_file_names):
+        total_count = len(duplicate_h_file_names) + len(duplicate_m_file_names) \
+            + len(missing_h_file_names) + len(missing_m_file_names)
+
+        width = len(str(total_count))
+
+        print('{:>{width}} duplicate .h file names'.format(len(duplicate_h_file_names), width=width))
+        print('{:>{width}} duplicate .m file names'.format(len(duplicate_m_file_names), width=width))
+        print('{:>{width}} missing .h file names'.format(len(missing_h_file_names), width=width))
+        print('{:>{width}} missing .m file names'.format(len(missing_m_file_names), width=width))
+
+        cprint('{:>{width}} duplicate or missing file names in total'.format(total_count, width=width), attrs=['bold'])
+
+
     def print_missing_objc_files(self):
         duplicate_h_file_names = set()
         duplicate_m_file_names = set()
@@ -670,3 +688,12 @@ class XcProjReporter():
         missing_m_file_names.sort()
         for missing_m_file_name in missing_m_file_names:
             print("[Missing .m file] {}.h".format(missing_m_file_name))
+
+        # Summary
+
+        self._print_horizontal_line()
+
+        self._print_missing_objc_files_summary(duplicate_h_file_names=duplicate_h_file_names_list,
+                                               duplicate_m_file_names=duplicate_m_file_names_list,
+                                               missing_h_file_names=missing_h_file_names,
+                                               missing_m_file_names=missing_m_file_names)
