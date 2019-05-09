@@ -31,12 +31,14 @@ The goals to reach:
 - .h files without .m
 - .m files without .h
 
-- Proportion of types Swift vs Obj-C
-
 - Tree of types that use a starting type
+
+- List unused types
 
 - List
   - view controller types
+    - graph of view controllers instanciations
   - view model types
   - service types
   - localizable keys not used
+

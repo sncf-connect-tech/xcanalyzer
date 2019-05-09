@@ -621,3 +621,52 @@ class XcProjReporter():
         # Display filepaths and group paths
         for filepath in filepaths:
             print("{} [{}]".format(filepath, file_group_paths[filepath]))
+
+    def print_missing_objc_files(self):
+        duplicate_h_file_names = set()
+        duplicate_m_file_names = set()
+
+        h_file_names = set()
+        m_file_names = set()
+
+        for objc_file in self.xcode_project.objc_files:
+            filename = objc_file.filepath.split('/')[-1]
+            base_filename = filename[:-2]  # filename without extension
+
+            if filename.endswith('.h'):
+                # Find duplicate name
+                if base_filename in h_file_names:
+                    duplicate_h_file_names.add(base_filename)
+
+                h_file_names.add(base_filename)
+            
+            if filename.endswith('.m'):
+                # Find duplicate name
+                if base_filename in m_file_names:
+                    duplicate_m_file_names.add(base_filename)
+
+                m_file_names.add(base_filename)
+        
+        # .h files with same names
+        duplicate_h_file_names_list = list(duplicate_h_file_names)
+        duplicate_h_file_names_list.sort()
+        for duplicate_h_file_name in duplicate_h_file_names_list:
+            print("[Duplicate .h file name] {}.h".format(duplicate_h_file_name))
+
+        # .m files with same names
+        duplicate_m_file_names_list = list(duplicate_m_file_names)
+        duplicate_m_file_names_list.sort()
+        for duplicate_m_file_name in duplicate_m_file_names_list:
+            print("[Duplicate .m file name] {}.m".format(duplicate_m_file_name))
+
+        # .m files missing .h files
+        missing_h_file_names = list(m_file_names - h_file_names)
+        missing_h_file_names.sort()
+        for missing_h_file_name in missing_h_file_names:
+            print("[Missing .h file] {}.h".format(missing_h_file_name))
+
+        # .h files missing .m files
+        missing_m_file_names = list(h_file_names - m_file_names)
+        missing_m_file_names.sort()
+        for missing_m_file_name in missing_m_file_names:
+            print("[Missing .m file] {}.h".format(missing_m_file_name))

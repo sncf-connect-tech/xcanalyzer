@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		DF15465322841CBF00ACB1DC /* DuplicateMFile.m in Sources */ = {isa = PBXBuildFile; fileRef = DF15465222841CBF00ACB1DC /* DuplicateMFile.m */; };
+		DF15465522841CD300ACB1DC /* DuplicateMFile.m in Sources */ = {isa = PBXBuildFile; fileRef = DF15465422841CD300ACB1DC /* DuplicateMFile.m */; };
 		DF186B56225F49F7005C5DC7 /* MyIntents.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = DF186B54225F49E2005C5DC7 /* MyIntents.intentdefinition */; };
 		DF186B57225F49FC005C5DC7 /* MyIntents.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = DF186B54225F49E2005C5DC7 /* MyIntents.intentdefinition */; settings = {ATTRIBUTES = (no_codegen, ); }; };
 		DF186B5B225F4A3A005C5DC7 /* LocalizedIntents.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = DF186B5E225F4A3A005C5DC7 /* LocalizedIntents.intentdefinition */; settings = {ATTRIBUTES = (no_codegen, ); }; };
@@ -133,6 +135,10 @@
 
 /* Begin PBXFileReference section */
 		DF1507532248D3EA009D0B98 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		DF15465022841C6B00ACB1DC /* DuplicateHFile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DuplicateHFile.h; sourceTree = "<group>"; };
+		DF15465122841C7B00ACB1DC /* DuplicateHFile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DuplicateHFile.h; sourceTree = "<group>"; };
+		DF15465222841CBF00ACB1DC /* DuplicateMFile.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DuplicateMFile.m; sourceTree = "<group>"; };
+		DF15465422841CD300ACB1DC /* DuplicateMFile.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DuplicateMFile.m; sourceTree = "<group>"; };
 		DF186B54225F49E2005C5DC7 /* MyIntents.intentdefinition */ = {isa = PBXFileReference; lastKnownFileType = file.intentdefinition; path = MyIntents.intentdefinition; sourceTree = "<group>"; };
 		DF186B5D225F4A3A005C5DC7 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.intentdefinition; name = Base; path = Base.lproj/LocalizedIntents.intentdefinition; sourceTree = "<group>"; };
 		DF186B60225F4A3C005C5DC7 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/LocalizedIntents.strings; sourceTree = "<group>"; };
@@ -390,6 +396,8 @@
 				DF186B702265D39C005C5DC7 /* libTouchJSONUniversal.a */,
 				DF186B742265FF70005C5DC7 /* libTouchJSONUniversal2.a */,
 				DF186B6E2265B5C6005C5DC7 /* SampleiOSApp.h */,
+				DF15465122841C7B00ACB1DC /* DuplicateHFile.h */,
+				DF15465422841CD300ACB1DC /* DuplicateMFile.m */,
 			);
 			path = SampleiOSApp;
 			sourceTree = "<group>";
@@ -428,6 +436,8 @@
 				DFAC5E7F22401C11002C424B /* Ghost.swift */,
 				DF186B65225F686B005C5DC7 /* ViewBadPlaced.xib */,
 				DF186B6C2264D956005C5DC7 /* CoreBundle.bundle */,
+				DF15465022841C6B00ACB1DC /* DuplicateHFile.h */,
+				DF15465222841CBF00ACB1DC /* DuplicateMFile.m */,
 			);
 			path = SampleCore;
 			sourceTree = "<group>";
@@ -746,6 +756,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DF15465522841CD300ACB1DC /* DuplicateMFile.m in Sources */,
 				DFB4DB5C22397A49007DB426 /* ViewController.swift in Sources */,
 				DF186B57225F49FC005C5DC7 /* MyIntents.intentdefinition in Sources */,
 				DF1B4286227387E5009B0355 /* MySecondObjCClass.m in Sources */,
@@ -778,6 +789,7 @@
 				DF186B7B22690AFF005C5DC7 /* MyObjcClass.m in Sources */,
 				DF64A40B226F8F2700B0833F /* MyClass+Extension.swift in Sources */,
 				DF1B428B22770FCB009B0355 /* MyObjcClass.swift in Sources */,
+				DF15465322841CBF00ACB1DC /* DuplicateMFile.m in Sources */,
 				DF186B692260F186005C5DC7 /* FileInsideBadPlacedGroup.swift in Sources */,
 				DFAC5E7B22401710002C424B /* SampleCore.swift in Sources */,
 				DF1B428922738819009B0355 /* MySharedSwiftClass.swift in Sources */,
