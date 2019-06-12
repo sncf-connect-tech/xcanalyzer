@@ -20,7 +20,7 @@ argument_parser.add_argument('-l', '--l',
                              choices=['all', 'swift', 'objc'],
                              default='all',
                              dest='language',
-                             help='Language, Objective-C, Swift or both for which the types are given.')
+                             help='Language for which the types are given: Objective-C, Swift or both.')
 
 
 # --- Parse arguments ---

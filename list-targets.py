@@ -23,8 +23,8 @@ argument_parser.add_argument('-n', '--name-sorted',
 # Verbose argument
 argument_parser.add_argument('-v', '--verbose',
                              dest='verbose',
-                             action='store_true', 
-                             help=".")
+                             action='store_true',
+                             help="Give name of products associated with targets.")
 
 
 # --- Parse arguments ---
