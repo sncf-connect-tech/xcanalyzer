@@ -389,8 +389,10 @@ class SwiftFileParser():
 
         self.xc_file.swift_types = set()
 
-        substructures = self.object.get('key.substructure')
-        for substructure in substructures:
+        substructures = self.object.get('key.substructure', []).copy()
+        while substructures:
+            substructure = substructures.pop()
+
             # Swift type's type
             type_identifier = SwiftFileParser.SWIFT_TYPE_TYPE_MAPPING.get(substructure.get('key.kind'))
             if not type_identifier:
@@ -405,7 +407,16 @@ class SwiftFileParser():
             swift_type = SwiftType(type_identifier=type_identifier,
                                    name=substructure.get('key.name'),
                                    accessibility=accessibility)
+
+            # Types' uses
+
+            # Add type to file
             self.xc_file.swift_types.add(swift_type)
+
+            # Prepare inner types
+            inner_substructures = substructure.get('key.substructure', []).copy()
+            if inner_substructures:
+                substructures += inner_substructures
 
 
 class ObjcFileParser():
