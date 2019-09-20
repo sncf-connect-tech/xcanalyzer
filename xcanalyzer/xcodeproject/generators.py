@@ -639,7 +639,6 @@ class XcProjReporter():
 
         cprint('{:>{width}} duplicate or missing file names in total'.format(total_count, width=width), attrs=['bold'])
 
-
     def print_missing_objc_files(self):
         duplicate_h_file_names = set()
         duplicate_m_file_names = set()
@@ -697,3 +696,18 @@ class XcProjReporter():
                                                duplicate_m_file_names=duplicate_m_file_names_list,
                                                missing_h_file_names=missing_h_file_names,
                                                missing_m_file_names=missing_m_file_names)
+    
+    def print_uses_of_type(self, type_name):
+        # Search for the type
+        found_swift_types = set()
+
+        for target in self.xcode_project.targets_sorted_by_name:
+            for swift_file in target.swift_files:
+                for swift_type in swift_file.swift_types:
+                    if swift_type.name == type_name:
+                        found_swift_types.add(swift_type)
+
+                    if type_name in swift_type.type_uses:
+                        print(swift_type)
+
+            # TODO: Objc

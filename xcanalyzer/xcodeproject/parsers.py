@@ -389,34 +389,73 @@ class SwiftFileParser():
 
         self.xc_file.swift_types = set()
 
-        substructures = self.object.get('key.substructure', []).copy()
-        while substructures:
-            substructure = substructures.pop()
+        root_substructures = self.object.get('key.substructure', []).copy()
 
+        for root_substructure in root_substructures:
             # Swift type's type
-            type_identifier = SwiftFileParser.SWIFT_TYPE_TYPE_MAPPING.get(substructure.get('key.kind'))
+            type_identifier = SwiftFileParser.SWIFT_TYPE_TYPE_MAPPING.get(root_substructure.get('key.kind'))
             if not type_identifier:
                 continue
 
             # Accessibility
-            if 'key.accessibility' in substructure:
-                accessibility = substructure['key.accessibility'].split('.')[-1]
+            if 'key.accessibility' in root_substructure:
+                accessibility = root_substructure['key.accessibility'].split('.')[-1]
             else:
                 accessibility = SwiftAccessibility.INTERNAL
 
+            # Create Swift type
             swift_type = SwiftType(type_identifier=type_identifier,
-                                   name=substructure.get('key.name'),
+                                   name=root_substructure.get('key.name'),
                                    accessibility=accessibility)
 
-            # Types' uses
+            # Used types
+            swift_type.type_uses = set()
+
+            # Parse content of the type
+            inner_substructures = root_substructure.get('key.substructure', []).copy()
+            while inner_substructures:
+                inner_substructure = inner_substructures.pop()
+
+                # Types' uses
+                if filepath.endswith('Uses.swift'):  # DEBUG
+                    swift_type.type_uses |= self.types_used_by(inner_substructure)
+
+                # Substructures of inner substructure
+                inner_substructures += inner_substructure.get('key.substructure', []).copy()
 
             # Add type to file
             self.xc_file.swift_types.add(swift_type)
+    
+    def unwrapped_if_optional(self, typename):
+        if typename.endswith('?'):
+            return typename[:-1]
+        else:
+            return typename
 
-            # Prepare inner types
-            inner_substructures = substructure.get('key.substructure', []).copy()
-            if inner_substructures:
-                substructures += inner_substructures
+    def types_used_by(self, substructure):
+        results = set()
+
+        # Inheritance of types
+        if "key.inheritedtypes" in substructure:
+            inheritedtypes = substructure["key.inheritedtypes"]
+            for inheritedtype in inheritedtypes:
+                results.add(inheritedtype["key.name"])
+            
+        # Member of type and optional type
+        if substructure.get("key.kind", None) == "source.lang.swift.decl.var.instance":
+            results.add(self.unwrapped_if_optional(substructure["key.typename"]))
+        
+        # Instanciation
+        if substructure.get("key.kind", None) == "source.lang.swift.expr.call":
+            name = substructure["key.name"]
+            if name[0].isupper():
+                results.add(name)
+        
+        # Return type of method
+        if substructure.get("key.kind", None) == "source.lang.swift.decl.function.method.instance":
+            results.add(self.unwrapped_if_optional(substructure["key.typename"]))
+
+        return results
 
 
 class ObjcFileParser():

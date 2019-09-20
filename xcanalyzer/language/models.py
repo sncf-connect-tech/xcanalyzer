@@ -46,6 +46,7 @@ class SwiftTypeType():
         CLASS,
     }
 
+
 class SwiftType():
 
     def __init__(self, type_identifier, name, accessibility):
@@ -55,6 +56,8 @@ class SwiftType():
         self.type_identifier = type_identifier
         self.name = name
         self.accessibility = accessibility
+
+        self.type_uses = set()
     
     def __repr__(self):
         return '{:<11} {:<9} {}'.format(self.accessibility, self.type_identifier, self.name)

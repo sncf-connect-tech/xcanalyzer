@@ -1,11 +1,12 @@
 from unittest import TestCase
 
+import json
 import os
 
 from ..models import XcTarget, XcGroup, XcFile
-from ..parsers import XcProjectParser
+from ..parsers import XcProjectParser, SwiftFileParser
 
-from .fixtures import SampleXcodeProjectFixture, XcProjectParserFixture
+from .fixtures import SampleXcodeProjectFixture, XcProjectParserFixture, SwiftFileParserFixture
 
 
 class XcProjectParserTests(TestCase):
@@ -264,3 +265,125 @@ class XcProjectParserTests(TestCase):
 
         self.assertTrue(XcFile('/SampleCore/RelativeToProject/InsideRelativeToProject.swift') in bar_group.files)
         self.assertTrue(XcFile('/SampleCore/InsideRelativeToProjectWithoutFolder.swift') in foo_group.files)
+
+
+class SwiftFileParserTests(TestCase):
+    
+    fixture = SwiftFileParserFixture()
+
+    def test_types_used_by__gives_class_inherited(self):
+        substructure = {
+            "key.inheritedtypes": [
+                {
+                    "key.name": "MySwiftClass"
+                }
+            ]
+        }
+        parser = self.fixture.any_swift_file_parser()
+        
+        types = parser.types_used_by(substructure)
+        
+        self.assertEqual(types, {"MySwiftClass"})
+    
+    def test_types_used_by__gives_member_of_type(self):
+        substructure = {
+            "key.accessibility": "source.lang.swift.accessibility.private",
+            "key.attributes": [
+                {
+                    "key.attribute": "source.decl.attribute.private",
+                    "key.length": 7,
+                    "key.offset": 247
+                }
+            ],
+            "key.kind": "source.lang.swift.decl.var.instance",
+            "key.length": 24,
+            "key.name": "member",
+            "key.namelength": 6,
+            "key.nameoffset": 259,
+            "key.offset": 255,
+            "key.typename": "MySwiftClass"
+        }
+        parser = self.fixture.any_swift_file_parser()
+        
+        types = parser.types_used_by(substructure)
+        
+        self.assertEqual(types, {"MySwiftClass"})
+
+    def test_types_used_by__gives_member_of_optional_type(self):
+        substructure = {
+            "key.accessibility": "source.lang.swift.accessibility.private",
+            "key.attributes": [
+                {
+                    "key.attribute": "source.decl.attribute.private",
+                    "key.length": 7,
+                    "key.offset": 284
+                }
+            ],
+            "key.kind": "source.lang.swift.decl.var.instance",
+            "key.length": 33,
+            "key.name": "memberOptional",
+            "key.namelength": 14,
+            "key.nameoffset": 296,
+            "key.offset": 292,
+            "key.typename": "MySwiftClass?"
+        }
+        parser = self.fixture.any_swift_file_parser()
+        
+        types = parser.types_used_by(substructure)
+        
+        self.assertEqual(types, {"MySwiftClass"})
+
+    def test_types_used_by__gives_instanciation(self):
+        substructure = {
+            "key.bodylength" : 0,
+            "key.bodyoffset" : 375,
+            "key.kind" : "source.lang.swift.expr.call",
+            "key.length" : 14,
+            "key.name" : "MySwiftClass",
+            "key.namelength" : 12,
+            "key.nameoffset" : 362,
+            "key.offset" : 362
+        }
+        parser = self.fixture.any_swift_file_parser()
+        
+        types = parser.types_used_by(substructure)
+        
+        self.assertEqual(types, {"MySwiftClass"})
+
+    def test_types_used_by__gives_return_type_of_method(self):
+        substructure = {
+          "key.accessibility" : "source.lang.swift.accessibility.internal",
+          "key.bodylength" : 35,
+          "key.bodyoffset" : 1149,
+          "key.kind" : "source.lang.swift.decl.function.method.instance",
+          "key.length" : 72,
+          "key.name" : "otherMethod()",
+          "key.namelength" : 13,
+          "key.nameoffset" : 1118,
+          "key.offset" : 1113,
+          "key.typename" : "MySwiftClass"
+        }
+        parser = self.fixture.any_swift_file_parser()
+        
+        types = parser.types_used_by(substructure)
+        
+        self.assertEqual(types, {"MySwiftClass"})
+
+    def test_types_used_by__gives_return_optional_type_of_method(self):
+        substructure = {
+          "key.accessibility" : "source.lang.swift.accessibility.internal",
+          "key.bodylength" : 35,
+          "key.bodyoffset" : 1236,
+          "key.kind" : "source.lang.swift.decl.function.method.instance",
+          "key.length" : 81,
+          "key.name" : "otherMethodOptional()",
+          "key.namelength" : 21,
+          "key.nameoffset" : 1196,
+          "key.offset" : 1191,
+          "key.typename" : "MySwiftClass?"
+        }
+        parser = self.fixture.any_swift_file_parser()
+        
+        types = parser.types_used_by(substructure)
+        
+        self.assertEqual(types, {"MySwiftClass"})

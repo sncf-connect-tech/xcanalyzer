@@ -20,6 +20,11 @@ class Uses {
     init() {
         self.member = MySwiftClass()
         self.memberOptional = nil
+
+        print(MySwiftClass())
+
+        let myInstance = MySwiftClass()
+        print(myInstance)
     }
 
     func inMethod(argument: MySwiftClass) -> MySwiftClass {

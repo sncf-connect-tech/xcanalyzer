@@ -1,7 +1,7 @@
 import os
 
 from ..models import XcTarget, XcProject, XcGroup, XcFile
-from ..parsers import XcProjectParser
+from ..parsers import XcProjectParser, SwiftFileParser
 
 
 # Absolute path of this project root folder.
@@ -52,6 +52,12 @@ class XcProjectParserFixture():
         project_parser.load()
 
         return project_parser
+
+
+class SwiftFileParserFixture():
+
+    def any_swift_file_parser(self):
+        return SwiftFileParser(None, XcFile('/MyFile.swift'))
 
 
 # Generators
