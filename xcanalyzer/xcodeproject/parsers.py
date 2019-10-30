@@ -409,7 +409,7 @@ class SwiftFileParser():
                                    accessibility=accessibility)
 
             # Used types
-            swift_type.type_uses = set()
+            swift_type.used_types = set()
 
             # Parse content of the type
             inner_substructures = root_substructure.get('key.substructure', []).copy()
@@ -418,7 +418,7 @@ class SwiftFileParser():
 
                 # Types' uses
                 if filepath.endswith('Uses.swift'):  # DEBUG
-                    swift_type.type_uses |= self.types_used_by(inner_substructure)
+                    swift_type.used_types |= self.types_used_by(inner_substructure)
 
                 # Substructures of inner substructure
                 inner_substructures += inner_substructure.get('key.substructure', []).copy()
@@ -441,7 +441,7 @@ class SwiftFileParser():
             for inheritedtype in inheritedtypes:
                 results.add(inheritedtype["key.name"])
             
-        # Member of type and optional type
+        # Member of type and optional type (`let` as `var` is managed)
         if substructure.get("key.kind", None) == "source.lang.swift.decl.var.instance":
             results.add(self.unwrapped_if_optional(substructure["key.typename"]))
         
@@ -450,7 +450,7 @@ class SwiftFileParser():
             name = substructure["key.name"]
             if name[0].isupper():
                 results.add(name)
-        
+
         # Return type of method
         if substructure.get("key.kind", None) == "source.lang.swift.decl.function.method.instance":
             type_name = substructure.get("key.typename", None)

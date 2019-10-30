@@ -16,10 +16,13 @@ class Uses {
 
     private let member: MySwiftClass
     private let memberOptional: MySwiftClass?
+    private var memberVar: MySwiftClass
+    private var memberOptionalVar: MySwiftClass?
 
     init() {
         self.member = MySwiftClass()
         self.memberOptional = nil
+        self.memberVar = MySwiftClass()
 
         print(MySwiftClass())
 

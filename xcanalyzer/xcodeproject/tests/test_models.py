@@ -136,7 +136,7 @@ class XcProjectTests(TestCase):
     # __init__
 
     def test_instantiate_xc_project(self):
-        xc_project = XcProject(dirpath='/', name="MyXcProject", targets=set(), groups=set(), files=set())
+        xc_project = XcProject(dirpath='/', name="MyXcProject", targets=set(), groups=list(), files=set())
 
         self.assertTrue(xc_project)
         self.assertEqual(xc_project.dirpath, '/')
@@ -146,13 +146,13 @@ class XcProjectTests(TestCase):
         target = self.fixture.any_target()
         targets = set([target])
         
-        xc_project = XcProject(dirpath='/', name="MyXcProject", targets=targets, groups=set(), files=set())
+        xc_project = XcProject(dirpath='/', name="MyXcProject", targets=targets, groups=list(), files=set())
 
         self.assertEqual(xc_project.targets, targets)
 
     def test_instantiate_xc_project__with_groups__has_groups(self):
         group = self.fixture.any_group()
-        groups = set([group])
+        groups = [group]
         
         xc_project = XcProject(dirpath='/', name="MyXcProject", targets=set(), groups=groups, files=set())
 
@@ -165,7 +165,7 @@ class XcProjectTests(TestCase):
         target_2 = self.fixture.any_target(target_type=XcTarget.Type.TEST)
         target_3 = self.fixture.any_target(target_type=XcTarget.Type.APPLICATION)
         targets = set([target_1, target_2, target_3])
-        xc_project = XcProject(dirpath='/', name="MyXcProject", targets=targets, groups=set(), files=set())
+        xc_project = XcProject(dirpath='/', name="MyXcProject", targets=targets, groups=list(), files=set())
 
         targets = xc_project.targets_of_type(XcTarget.Type.UI_TEST)
 
@@ -175,7 +175,7 @@ class XcProjectTests(TestCase):
 
     def test_target_with_name__returns_none__when_no_matching_target_name(self):
         target_1 = self.fixture.any_target(name='MyTarget1')
-        xc_project = XcProject(dirpath='/', name="MyXcProject", targets=set([target_1]), groups=set(), files=set())
+        xc_project = XcProject(dirpath='/', name="MyXcProject", targets=set([target_1]), groups=list(), files=set())
 
         target_2 = xc_project.target_with_name('MyTarget2')
 
@@ -183,7 +183,7 @@ class XcProjectTests(TestCase):
 
     def test_target_with_name__returns_target__when_a_target_name_matches(self):
         target = self.fixture.any_target(name='MyTarget')
-        xc_project = XcProject(dirpath='/', name="MyXcProject", targets=set([target]), groups=set(), files=set())
+        xc_project = XcProject(dirpath='/', name="MyXcProject", targets=set([target]), groups=list(), files=set())
 
         resulting_target = xc_project.target_with_name('MyTarget')
 
@@ -195,7 +195,7 @@ class XcProjectTests(TestCase):
         group_C = XcGroup(group_path="/MyGroupA/MyGroupB/MyGroupC", filepath="/MyGroupA/MyGroupB/MyGroupC")
         group_B = XcGroup(group_path="/MyGroupA/MyGroupB", filepath="/MyGroupA/MyGroupB", groups=set([group_C]))
         group_A = XcGroup(group_path="/MyGroupA", filepath="/MyGroupA", groups=set([group_B]))
-        project = XcProject(dirpath='/', name="MyProject", targets=set(), groups=set([group_A]), files=set())
+        project = XcProject(dirpath='/', name="MyProject", targets=set(), groups=[group_A], files=set())
 
         groups = project.groups_filtered()
 
@@ -211,7 +211,7 @@ class XcProjectTests(TestCase):
     
     def test_groups_filtered__gives_empty_groups__when_filter_empty(self):
         group = XcGroup(group_path="/MyGroup", filepath="/MyGroup")
-        project = XcProject(dirpath='/', name="MyProject", targets=set(), groups=set([group]), files=set())
+        project = XcProject(dirpath='/', name="MyProject", targets=set(), groups=[group], files=set())
 
         groups = project.groups_filtered(filter_mode='empty')
 
@@ -221,7 +221,7 @@ class XcProjectTests(TestCase):
     def test_groups_filtered__exclude_groups_with_files__when_filter_empty(self):
         file = self.fixture.any_file()
         group = XcGroup(group_path="/MyGroup", filepath="/MyGroup", files=set([file]))
-        project = XcProject(dirpath='/', name="MyProject", targets=set(), groups=set([group]), files=set())
+        project = XcProject(dirpath='/', name="MyProject", targets=set(), groups=[group], files=set())
 
         groups = project.groups_filtered(filter_mode='empty')
 
@@ -230,7 +230,7 @@ class XcProjectTests(TestCase):
     def test_groups_filtered__exclude_groups_with_groups__when_filter_empty(self):
         subgroup = XcGroup(group_path="/MyGroup/MySubGroup", filepath="/MyGroup/MySubGroup")
         group = XcGroup(group_path="/MyGroup", filepath="/MyGroup", groups=set([subgroup]))
-        project = XcProject(dirpath='/', name="MyProject", targets=set(), groups=set([group]), files=set())
+        project = XcProject(dirpath='/', name="MyProject", targets=set(), groups=[group], files=set())
 
         groups = project.groups_filtered(filter_mode='empty')
 
@@ -241,7 +241,7 @@ class XcProjectTests(TestCase):
 
     def test_groups_filtered__gives_project_relative_groups__when_filter_project_relative(self):
         group = XcGroup(group_path="/MyGroup", filepath="/MyGroup", is_project_relative=True)
-        project = XcProject(dirpath='/', name="MyProject", targets=set(), groups=set([group]), files=set())
+        project = XcProject(dirpath='/', name="MyProject", targets=set(), groups=[group], files=set())
 
         groups = project.groups_filtered(filter_mode='project_relative')
         
@@ -251,7 +251,7 @@ class XcProjectTests(TestCase):
     
     def test_groups_filtered__exclude_groups_non_project_relative__when_filter_project_relative(self):
         group = XcGroup(group_path="/MyGroup", filepath="/MyGroup", is_project_relative=False)
-        project = XcProject(dirpath='/', name="MyProject", targets=set(), groups=set([group]), files=set())
+        project = XcProject(dirpath='/', name="MyProject", targets=set(), groups=[group], files=set())
 
         groups = project.groups_filtered(filter_mode='project_relative')
 

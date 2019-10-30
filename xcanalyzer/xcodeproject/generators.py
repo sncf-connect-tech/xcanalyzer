@@ -702,12 +702,13 @@ class XcProjReporter():
         found_swift_types = set()
 
         for target in self.xcode_project.targets_sorted_by_name:
+            # Swift
             for swift_file in target.swift_files:
                 for swift_type in swift_file.swift_types:
                     if swift_type.name == type_name:
                         found_swift_types.add(swift_type)
 
-                    if type_name in swift_type.type_uses:
+                    if type_name in swift_type.used_types:
                         print(swift_type)
 
             # TODO: Objc

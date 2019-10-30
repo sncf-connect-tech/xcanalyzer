@@ -57,7 +57,7 @@ class SwiftType():
         self.name = name
         self.accessibility = accessibility
 
-        self.type_uses = set()
+        self.used_types = set()
     
     def __repr__(self):
         return '{:<11} {:<9} {}'.format(self.accessibility, self.type_identifier, self.name)
