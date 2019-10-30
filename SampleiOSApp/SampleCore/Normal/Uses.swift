@@ -25,6 +25,20 @@ class Uses {
 
         let myInstance = MySwiftClass()
         print(myInstance)
+
+        let myInstance2: MySwiftClass
+        myInstance2 = MySwiftClass()
+        print(myInstance2)
+
+        var myInstance3 = MySwiftClass()
+        print(myInstance3)
+
+        var myInstance4: MySwiftClass
+        myInstance4 = MySwiftClass()
+        print(myInstance4)
+
+        let myInstance5: MySwiftClass?
+        var myInstance6: MySwiftClass?
     }
 
     func inMethod(argument: MySwiftClass) -> MySwiftClass {

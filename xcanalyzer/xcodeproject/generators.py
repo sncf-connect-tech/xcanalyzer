@@ -275,7 +275,7 @@ class XcProjReporter():
             SwiftExtensionScope.FILE: '"false extensions": extensions defined for types in the same file as the extension',
             SwiftExtensionScope.PROJECT_SWIFT: 'extensions of Swift types defined somewhere else in the project',
             SwiftExtensionScope.PROJECT_OBJC: 'extensions of Objective-C types defined somewhere else in the project',
-            SwiftExtensionScope.OUTER: 'extensions of types defined in standard and 3rd party libraries like Foundation UIKit, etc.',
+            SwiftExtensionScope.OUTER: 'extensions of types defined in standard and 3rd party libraries like Foundation, UIKit, etc.',
         }
 
         # Counters

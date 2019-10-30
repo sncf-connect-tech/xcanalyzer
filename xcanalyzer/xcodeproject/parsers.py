@@ -453,7 +453,9 @@ class SwiftFileParser():
         
         # Return type of method
         if substructure.get("key.kind", None) == "source.lang.swift.decl.function.method.instance":
-            results.add(self.unwrapped_if_optional(substructure["key.typename"]))
+            type_name = substructure.get("key.typename", None)
+            if type_name is not None:
+                results.add(self.unwrapped_if_optional(type_name))
 
         return results
 
