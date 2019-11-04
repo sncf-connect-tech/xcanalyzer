@@ -410,9 +410,10 @@ class SwiftCodeParser():
         substructs.reverse()
         while substructs:
             substructure = substructs.pop()
-
             type_identifier = SwiftFileParser.SWIFT_TYPE_TYPE_MAPPING.get(substructure.get('key.kind'))
-            if type_identifier:  # If it is a type declaration
+
+            # Type declaration
+            if type_identifier:
                 # We create the Swift type
                 swift_type = self.parse_swift_type(substructure, type_identifier)
         
@@ -421,19 +422,28 @@ class SwiftCodeParser():
 
                 # Then we get the following substructure and check that it is this type body.
                 if substructs:
-                    body_substructure = substructs.pop()
-                    inner_substructures = body_substructure.get('key.substructure', [])
-
-                    if inner_substructures:
-                        inner_types, used_types = self.parse_substructures(inner_substructures)
-                        swift_type.inner_types = inner_types
+                    closure = substructs.pop()
+                    
+                    if closure.get('key.kind') == 'source.lang.swift.expr.closure':
+                        closure_substructures = closure.get('key.substructure', [])
+                        if closure_substructures and closure_substructures[0].get('key.kind') == 'source.lang.swift.stmt.brace':
+                            body_substructures = closure_substructures[0].get('key.substructure', [])
+                            if body_substructures:
+                                inner_types, used_types = self.parse_substructures(body_substructures)
+                                swift_type.inner_types = inner_types
+                                swift_type.used_types = used_types
             
-            else:
-                inner_substructures = substructure.get('key.substructure', [])
-                if inner_substructures:
-                    other_swift_types, inner_used_types = self.parse_substructures(inner_substructures)
-                    swift_types += other_swift_types
-        
+            # Member declaration
+            elif substructure.get('key.kind') == 'source.lang.swift.decl.var.local':
+                type_name = self.unwrapped_if_optional(substructure['key.typename'])
+                used_types.add(type_name)
+            
+            # else:
+            #     inner_substructures = substructure.get('key.substructure', [])
+            #     if inner_substructures:
+            #         other_swift_types, inner_used_types = self.parse_substructures(inner_substructures)
+            #         swift_types += other_swift_types
+
         return swift_types, used_types
     
     def parse_swift_type(self, substructure, type_identifier):
