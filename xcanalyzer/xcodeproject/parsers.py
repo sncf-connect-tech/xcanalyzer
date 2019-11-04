@@ -451,12 +451,6 @@ class SwiftCodeParser():
                     if parameter.get('key.kind') == 'source.lang.swift.decl.var.parameter':
                         used_types.add(parameter['key.typename'])
             
-            # else:
-            #     inner_substructures = substructure.get('key.substructure', [])
-            #     if inner_substructures:
-            #         other_swift_types, inner_used_types = self.parse_substructures(inner_substructures)
-            #         swift_types += other_swift_types
-
         return swift_types, used_types
     
     def parse_swift_type(self, substructure, type_identifier):

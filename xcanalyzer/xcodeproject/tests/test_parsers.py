@@ -381,7 +381,38 @@ class SwiftCodeParserTests(TestCase):
         swift_type = types.pop()
         self.assertEqual(swift_type.type_identifier, "extension")
         self.assertEqual(swift_type.name, "MyExtension")
+    
+    # swift_types - several type declarations
 
+    def test__swift_types__gives_every_declaration_of_types(self):
+        # Given
+        swift_code = """
+            class MyClass \{
+            \}
+
+            struct MyStruct \{
+            \}
+
+            extension MyClass \{
+
+            \}
+
+            enum MyEnum \{
+
+            \}
+        """
+        parser = self.fixture.any_swift_code_parser(swift_code)
+        
+        # When
+        types = parser.swift_types
+
+        # Then
+        self.assertEqual(len(types), 4)
+        self.assertTrue(SwiftType('class', 'MyClass', 'internal') in types)
+        self.assertTrue(SwiftType('struct', 'MyStruct', 'internal') in types)
+        self.assertTrue(SwiftType('extension', 'MyClass', 'internal') in types)
+        self.assertTrue(SwiftType('enum', 'MyEnum', 'internal') in types)
+    
     # swift_types - inner types - inside class
 
     def test__swift_types__gives_inner_type_declarations__when_inside_class(self):
