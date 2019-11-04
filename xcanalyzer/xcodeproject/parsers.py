@@ -400,6 +400,8 @@ class SwiftCodeParser():
         self.substructures = substructures
     
     def parse(self):
+        # import pprint; pprint.pprint(self.substructures)
+
         self.swift_types, self.used_types = self.parse_substructures(self.substructures)
 
     def parse_substructures(self, substructures):
@@ -437,6 +439,17 @@ class SwiftCodeParser():
             elif substructure.get('key.kind') == 'source.lang.swift.decl.var.local':
                 type_name = self.unwrapped_if_optional(substructure['key.typename'])
                 used_types.add(type_name)
+            
+            # Method declaration
+            elif substructure.get('key.kind') == 'source.lang.swift.decl.function.free':
+                type_name = substructure.get('key.typename')
+                if type_name:
+                    used_types.add(self.unwrapped_if_optional(type_name))
+                
+                parameters = substructure.get('key.substructure', [])
+                for parameter in parameters:
+                    if parameter.get('key.kind') == 'source.lang.swift.decl.var.parameter':
+                        used_types.add(parameter['key.typename'])
             
             # else:
             #     inner_substructures = substructure.get('key.substructure', [])

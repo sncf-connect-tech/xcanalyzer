@@ -486,7 +486,8 @@ class SwiftCodeParserTests(TestCase):
 
     # used_types - member types
 
-    def test__swift_types__gives_types_of_members(self):
+    def test__used_types__gives_types_of_members__for_a_class(self):
+        # Given
         swift_code = """
             class MyClass \{
                 let member: LetMember
@@ -503,3 +504,95 @@ class SwiftCodeParserTests(TestCase):
         # Then
         self.assertEqual(len(used_types), 4)
         self.assertEqual(used_types, {'LetMember', 'OptionalLetMember', 'VarMember', 'OptionalVarMember'})
+
+    def test__used_types__gives_types_of_members__for_a_struct(self):
+        # Given
+        swift_code = """
+            struct MyStruct \{
+                let member: LetMember
+                let optionalMember: OptionalLetMember?
+                var member: VarMember
+                var optionalMember: OptionalVarMember?
+            \}
+        """
+        parser = self.fixture.any_swift_code_parser(swift_code)
+        
+        # When
+        used_types = parser.swift_types[0].used_types
+
+        # Then
+        self.assertEqual(len(used_types), 4)
+        self.assertEqual(used_types, {'LetMember', 'OptionalLetMember', 'VarMember', 'OptionalVarMember'})
+
+    # used_types - method - parameters and return type
+
+    def test__used_types__gives_return_type_of_method(self):
+        swift_code = """
+            class MyClass \{
+                
+                func myMethod() -> ReturnType \{
+                \}
+
+            \}
+        """
+        parser = self.fixture.any_swift_code_parser(swift_code)
+        
+        # When
+        used_types = parser.swift_types[0].used_types
+
+        # Then
+        self.assertEqual(len(used_types), 1)
+        self.assertEqual(used_types, {'ReturnType'})
+
+    def test__used_types__gives_not_type_for_a_method__without_return_type(self):
+        swift_code = """
+            class MyClass \{
+                
+                func myMethod() \{
+                \}
+
+            \}
+        """
+        parser = self.fixture.any_swift_code_parser(swift_code)
+        
+        # When
+        used_types = parser.swift_types[0].used_types
+
+        # Then
+        self.assertEqual(len(used_types), 0)
+
+    def test__used_types__gives_types_of_method_parameters(self):
+        swift_code = """
+            class MyClass \{
+                
+                func myMethod(param1: Type1, param2: Type2) \{
+                \}
+
+            \}
+        """
+        parser = self.fixture.any_swift_code_parser(swift_code)
+        
+        # When
+        used_types = parser.swift_types[0].used_types
+
+        # Then
+        self.assertEqual(len(used_types), 2)
+        self.assertEqual(used_types, {'Type1', 'Type2'})
+
+    def test__used_types__gives_types_of_method_parameters__and_return_type(self):
+        swift_code = """
+            class MyClass \{
+                
+                func myMethod(param1: Type1, param2: Type2) -> ReturnType \{
+                \}
+
+            \}
+        """
+        parser = self.fixture.any_swift_code_parser(swift_code)
+        
+        # When
+        used_types = parser.swift_types[0].used_types
+
+        # Then
+        self.assertEqual(len(used_types), 3)
+        self.assertEqual(used_types, {'Type1', 'Type2', 'ReturnType'})
