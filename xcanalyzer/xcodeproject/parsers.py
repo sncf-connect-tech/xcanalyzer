@@ -460,10 +460,15 @@ class SwiftCodeParser():
         else:
             accessibility = SwiftAccessibility.INTERNAL
 
+        # Inherited types: super class and protocol conformance
+        inherited_types_refs = substructure.get('key.inheritedtypes', [])
+        inherited_types = {t['key.name'] for t in inherited_types_refs}
+
         # Create Swift type
         return SwiftType(type_identifier=type_identifier,
-                               name=substructure.get('key.name'),
-                               accessibility=accessibility)
+                         name=substructure.get('key.name'),
+                         accessibility=accessibility,
+                         inherited_types=inherited_types)
 
     def parse_body_substructure(self, substructure):
         used_types = set()

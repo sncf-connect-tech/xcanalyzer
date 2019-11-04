@@ -413,6 +413,42 @@ class SwiftCodeParserTests(TestCase):
         self.assertTrue(SwiftType('extension', 'MyClass', 'internal') in types)
         self.assertTrue(SwiftType('enum', 'MyEnum', 'internal') in types)
     
+    # swift_types - super type
+
+    def test__swift_types__set_inherited_types__for_a_class__when_super_class(self):
+        # Given
+        swift_code = """
+            class MyClass: SuperClass \{
+            \}
+        """
+        parser = self.fixture.any_swift_code_parser(swift_code)
+        
+        # When
+        types = parser.swift_types
+        my_class = types[0]
+
+        # Then
+        self.assertEqual(len(types), 1)
+        self.assertEqual(len(my_class.inherited_types), 1)
+        self.assertEqual(my_class.inherited_types, {'SuperClass'})
+
+    def test__swift_types__set_inherited_types__for_a_class__when_several_class_and_protocol_conformances(self):
+        # Given
+        swift_code = """
+            class MyClass: SuperClass, Protocol1, Protocol2 \{
+            \}
+        """
+        parser = self.fixture.any_swift_code_parser(swift_code)
+        
+        # When
+        types = parser.swift_types
+        my_class = types[0]
+
+        # Then
+        self.assertEqual(len(types), 1)
+        self.assertEqual(len(my_class.inherited_types), 3)
+        self.assertEqual(my_class.inherited_types, {'SuperClass', 'Protocol1', 'Protocol2'})
+
     # swift_types - inner types - inside class
 
     def test__swift_types__gives_inner_type_declarations__when_inside_class(self):

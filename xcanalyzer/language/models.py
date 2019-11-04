@@ -49,13 +49,14 @@ class SwiftTypeType():
 
 class SwiftType():
 
-    def __init__(self, type_identifier, name, accessibility):
+    def __init__(self, type_identifier, name, accessibility, inherited_types=set()):
         assert type_identifier in SwiftTypeType.ALL
         assert accessibility in SwiftAccessibility.ALL
 
         self.type_identifier = type_identifier
         self.name = name
         self.accessibility = accessibility
+        self.inherited_types = inherited_types
 
         self.inner_types = list()
 
