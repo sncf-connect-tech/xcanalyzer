@@ -57,10 +57,17 @@ class SwiftType():
         self.name = name
         self.accessibility = accessibility
 
+        self.inner_types = list()
+
         self.used_types = set()
     
     def __repr__(self):
         return '{:<11} {:<9} {}'.format(self.accessibility, self.type_identifier, self.name)
+    
+    def __eq__(self, other):
+        return self.type_identifier == other.type_identifier and \
+            self.name == other.name and \
+            self.accessibility == other.accessibility
 
 
 class ObjcTypeType():

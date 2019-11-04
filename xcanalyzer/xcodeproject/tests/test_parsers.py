@@ -3,10 +3,12 @@ from unittest import TestCase
 import json
 import os
 
+from ...language.models import SwiftType
+
 from ..models import XcTarget, XcGroup, XcFile
 from ..parsers import XcProjectParser, SwiftFileParser
 
-from .fixtures import SampleXcodeProjectFixture, XcProjectParserFixture, SwiftFileParserFixture
+from .fixtures import SampleXcodeProjectFixture, XcProjectParserFixture, SwiftCodeParserFixture
 
 
 class XcProjectParserTests(TestCase):
@@ -267,123 +269,237 @@ class XcProjectParserTests(TestCase):
         self.assertTrue(XcFile('/SampleCore/InsideRelativeToProjectWithoutFolder.swift') in foo_group.files)
 
 
-class SwiftFileParserTests(TestCase):
+class SwiftCodeParserTests(TestCase):
     
-    fixture = SwiftFileParserFixture()
+    fixture = SwiftCodeParserFixture()
 
-    def test_types_used_by__gives_class_inherited(self):
-        substructure = {
-            "key.inheritedtypes": [
-                {
-                    "key.name": "MySwiftClass"
-                }
-            ]
-        }
-        parser = self.fixture.any_swift_file_parser()
-        
-        types = parser.types_used_by(substructure)
-        
-        self.assertEqual(types, {"MySwiftClass"})
-    
-    def test_types_used_by__gives_member_of_type(self):
-        substructure = {
-            "key.accessibility": "source.lang.swift.accessibility.private",
-            "key.attributes": [
-                {
-                    "key.attribute": "source.decl.attribute.private",
-                    "key.length": 7,
-                    "key.offset": 247
-                }
-            ],
-            "key.kind": "source.lang.swift.decl.var.instance",
-            "key.length": 24,
-            "key.name": "member",
-            "key.namelength": 6,
-            "key.nameoffset": 259,
-            "key.offset": 255,
-            "key.typename": "MySwiftClass"
-        }
-        parser = self.fixture.any_swift_file_parser()
-        
-        types = parser.types_used_by(substructure)
-        
-        self.assertEqual(types, {"MySwiftClass"})
+    # swift_types - accessibility
 
-    def test_types_used_by__gives_member_of_optional_type(self):
-        substructure = {
-            "key.accessibility": "source.lang.swift.accessibility.private",
-            "key.attributes": [
-                {
-                    "key.attribute": "source.decl.attribute.private",
-                    "key.length": 7,
-                    "key.offset": 284
-                }
-            ],
-            "key.kind": "source.lang.swift.decl.var.instance",
-            "key.length": 33,
-            "key.name": "memberOptional",
-            "key.namelength": 14,
-            "key.nameoffset": 296,
-            "key.offset": 292,
-            "key.typename": "MySwiftClass?"
-        }
-        parser = self.fixture.any_swift_file_parser()
+    def test__swift_types__gives_accessibility_internal__when_undefined(self):
+        swift_code = "class MyClass \{\}"
+        parser = self.fixture.any_swift_code_parser(swift_code)
         
-        types = parser.types_used_by(substructure)
-        
-        self.assertEqual(types, {"MySwiftClass"})
+        types = parser.swift_types
 
-    def test_types_used_by__gives_instanciation(self):
-        substructure = {
-            "key.bodylength" : 0,
-            "key.bodyoffset" : 375,
-            "key.kind" : "source.lang.swift.expr.call",
-            "key.length" : 14,
-            "key.name" : "MySwiftClass",
-            "key.namelength" : 12,
-            "key.nameoffset" : 362,
-            "key.offset" : 362
-        }
-        parser = self.fixture.any_swift_file_parser()
-        
-        types = parser.types_used_by(substructure)
-        
-        self.assertEqual(types, {"MySwiftClass"})
+        self.assertEqual(len(types), 1)
+        swift_type = types.pop()
+        self.assertEqual(swift_type.accessibility, "internal")
 
-    def test_types_used_by__gives_return_type_of_method(self):
-        substructure = {
-          "key.accessibility" : "source.lang.swift.accessibility.internal",
-          "key.bodylength" : 35,
-          "key.bodyoffset" : 1149,
-          "key.kind" : "source.lang.swift.decl.function.method.instance",
-          "key.length" : 72,
-          "key.name" : "otherMethod()",
-          "key.namelength" : 13,
-          "key.nameoffset" : 1118,
-          "key.offset" : 1113,
-          "key.typename" : "MySwiftClass"
-        }
-        parser = self.fixture.any_swift_file_parser()
+    def test__swift_types__gives_accessibility_public__when_public(self):
+        swift_code = "public class MyClass \{\}"
+        parser = self.fixture.any_swift_code_parser(swift_code)
         
-        types = parser.types_used_by(substructure)
-        
-        self.assertEqual(types, {"MySwiftClass"})
+        types = parser.swift_types
 
-    def test_types_used_by__gives_return_optional_type_of_method(self):
-        substructure = {
-          "key.accessibility" : "source.lang.swift.accessibility.internal",
-          "key.bodylength" : 35,
-          "key.bodyoffset" : 1236,
-          "key.kind" : "source.lang.swift.decl.function.method.instance",
-          "key.length" : 81,
-          "key.name" : "otherMethodOptional()",
-          "key.namelength" : 21,
-          "key.nameoffset" : 1196,
-          "key.offset" : 1191,
-          "key.typename" : "MySwiftClass?"
-        }
-        parser = self.fixture.any_swift_file_parser()
+        self.assertEqual(len(types), 1)
+        swift_type = types.pop()
+        self.assertEqual(swift_type.accessibility, "public")
+
+    def test__swift_types__gives_accessibility_internal__when_internal(self):
+        swift_code = "internal class MyClass \{\}"
+        parser = self.fixture.any_swift_code_parser(swift_code)
         
-        types = parser.types_used_by(substructure)
+        types = parser.swift_types
+
+        self.assertEqual(len(types), 1)
+        swift_type = types.pop()
+        self.assertEqual(swift_type.accessibility, "internal")
+
+    def test__swift_types__gives_accessibility_fileprivate__when_fileprivate(self):
+        swift_code = "fileprivate class MyClass \{\}"
+        parser = self.fixture.any_swift_code_parser(swift_code)
         
-        self.assertEqual(types, {"MySwiftClass"})
+        types = parser.swift_types
+
+        self.assertEqual(len(types), 1)
+        swift_type = types.pop()
+        self.assertEqual(swift_type.accessibility, "fileprivate")
+
+    def test__swift_types__gives_accessibility_private__when_private(self):
+        swift_code = "private class MyClass \{\}"
+        parser = self.fixture.any_swift_code_parser(swift_code)
+        
+        types = parser.swift_types
+
+        self.assertEqual(len(types), 1)
+        swift_type = types.pop()
+        self.assertEqual(swift_type.accessibility, "private")
+
+    # swift_types - type
+
+    def test__swift_types__gives_class_declarations(self):
+        swift_code = "class MyClass \{\}"
+        parser = self.fixture.any_swift_code_parser(swift_code)
+        
+        types = parser.swift_types
+
+        self.assertEqual(len(types), 1)
+        swift_type = types.pop()
+        self.assertEqual(swift_type.type_identifier, "class")
+        self.assertEqual(swift_type.name, "MyClass")
+
+    def test__swift_types__gives_struct_declarations(self):
+        swift_code = "struct MyStruct \{\}"
+        parser = self.fixture.any_swift_code_parser(swift_code)
+        
+        types = parser.swift_types
+
+        self.assertEqual(len(types), 1)
+        swift_type = types.pop()
+        self.assertEqual(swift_type.type_identifier, "struct")
+        self.assertEqual(swift_type.name, "MyStruct")
+
+    def test__swift_types__gives_enum_declarations(self):
+        swift_code = "enum MyEnum \{\}"
+        parser = self.fixture.any_swift_code_parser(swift_code)
+        
+        types = parser.swift_types
+
+        self.assertEqual(len(types), 1)
+        swift_type = types.pop()
+        self.assertEqual(swift_type.type_identifier, "enum")
+        self.assertEqual(swift_type.name, "MyEnum")
+
+    def test__swift_types__gives_protocol_declarations(self):
+        swift_code = "protocol MyProtocol \{\}"
+        parser = self.fixture.any_swift_code_parser(swift_code)
+        
+        types = parser.swift_types
+
+        self.assertEqual(len(types), 1)
+        swift_type = types.pop()
+        self.assertEqual(swift_type.type_identifier, "protocol")
+        self.assertEqual(swift_type.name, "MyProtocol")
+
+    def test__swift_types__gives_extension_declarations(self):
+        swift_code = "extension MyExtension \{\}"
+        parser = self.fixture.any_swift_code_parser(swift_code)
+        
+        types = parser.swift_types
+
+        self.assertEqual(len(types), 1)
+        swift_type = types.pop()
+        self.assertEqual(swift_type.type_identifier, "extension")
+        self.assertEqual(swift_type.name, "MyExtension")
+
+    # swift_types - inner types - inside class
+
+    def test__swift_types__gives_inner_type_declarations__when_inside_class(self):
+        # Given
+        swift_code = """
+            public class OuterClass \{
+
+                public class MyClass \{\}
+
+                public struct MyStruct \{\}
+
+                public enum MyEnum \{\}
+
+                public protocol MyProtocol \{\}
+
+                public extension MyExtension \{\}
+
+            \}
+        """
+        parser = self.fixture.any_swift_code_parser(swift_code)
+        
+        # When
+        types = parser.swift_types
+
+        # Then
+        self.assertEqual(len(types), 1)
+        self.assertTrue(SwiftType('class', 'OuterClass', 'public') in types, types)
+
+        inner_types = types[0].inner_types
+        self.assertTrue(SwiftType('class', 'MyClass', 'public') in inner_types)
+        self.assertTrue(SwiftType('struct', 'MyStruct', 'public') in inner_types)
+        self.assertTrue(SwiftType('enum', 'MyEnum', 'public') in inner_types)
+        self.assertTrue(SwiftType('protocol', 'MyProtocol', 'public') in inner_types)
+        self.assertTrue(SwiftType('extension', 'MyExtension', 'public') in inner_types)
+
+    # swift_types - inner types - inside class - 2 inner level
+
+    def test__swift_types__gives_inner_type_declarations__when_inside_class__recursively(self):
+        # Given
+        swift_code = """
+            public class MyClass \{
+
+                public class InnerClass \{
+
+                    public class InnerInnerClass \{\}
+
+                \}
+
+            \}
+        """
+        parser = self.fixture.any_swift_code_parser(swift_code)
+        
+        # When
+        types = parser.swift_types
+
+        # Then
+        self.assertEqual(len(types), 1)
+        self.assertTrue(SwiftType('class', 'MyClass', 'public') in types)
+
+        inner_types = types[0].inner_types
+        self.assertEqual(len(inner_types), 1)
+        self.assertTrue(SwiftType('class', 'InnerClass', 'public') in inner_types)
+
+        inner_inner_types = inner_types[0].inner_types
+        self.assertEqual(len(inner_inner_types), 1)
+        self.assertTrue(SwiftType('class', 'InnerInnerClass', 'public') in inner_inner_types)
+
+    # swift_types - inner types - inside struct
+
+    def test__swift_types__gives_inner_type_declarations__when_inside_struct(self):
+        # Given
+        swift_code = """
+            public struct OuterStruct \{
+
+                public class MyClass \{\}
+
+                public struct MyStruct \{\}
+
+                public enum MyEnum \{\}
+
+                public protocol MyProtocol \{\}
+
+                public extension MyExtension \{\}
+
+            \}
+        """
+        parser = self.fixture.any_swift_code_parser(swift_code)
+        
+        # When
+        types = parser.swift_types
+
+        # Then
+        self.assertEqual(len(types), 1)
+        self.assertTrue(SwiftType('struct', 'OuterStruct', 'public') in types, types)
+
+        inner_types = types[0].inner_types
+        self.assertTrue(SwiftType('class', 'MyClass', 'public') in inner_types)
+        self.assertTrue(SwiftType('struct', 'MyStruct', 'public') in inner_types)
+        self.assertTrue(SwiftType('enum', 'MyEnum', 'public') in inner_types)
+        self.assertTrue(SwiftType('protocol', 'MyProtocol', 'public') in inner_types)
+        self.assertTrue(SwiftType('extension', 'MyExtension', 'public') in inner_types)
+
+    # used_types - member types
+
+    def test__swift_types__gives_types_of_members(self):
+        swift_code = """
+            class MyClass \{
+                let member: LetMember
+                let optionalMember: OptionalLetMember?
+                var member: VarMember
+                var optionalMember: OptionalVarMember?
+            \}
+        """
+        parser = self.fixture.any_swift_code_parser(swift_code)
+        
+        # When
+        used_types = parser.swift_types[0].used_types
+
+        # Then
+        self.assertEqual(len(used_types), 4)
+        self.assertEqual(used_types, {'LetMember', 'OptionalLetMember', 'VarMember', 'OptionalVarMember'})

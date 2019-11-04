@@ -1,7 +1,9 @@
+import json
 import os
+import subprocess
 
 from ..models import XcTarget, XcProject, XcGroup, XcFile
-from ..parsers import XcProjectParser, SwiftFileParser
+from ..parsers import XcProjectParser, SwiftCodeParser
 
 
 # Absolute path of this project root folder.
@@ -54,10 +56,21 @@ class XcProjectParserFixture():
         return project_parser
 
 
-class SwiftFileParserFixture():
+class SwiftCodeParserFixture():
 
-    def any_swift_file_parser(self):
-        return SwiftFileParser(None, XcFile('/MyFile.swift'))
+    def any_swift_code_parser(self, swift_code):
+        command = ['sourcekitten', 'structure', '--text', swift_code]
+        result = subprocess.run(command, capture_output=True)
+        swift_structure = json.loads(result.stdout)
+
+        root_substructures = swift_structure.get('key.substructure', []).copy()
+        parser = SwiftCodeParser(substructures=root_substructures)
+
+        # import pprint; pprint.pprint(root_substructures)
+
+        parser.parse()
+
+        return parser
 
 
 # Generators

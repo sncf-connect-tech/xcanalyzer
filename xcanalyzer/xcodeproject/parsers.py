@@ -385,52 +385,84 @@ class SwiftFileParser():
         filepath = '{}{}'.format(self.project_folder_path, self.xc_file.filepath)
         command = ['sourcekitten', 'structure', '--file', filepath]
         result = subprocess.run(command, capture_output=True)
-        self.object = json.loads(result.stdout)
+        swift_file_structure = json.loads(result.stdout)
 
-        self.xc_file.swift_types = set()
+        root_substructures = swift_file_structure.get('key.substructure', []).copy()
+        swift_parser = SwiftCodeParser(substructures=root_substructures)
+        swift_parser.parse()
 
-        root_substructures = self.object.get('key.substructure', []).copy()
+        self.xc_file.swift_types = swift_parser.swift_types
 
-        for root_substructure in root_substructures:
-            # Swift type's type
-            type_identifier = SwiftFileParser.SWIFT_TYPE_TYPE_MAPPING.get(root_substructure.get('key.kind'))
-            if not type_identifier:
-                continue
 
-            # Accessibility
-            if 'key.accessibility' in root_substructure:
-                accessibility = root_substructure['key.accessibility'].split('.')[-1]
-            else:
-                accessibility = SwiftAccessibility.INTERNAL
+class SwiftCodeParser():
 
-            # Create Swift type
-            swift_type = SwiftType(type_identifier=type_identifier,
-                                   name=root_substructure.get('key.name'),
-                                   accessibility=accessibility)
-
-            # Used types
-            swift_type.used_types = set()
-
-            # Parse content of the type
-            inner_substructures = root_substructure.get('key.substructure', []).copy()
-            while inner_substructures:
-                inner_substructure = inner_substructures.pop()
-
-                # Types' uses
-                if filepath.endswith('Uses.swift'):  # DEBUG
-                    swift_type.used_types |= self.types_used_by(inner_substructure)
-
-                # Substructures of inner substructure
-                inner_substructures += inner_substructure.get('key.substructure', []).copy()
-
-            # Add type to file
-            self.xc_file.swift_types.add(swift_type)
+    def __init__(self, substructures):
+        self.substructures = substructures
     
-    def unwrapped_if_optional(self, typename):
-        if typename.endswith('?'):
-            return typename[:-1]
+    def parse(self):
+        self.swift_types, self.used_types = self.parse_substructures(self.substructures)
+
+    def parse_substructures(self, substructures):
+        swift_types = list()
+        used_types = set()
+
+        substructs = substructures.copy()
+        substructs.reverse()
+        while substructs:
+            substructure = substructs.pop()
+
+            type_identifier = SwiftFileParser.SWIFT_TYPE_TYPE_MAPPING.get(substructure.get('key.kind'))
+            if type_identifier:  # If it is a type declaration
+                # We create the Swift type
+                swift_type = self.parse_swift_type(substructure, type_identifier)
+        
+                # Add type to file
+                swift_types.append(swift_type)
+
+                # Then we get the following substructure and check that it is this type body.
+                if substructs:
+                    body_substructure = substructs.pop()
+                    inner_substructures = body_substructure.get('key.substructure', [])
+
+                    if inner_substructures:
+                        inner_types, used_types = self.parse_substructures(inner_substructures)
+                        swift_type.inner_types = inner_types
+            
+            else:
+                inner_substructures = substructure.get('key.substructure', [])
+                if inner_substructures:
+                    other_swift_types, inner_used_types = self.parse_substructures(inner_substructures)
+                    swift_types += other_swift_types
+        
+        return swift_types, used_types
+    
+    def parse_swift_type(self, substructure, type_identifier):
+        # Accessibility
+        if 'key.accessibility' in substructure:
+            accessibility = substructure['key.accessibility'].split('.')[-1]
         else:
-            return typename
+            accessibility = SwiftAccessibility.INTERNAL
+
+        # Create Swift type
+        return SwiftType(type_identifier=type_identifier,
+                               name=substructure.get('key.name'),
+                               accessibility=accessibility)
+
+    def parse_body_substructure(self, substructure):
+        used_types = set()
+
+        # Parse content of the type
+        inner_substructures = substructure.get('key.substructure', []).copy()
+        while inner_substructures:
+            inner_substructure = inner_substructures.pop()
+
+            # Types' uses
+            used_types |= self.types_used_by(inner_substructure)
+
+            # Substructures of inner substructure
+            inner_substructures += inner_substructure.get('key.substructure', []).copy()
+        
+        return used_types
 
     def types_used_by(self, substructure):
         results = set()
@@ -458,6 +490,12 @@ class SwiftFileParser():
                 results.add(self.unwrapped_if_optional(type_name))
 
         return results
+
+    def unwrapped_if_optional(self, typename):
+        if typename.endswith('?'):
+            return typename[:-1]
+        else:
+            return typename
 
 
 class ObjcFileParser():
