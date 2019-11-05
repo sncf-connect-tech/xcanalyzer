@@ -347,6 +347,7 @@ class XcProjReporter():
             (ObjcTypeType.CATEGORY, 'categories'),
             (ObjcTypeType.ENUM, 'enums'),
             (ObjcTypeType.CONSTANT, 'constants'),
+            (ObjcTypeType.MACRO_CONSTANT, 'macro constants'),
             (ObjcTypeType.PROTOCOL, 'protocols'),
         ]
 

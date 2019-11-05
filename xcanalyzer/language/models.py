@@ -77,6 +77,7 @@ class ObjcTypeType():
     CATEGORY = 'category'
     ENUM = 'enum'
     CONSTANT = 'constant'
+    MACRO_CONSTANT = 'macro_constant'
     PROTOCOL = 'protocol'
 
     ALL = {
@@ -84,6 +85,7 @@ class ObjcTypeType():
         CATEGORY,
         ENUM,
         CONSTANT,
+        MACRO_CONSTANT,
         PROTOCOL,
     }
 

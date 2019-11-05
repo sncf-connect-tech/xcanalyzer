@@ -552,7 +552,7 @@ class ObjcFileParser():
                     self.xc_file.objc_types.append(objc_type)
 
                 # Objc category
-                for match in re.finditer(r'@implementation ([a-zA-Z0-9_]+) \(([a-zA-Z0-9]*)\)', line):
+                for match in re.finditer(r'@implementation (\w+) \((\w*)\)', line):
                     class_name = match.group(1)
                     category_name = match.group(2)
 
@@ -562,7 +562,7 @@ class ObjcFileParser():
                 
                 # Objc enum
                 for enum_type in ObjcEnumType.ALL:
-                    regex = r'typedef ' + enum_type + r'\([a-zA-Z0-9_]+, ([a-zA-Z0-9_]+)\)( \{)?'
+                    regex = r'typedef ' + enum_type + r'\(\w+, (\w+)\)( \{)?'
                     for match in re.finditer(regex, line):
                         enum_name = match.group(1)
 
@@ -573,7 +573,7 @@ class ObjcFileParser():
                 # Objc 'enum'
                 if xc_filepath.endswith('MyObjcClass.h'):
                     if enum_has_started:
-                        for match in re.finditer(r'} ([a-zA-Z0-9_]+);', line):
+                        for match in re.finditer(r'} (\w+);', line):
                             enum_name = match.group(1)
 
                             # Add enum in objective-C types of the file
@@ -586,8 +586,16 @@ class ObjcFileParser():
                         enum_has_started = True
                         continue
                 
+                # Objc constant macro
+                for match in re.finditer(r'#define (\w+) +', line):
+                    constant_name = match.group(1)
+
+                    # Add enum in objective-C types of the file
+                    objc_type = ObjcType(type_identifier=ObjcTypeType.MACRO_CONSTANT, name=constant_name)
+                    self.xc_file.objc_types.append(objc_type)
+                
                 # Objc constant
-                for match in re.finditer(r'#define ([a-zA-Z0-9_]+) +', line):
+                for match in re.finditer(r'\* ?const +(\w+)', line):
                     constant_name = match.group(1)
 
                     # Add enum in objective-C types of the file
@@ -595,7 +603,7 @@ class ObjcFileParser():
                     self.xc_file.objc_types.append(objc_type)
                 
                 # Objc protocol
-                for match in re.finditer(r'@protocol ([a-zA-Z0-9_]+)(;| ).*', line):
+                for match in re.finditer(r'@protocol (\w+)(;| ).*', line):
                     protocol_name = match.group(1)
 
                     # Add enum in objective-C types of the file
