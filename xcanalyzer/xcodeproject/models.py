@@ -30,6 +30,10 @@ class XcFile():
     def swift_extensions(self):
         return [t for t in self.swift_types if t.type_identifier == SwiftTypeType.EXTENSION]
     
+    @property
+    def swift_classes(self):
+        return [t for t in self.swift_types if t.type_identifier == SwiftTypeType.CLASS]
+    
 
 class XcGroup():
 
@@ -388,7 +392,7 @@ class XcTarget():
     @property
     def swift_files(self):
         return set([f for f in self.source_files if f.filepath.endswith('.swift')])
-
+    
     @property
     def h_files(self):
         return set([f for f in self.header_files if f.filepath.endswith('.h')])
@@ -400,4 +404,121 @@ class XcTarget():
     @property
     def objc_files(self):
         return self.h_files | self.m_files
+    
+    @property
+    def dependencies_all(self):
+        result = set()
+
+        # Direct dependencies
+        result.update(self.dependencies)
+
+        # Indirect dependencies
+        for dependency in self.dependencies:
+            result.update(dependency.dependencies)
+
+        return result
+
+    @property
+    def swift_types(self):
+        results = []
+        
+        for swift_file in self.swift_files:
+            results += swift_file.swift_types
+        
+        return results
+
+    @property
+    def objc_types(self):
+        results = []
+        
+        for objc_file in self.objc_files:
+            results += objc_file.objc_types
+        
+        return results
+
+    @property
+    def swift_types_grouped_by_type(self):
+        results = dict()
+
+        for swift_type_type in SwiftTypeType.ALL:
+            results[swift_type_type] = []
+
+        for swift_type in self.swift_types:
+            results[swift_type.type_identifier].append(swift_type)
+
+        return results
+
+    @property
+    def objc_types_grouped_by_type(self):
+        results = dict()
+
+        for objc_type_type in ObjcTypeType.ALL:
+            results[objc_type_type] = []
+
+        for objc_type in self.objc_types:
+            results[objc_type.type_identifier].append(objc_type)
+
+        return results
+
+    @property
+    def swift_classes(self):
+        results = []
+        
+        for swift_file in self.swift_files:
+            results += swift_file.swift_classes
+        
+        return results
+
+    @property
+    def view_controllers(self):
+        results = []
+
+        swift_classes = self.swift_classes
+        next_swift_classes = []
+
+        # View controllers that inherit from UIViewController directly
+        for swift_class in swift_classes:
+            if swift_class.inherits_from_view_controller:
+                results.append(swift_class)
+            else:
+                next_swift_classes.append(swift_class)
+        
+        swift_classes = next_swift_classes
+        next_swift_classes = []
+
+        # View controllers that inherit from other view controllers
+        # defined in a direct dependency
+        dependency_view_controllers = set()
+        for dependency in self.dependencies:
+            dependency_view_controllers |= {vc.name for vc in dependency.view_controllers}
+
+        for swift_class in swift_classes:
+            if swift_class.inherits_from_one_of(dependency_view_controllers):
+                results.append(swift_class)
+            else:
+                next_swift_classes.append(swift_class)
+        
+        swift_classes = next_swift_classes
+        next_swift_classes = []
+
+        # View controllers that inherit from the previous sets
+        detected_view_controllers = {r.name for r in results}
+        new_detected_view_controllers = True
+
+        while new_detected_view_controllers:
+            new_detected_view_controllers = False
+
+            for swift_class in swift_classes:
+                if swift_class.inherits_from_one_of(detected_view_controllers):
+                    results.append(swift_class)
+                    detected_view_controllers.add(swift_class.name)
+                    new_detected_view_controllers = True
+                else:
+                    next_swift_classes.append(swift_class)
+        
+            swift_classes = next_swift_classes
+            next_swift_classes = []
+
+        return results
+
 

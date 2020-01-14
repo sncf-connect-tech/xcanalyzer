@@ -49,6 +49,13 @@ class SwiftTypeType():
 
 class SwiftType():
 
+    UI_VIEW_CONTROLLER_BASE_CLASSES = {
+        'UIViewController',
+        'UINavigationController',
+        'UISplitViewController',
+        'UITabBarController',
+    }
+
     def __init__(self, type_identifier, name, accessibility, inherited_types=set()):
         assert type_identifier in SwiftTypeType.ALL
         assert accessibility in SwiftAccessibility.ALL
@@ -69,6 +76,13 @@ class SwiftType():
         return self.type_identifier == other.type_identifier and \
             self.name == other.name and \
             self.accessibility == other.accessibility
+    
+    @property
+    def inherits_from_view_controller(self):
+        return bool(self.UI_VIEW_CONTROLLER_BASE_CLASSES & self.inherited_types)
+    
+    def inherits_from_one_of(self, swift_class_names):
+        return bool(swift_class_names & self.inherited_types)
 
 
 class ObjcTypeType():
@@ -116,4 +130,4 @@ class ObjcType():
         self.name = name
 
     def __repr__(self):
-        return '{:<9} {}'.format(self.type_identifier, self.name)
+        return '{:<15} {}'.format(self.type_identifier, self.name)

@@ -221,39 +221,70 @@ class XcProjReporter():
             filepaths.sort()
             for filepath in filepaths:
                 print(filepath)
+            
+            print()
 
-    def _print_swift_types(self, swift_files):
+    def _print_swift_types(self, swift_files, display_files):
         for swift_file in swift_files:
-            cprint(swift_file.filepath, attrs=['bold'])
+            # File
+            if display_files:
+                cprint(swift_file.filepath)
+            
+            # Swift types
             for swift_type in swift_file.swift_types:
-                print(swift_type)
+                print('    {}'.format(swift_type))
     
-    def _print_objc_types(self, objc_files):
+    def _print_objc_types(self, objc_files, display_files):
         for objc_file in objc_files:
-            cprint(objc_file.filepath, attrs=['bold'])
-            for objc_type in objc_file.objc_types:
-                print(objc_type)
+            # File
+            if display_files:
+                cprint(objc_file.filepath)
 
-    def print_types_by_file(self, languages):
+            # Obj-C types
+            for objc_type in objc_file.objc_types:
+                print('    {}'.format(objc_type))
+
+    def print_target_types_title(self, target):
+        # Swift types counts
+        printable_swift_types_counts = []
+        for swift_type_type, swift_types in target.swift_types_grouped_by_type.items():
+            if len(swift_types):
+                printable_swift_types_counts.append('{} {}'.format(len(swift_types), swift_type_type))
+        
+        printable_swift_types_counts = ', '.join(printable_swift_types_counts) or '<none>'
+
+        # ObjC types counts
+        printable_objc_types_counts = []
+        for objc_type_type, objc_types in target.objc_types_grouped_by_type.items():
+            if len(objc_types):
+                printable_objc_types_counts.append('{} {}'.format(len(objc_types), objc_type_type))
+        
+        printable_objc_types_counts = ', '.join(printable_objc_types_counts) or '<none>'
+
+        # Print target
+        cprint('{} [Swift: {} | ObjC: {}]'.format(target.name, printable_swift_types_counts, printable_objc_types_counts), attrs=['bold'])
+
+    def print_types_by_file(self, languages, display_files):
         # Swift types
         for target in self.xcode_project.targets_sorted_by_name:
             # Target
-            cprint('=> {}'.format(target.name), attrs=['bold'])
+            self.print_target_types_title(target)
 
             # Swift files
             if 'swift' in languages:
-                self._print_swift_types(target.swift_files)
+                self._print_swift_types(target.swift_files, display_files=display_files)
             
             # Objective-C .m files
             if 'objc' in languages:
-                self._print_objc_types(target.objc_files)
+                self._print_objc_types(target.objc_files, display_files=display_files)
             
             print()  # Empty line
         
         # Objective-C types from project .h files
         if 'objc' in languages:
-            cprint('=> Project "target less" .h files', attrs=['bold'])
-            self._print_objc_types(self.xcode_project.target_less_h_files)
+            cprint('Project "target less" .h files', attrs=['bold'])
+            self._print_objc_types(self.xcode_project.target_less_h_files,
+                                   display_files=display_files)
     
     def print_types_summary(self, languages):
         assert languages
@@ -713,3 +744,36 @@ class XcProjReporter():
                         print(swift_type)
 
             # TODO: Objc
+    
+    def print_view_controllers(self, app):
+        # App target
+        app_target = self.xcode_project.target_with_name(app)
+        if not app_target:
+            raise ValueError("No app target found with name '{}'.".format(app))
+
+        # App target dependencies sorted by name
+        app_target_dependencies = list(app_target.dependencies_all)
+        app_target_dependencies.sort(key=lambda t: t.name.lower())
+        targets = app_target_dependencies + [app_target]
+
+        total_view_controllers_count = 0
+
+        for target in targets:
+            view_controllers = target.view_controllers
+            view_controllers_count = len(view_controllers)
+            total_view_controllers_count += view_controllers_count
+
+            # Target
+            cprint('{} [{} view controller(s)]'.format(target.name, view_controllers_count), attrs=['bold'])
+
+            # View controllers
+            view_controllers.sort(key=lambda t: t.name.lower())
+            for view_controller in view_controllers:
+                print(view_controller.name)
+
+            print()
+        
+        self._print_horizontal_line()
+
+        # Total view controllers count
+        cprint('{} view controller(s) in total for the app {}'.format(total_view_controllers_count, app), attrs=['bold'])
