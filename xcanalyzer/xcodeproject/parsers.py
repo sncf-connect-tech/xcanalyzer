@@ -374,6 +374,58 @@ class XcProjectParser():
                     xcode_target.embed_frameworks.add(product_references[embed_framework_ref])
     
         return xcode_targets
+    
+    def _find_type(self, swift_objc_type_name):
+        for target in self.xc_project.targets_sorted_by_name:
+            for swift_type in target.swift_types:
+                if swift_type.name == swift_objc_type_name:
+                    return swift_type
+
+            for objc_type in target.objc_types:
+                if objc_type.name == swift_objc_type_name:
+                    return objc_type
+
+        for objc_file in self.xc_project.target_less_h_files:
+            for ojbc_type in objc_file.objc_types:
+                if objc_type.name == swift_objc_type_name:
+                    return objc_type
+        
+        return None
+    
+    def _find_files_that_contains(self, swift_objc_type):
+        results = []
+
+        source_files = []
+
+        for target in self.xc_project.targets_sorted_by_name:
+            source_files += target.swift_files
+            source_files += target.objc_files
+        
+        # for objc_file in self.xc_project.target_less_h_files:
+        #     pass
+
+        for source_file in source_files:
+            xc_filepath = self.xc_project.relative_path_for_file(source_file)
+            with open(xc_filepath) as opened_file:
+                for line in opened_file:
+                    if re.search(r'\W{}\W'.format(swift_objc_type.name), line):
+                        results.append(source_file)
+                        break
+        
+        for result in results:
+            print(result)
+
+        return results
+
+    def find_occurrences_of(self, swift_objc_type_name):
+        # Check the type exist in the project
+        found_type = self._find_type(swift_objc_type_name)
+
+        if found_type is None:
+            raise ValueError("Type not found in the Xcode project: '{}'".format(swift_objc_type_name))
+
+        # Find files in which the type occurs
+        return self._find_files_that_contains(found_type)
 
 
 class SwiftFileParser():

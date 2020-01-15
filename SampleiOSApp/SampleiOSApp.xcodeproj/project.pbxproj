@@ -37,6 +37,7 @@
 		DF30B739225E2DD3004F18A1 /* LICENCE.md in Resources */ = {isa = PBXBuildFile; fileRef = DF85324E224BCC9600792A18 /* LICENCE.md */; };
 		DF30B73B225E2DD5004F18A1 /* LICENCE.md in Resources */ = {isa = PBXBuildFile; fileRef = DF85324E224BCC9600792A18 /* LICENCE.md */; };
 		DF3AB33423CF0B01003070A0 /* MainObjcViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DF3AB33323CF0B01003070A0 /* MainObjcViewController.m */; };
+		DF3AB33623CF2AA3003070A0 /* SwiftTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF3AB33523CF2AA3003070A0 /* SwiftTypes.swift */; };
 		DF4ACD4F224C158900984A77 /* View.xib in Resources */ = {isa = PBXBuildFile; fileRef = DF4ACD4E224C158900984A77 /* View.xib */; };
 		DF4ACD52224C17D300984A77 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = DF4ACD54224C17D300984A77 /* Localizable.strings */; };
 		DF4ACD61224CC3E900984A77 /* Core.strings in Resources */ = {isa = PBXBuildFile; fileRef = DF4ACD63224CC3E900984A77 /* Core.strings */; };
@@ -170,6 +171,7 @@
 		DF1B428A22770FCB009B0355 /* MyObjcClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyObjcClass.swift; sourceTree = "<group>"; };
 		DF3AB33223CF0B01003070A0 /* MainObjcViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MainObjcViewController.h; sourceTree = "<group>"; };
 		DF3AB33323CF0B01003070A0 /* MainObjcViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MainObjcViewController.m; sourceTree = "<group>"; };
+		DF3AB33523CF2AA3003070A0 /* SwiftTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftTypes.swift; sourceTree = "<group>"; };
 		DF4ACD4E224C158900984A77 /* View.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = View.xib; sourceTree = "<group>"; };
 		DF4ACD53224C17D300984A77 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		DF4ACD55224C17E700984A77 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -343,6 +345,7 @@
 				DF8BA35622B3FB8500DB1326 /* MySwiftClass.swift */,
 				DF8BA35822B3FB9D00DB1326 /* Uses.swift */,
 				DFA25C842370C7BE0004043E /* MyViewController.swift */,
+				DF3AB33523CF2AA3003070A0 /* SwiftTypes.swift */,
 			);
 			path = Normal;
 			sourceTree = "<group>";
@@ -810,6 +813,7 @@
 				DF1B428B22770FCB009B0355 /* MyObjcClass.swift in Sources */,
 				DF15465322841CBF00ACB1DC /* DuplicateMFile.m in Sources */,
 				DF186B692260F186005C5DC7 /* FileInsideBadPlacedGroup.swift in Sources */,
+				DF3AB33623CF2AA3003070A0 /* SwiftTypes.swift in Sources */,
 				DF8BA35922B3FB9D00DB1326 /* Uses.swift in Sources */,
 				DFAC5E7B22401710002C424B /* SampleCore.swift in Sources */,
 				DF1B428922738819009B0355 /* MySharedSwiftClass.swift in Sources */,

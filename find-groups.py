@@ -36,7 +36,7 @@ except XcodeProjectReadException as e:
     exit()
 
 # Reporter
-reporter = XcProjReporter(xcode_project_reader.object)
+reporter = XcProjReporter(xcode_project_reader.xc_project)
 if args.filter_mode == 'all':
     reporter.print_groups()
 else:
