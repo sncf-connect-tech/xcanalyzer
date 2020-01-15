@@ -36,6 +36,7 @@
 		DF1B428B22770FCB009B0355 /* MyObjcClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF1B428A22770FCB009B0355 /* MyObjcClass.swift */; };
 		DF30B739225E2DD3004F18A1 /* LICENCE.md in Resources */ = {isa = PBXBuildFile; fileRef = DF85324E224BCC9600792A18 /* LICENCE.md */; };
 		DF30B73B225E2DD5004F18A1 /* LICENCE.md in Resources */ = {isa = PBXBuildFile; fileRef = DF85324E224BCC9600792A18 /* LICENCE.md */; };
+		DF3AB33423CF0B01003070A0 /* MainObjcViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DF3AB33323CF0B01003070A0 /* MainObjcViewController.m */; };
 		DF4ACD4F224C158900984A77 /* View.xib in Resources */ = {isa = PBXBuildFile; fileRef = DF4ACD4E224C158900984A77 /* View.xib */; };
 		DF4ACD52224C17D300984A77 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = DF4ACD54224C17D300984A77 /* Localizable.strings */; };
 		DF4ACD61224CC3E900984A77 /* Core.strings in Resources */ = {isa = PBXBuildFile; fileRef = DF4ACD63224CC3E900984A77 /* Core.strings */; };
@@ -43,6 +44,7 @@
 		DF4ACD67224E1C2F00984A77 /* SampleCore.h in Headers */ = {isa = PBXBuildFile; fileRef = DFB4DB8E223997A4007DB426 /* SampleCore.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		DF4ACD68224E236D00984A77 /* LICENCE.md in Resources */ = {isa = PBXBuildFile; fileRef = DF85324E224BCC9600792A18 /* LICENCE.md */; };
 		DF4ACD6A224E2C2300984A77 /* SampleCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DFB4DB8C223997A4007DB426 /* SampleCore.framework */; };
+		DF56F75923CE654E00FDAA32 /* SubViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF56F75823CE654E00FDAA32 /* SubViewController.swift */; };
 		DF64A40B226F8F2700B0833F /* MyClass+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF64A40A226F8F2700B0833F /* MyClass+Extension.swift */; };
 		DF8BA35722B3FB8500DB1326 /* MySwiftClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF8BA35622B3FB8500DB1326 /* MySwiftClass.swift */; };
 		DF8BA35922B3FB9D00DB1326 /* Uses.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF8BA35822B3FB9D00DB1326 /* Uses.swift */; };
@@ -166,12 +168,15 @@
 		DF1B42822273853B009B0355 /* MySecondObjCClass.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MySecondObjCClass.m; sourceTree = "<group>"; };
 		DF1B428722738819009B0355 /* MySharedSwiftClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MySharedSwiftClass.swift; sourceTree = "<group>"; };
 		DF1B428A22770FCB009B0355 /* MyObjcClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyObjcClass.swift; sourceTree = "<group>"; };
+		DF3AB33223CF0B01003070A0 /* MainObjcViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MainObjcViewController.h; sourceTree = "<group>"; };
+		DF3AB33323CF0B01003070A0 /* MainObjcViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MainObjcViewController.m; sourceTree = "<group>"; };
 		DF4ACD4E224C158900984A77 /* View.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = View.xib; sourceTree = "<group>"; };
 		DF4ACD53224C17D300984A77 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		DF4ACD55224C17E700984A77 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Localizable.strings; sourceTree = "<group>"; };
 		DF4ACD62224CC3E900984A77 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Core.strings; sourceTree = "<group>"; };
 		DF4ACD64224CC3EA00984A77 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Core.strings; sourceTree = "<group>"; };
 		DF4ACD65224D1E4800984A77 /* InsideRelativeToProject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InsideRelativeToProject.swift; sourceTree = "<group>"; };
+		DF56F75823CE654E00FDAA32 /* SubViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubViewController.swift; sourceTree = "<group>"; };
 		DF64A40A226F8F2700B0833F /* MyClass+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MyClass+Extension.swift"; sourceTree = "<group>"; };
 		DF85324E224BCC9600792A18 /* LICENCE.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = LICENCE.md; sourceTree = SOURCE_ROOT; };
 		DF8BA35622B3FB8500DB1326 /* MySwiftClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MySwiftClass.swift; sourceTree = "<group>"; };
@@ -396,6 +401,9 @@
 			children = (
 				DFB4DB5922397A49007DB426 /* AppDelegate.swift */,
 				DFB4DB5B22397A49007DB426 /* ViewController.swift */,
+				DF56F75823CE654E00FDAA32 /* SubViewController.swift */,
+				DF3AB33223CF0B01003070A0 /* MainObjcViewController.h */,
+				DF3AB33323CF0B01003070A0 /* MainObjcViewController.m */,
 				DFB4DB5D22397A49007DB426 /* Main.storyboard */,
 				DFB4DB6022397A4A007DB426 /* Assets.xcassets */,
 				DFB4DB6222397A4A007DB426 /* LaunchScreen.storyboard */,
@@ -768,8 +776,10 @@
 				DF15465522841CD300ACB1DC /* DuplicateMFile.m in Sources */,
 				DFB4DB5C22397A49007DB426 /* ViewController.swift in Sources */,
 				DF186B57225F49FC005C5DC7 /* MyIntents.intentdefinition in Sources */,
+				DF56F75923CE654E00FDAA32 /* SubViewController.swift in Sources */,
 				DF1B4286227387E5009B0355 /* MySecondObjCClass.m in Sources */,
 				DF186B5B225F4A3A005C5DC7 /* LocalizedIntents.intentdefinition in Sources */,
+				DF3AB33423CF0B01003070A0 /* MainObjcViewController.m in Sources */,
 				DF1B428822738819009B0355 /* MySharedSwiftClass.swift in Sources */,
 				DFB4DB5A22397A49007DB426 /* AppDelegate.swift in Sources */,
 			);

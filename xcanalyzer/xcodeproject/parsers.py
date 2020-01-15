@@ -6,7 +6,7 @@ import subprocess
 import openstep_parser as osp
 from pbxproj import XcodeProject
 
-from ..language.models import SwiftType, SwiftTypeType, SwiftAccessibility, ObjcTypeType, ObjcType, ObjcEnumType
+from ..language.models import SwiftType, SwiftTypeType, SwiftAccessibility, ObjcTypeType, ObjcType, ObjcEnumType, ObjcInterface
 
 from .exceptions import XcodeProjectReadException
 from .models import XcTarget, XcProject, XcGroup, XcFile
@@ -42,7 +42,7 @@ class XcProjectParser():
         root_files = self._find_root_files()
 
         # Output object
-        self.object = XcProject(self.project_folder_path,
+        self.xc_project = XcProject(self.project_folder_path,
                                 xcode_proj_name,
                                 targets=set(),
                                 groups=list(),
@@ -51,33 +51,47 @@ class XcProjectParser():
         # Groups
         if self.verbose:
             print("-> Parse groups")
-        self.object.groups = self._parse_groups()
+        self.xc_project.groups = self._parse_groups()
 
         # Tests, extensions and app modules
         if self.verbose:
             print("-> Parse targets")
-        self.object.targets = self._parse_targets()
+        self.xc_project.targets = self._parse_targets()
     
     def parse_swift_files(self):
-        for target in self.object.targets_sorted_by_name:
+        for target in self.xc_project.targets_sorted_by_name:
             for swift_file in target.swift_files:
-                parser = SwiftFileParser(project_folder_path=self.object.dirpath,
+                parser = SwiftFileParser(project_folder_path=self.xc_project.dirpath,
                                          xc_file=swift_file)
                 parser.parse()
     
     def parse_objc_files(self):
+        objc_super_class_names = dict()
+
         # Targets' objective-C files
-        for target in self.object.targets_sorted_by_name:
+        for target in self.xc_project.targets_sorted_by_name:
             for objc_file in target.objc_files:
-                parser = ObjcFileParser(xc_project=self.object,
+                parser = ObjcFileParser(xc_project=self.xc_project,
                                         xc_file=objc_file)
                 parser.parse()
+
+                for objc_interface in objc_file.objc_interfaces:
+                    objc_super_class_names[objc_interface.class_name] = objc_interface.super_class_name
         
         # Target less objective-C files
-        for objc_file in self.object.target_less_h_files:
-            parser = ObjcFileParser(xc_project=self.object,
+        for objc_file in self.xc_project.target_less_h_files:
+            parser = ObjcFileParser(xc_project=self.xc_project,
                                     xc_file=objc_file)
             parser.parse()
+
+            for objc_interface in objc_file.objc_interfaces:
+                objc_super_class_names[objc_interface.class_name] = objc_interface.super_class_name
+        
+        # Set superclass to classes
+        for target in self.xc_project.targets_sorted_by_name:
+            for objc_file in target.objc_files:
+                for objc_class in objc_file.objc_classes:
+                    objc_class.super_class_name = objc_super_class_names.get(objc_class.name)
 
     def _check_folder_path(self):
         if not os.path.isdir(self.project_folder_path):
@@ -547,20 +561,27 @@ class ObjcFileParser():
         self.xc_file = xc_file
     
     def parse(self):
-        if self.xc_file.objc_types is not None:
+        if self.xc_file.objc_types is not None or self.xc_file.objc_types is not None:
             return
         
         self.xc_file.objc_types = list()
+        self.xc_file.objc_interfaces = list()
         
         xc_filepath = self.xc_project.relative_path_for_file(self.xc_file)
-
-        # Objc class regex
-        class_regex = re.compile("@implementation ([a-zA-Z]+)")
 
         with open(xc_filepath) as opened_file:
             enum_has_started = False
 
             for line in opened_file:
+                # Objc interface
+                for match in re.finditer(r'@interface\s+(\w+)\s*:\s*(\w+)', line):
+                    class_name = match.group(1)
+                    super_class_name = match.group(2)
+
+                    # Add class in objective-C types of the file
+                    objc_interface = ObjcInterface(class_name=class_name, super_class_name=super_class_name)
+                    self.xc_file.objc_interfaces.append(objc_interface)
+
                 # Objc class
                 for match in re.finditer(r'@implementation ([a-zA-Z0-9_]+)( \{)?$', line):
                     class_name = match.group(1)

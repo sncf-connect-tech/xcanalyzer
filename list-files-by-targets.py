@@ -35,7 +35,7 @@ except XcodeProjectReadException as e:
     exit()
 
 # Reporter
-reporter = XcProjReporter(xcode_project_reader.object)
+reporter = XcProjReporter(xcode_project_reader.xc_project)
 if args.only_shared:
     reporter.print_shared_files()
 else:

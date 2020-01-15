@@ -1,4 +1,4 @@
-from ..language.models import SwiftTypeType, ObjcTypeType, SwiftExtensionScope
+from ..language.models import SwiftTypeType, ObjcTypeType, SwiftExtensionScope, UI_VIEW_CONTROLLER_BASE_CLASSES
 
 
 class XcFile():
@@ -7,6 +7,7 @@ class XcFile():
         self.filepath = filepath
         self.swift_types = None
         self.objc_types = None
+        self.objc_interfaces = None
 
     def __eq__(self, other):
         return self.filepath == other.filepath
@@ -33,7 +34,11 @@ class XcFile():
     @property
     def swift_classes(self):
         return [t for t in self.swift_types if t.type_identifier == SwiftTypeType.CLASS]
-    
+
+    @property
+    def objc_classes(self):
+        return [t for t in self.objc_types if t.type_identifier == ObjcTypeType.CLASS]
+
 
 class XcGroup():
 
@@ -470,11 +475,22 @@ class XcTarget():
         return results
 
     @property
+    def objc_classes(self):
+        results = []
+        
+        for objc_file in self.objc_files:
+            results += objc_file.objc_classes
+        
+        return results
+
+    @property
     def view_controllers(self):
         results = []
 
         swift_classes = self.swift_classes
+        objc_classes = self.objc_classes
         next_swift_classes = []
+        next_objc_classes = []
 
         # View controllers that inherit from UIViewController directly
         for swift_class in swift_classes:
@@ -482,9 +498,16 @@ class XcTarget():
                 results.append(swift_class)
             else:
                 next_swift_classes.append(swift_class)
+        for objc_class in objc_classes:
+            if objc_class.super_class_name in UI_VIEW_CONTROLLER_BASE_CLASSES:
+                results.append(objc_class)
+            else:
+                next_objc_classes.append(objc_class)
         
         swift_classes = next_swift_classes
+        objc_classes = next_objc_classes
         next_swift_classes = []
+        next_objc_classes = []
 
         # View controllers that inherit from other view controllers
         # defined in a direct dependency
@@ -497,14 +520,21 @@ class XcTarget():
                 results.append(swift_class)
             else:
                 next_swift_classes.append(swift_class)
+        for objc_class in objc_classes:
+            if objc_class.inherits_from_one_of(dependency_view_controllers):
+                results.append(objc_class)
+            else:
+                next_objc_classes.append(objc_class)
         
         swift_classes = next_swift_classes
+        objc_classes = next_objc_classes
         next_swift_classes = []
+        next_objc_classes = []
 
         # View controllers that inherit from the previous sets
         detected_view_controllers = {r.name for r in results}
-        new_detected_view_controllers = True
 
+        new_detected_view_controllers = True
         while new_detected_view_controllers:
             new_detected_view_controllers = False
 
@@ -515,9 +545,19 @@ class XcTarget():
                     new_detected_view_controllers = True
                 else:
                     next_swift_classes.append(swift_class)
+            
+            for objc_class in objc_classes:
+                if objc_class.inherits_from_one_of(detected_view_controllers):
+                    results.append(objc_class)
+                    detected_view_controllers.add(objc_class.name)
+                    new_detected_view_controllers = True
+                else:
+                    next_objc_classes.append(objc_class)
         
             swift_classes = next_swift_classes
+            objc_classes = next_objc_classes
             next_swift_classes = []
+            next_objc_classes = []
 
         return results
 

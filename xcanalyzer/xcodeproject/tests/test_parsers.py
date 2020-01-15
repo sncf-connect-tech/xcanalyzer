@@ -34,15 +34,15 @@ class XcProjectParserTests(TestCase):
     def test_xc_project_parser__gives_xcproject_with_name(self):
         project_parser = self.fixture.sample_xc_project_parser
 
-        self.assertTrue(project_parser.object)
-        self.assertTrue(project_parser.object.name, 'SampleiOSApp')
+        self.assertTrue(project_parser.xc_project)
+        self.assertTrue(project_parser.xc_project.name, 'SampleiOSApp')
 
     def test_xc_project_parser__loaded__gives_targets(self):
         # Given
         project_parser = self.fixture.sample_xc_project_parser
 
         # When
-        xcode_project = project_parser.object
+        xcode_project = project_parser.xc_project
 
         # Then - expected targets
         app_target = XcTarget(name='SampleiOSApp',
@@ -66,7 +66,7 @@ class XcProjectParserTests(TestCase):
     
     def test_xc_project_parser__gives_dependencies_between_targets(self):
         project_parser = self.fixture.sample_xc_project_parser
-        xcode_project = project_parser.object
+        xcode_project = project_parser.xc_project
 
         core_target = xcode_project.target_with_name('SampleCore')
         ui_target = xcode_project.target_with_name('SampleUI')
@@ -78,7 +78,7 @@ class XcProjectParserTests(TestCase):
     
     def test_xc_project_parser__gives_linked_frameworks_between_targets(self):
         project_parser = self.fixture.sample_xc_project_parser
-        xcode_project = project_parser.object
+        xcode_project = project_parser.xc_project
 
         core_target = xcode_project.target_with_name('SampleCore')
         ui_target = xcode_project.target_with_name('SampleUI')
@@ -87,7 +87,7 @@ class XcProjectParserTests(TestCase):
     
     def test_xc_project_parser__gives_embed_frameworks_between_targets(self):
         project_parser = self.fixture.sample_xc_project_parser
-        xcode_project = project_parser.object
+        xcode_project = project_parser.xc_project
 
         core_target = xcode_project.target_with_name('SampleCore')
         ui_target = xcode_project.target_with_name('SampleUI')
@@ -100,7 +100,7 @@ class XcProjectParserTests(TestCase):
 
     def test_xc_project_parser__gives_source_files_for_each_target(self):
         project_parser = self.fixture.sample_xc_project_parser
-        xcode_project = project_parser.object
+        xcode_project = project_parser.xc_project
 
         target = xcode_project.target_with_name('SampleCore')
 
@@ -110,7 +110,7 @@ class XcProjectParserTests(TestCase):
     
     def test_xc_project_parser__reduces_double_dot_path_parts__for_files__at_root(self):
         project_parser = self.fixture.sample_xc_project_parser
-        xcode_project = project_parser.object
+        xcode_project = project_parser.xc_project
 
         target = xcode_project.target_with_name('SampleCore')
 
@@ -118,7 +118,7 @@ class XcProjectParserTests(TestCase):
     
     def test_xc_project_parser__reduces_double_dot_path_parts__for_files__at_root__and_in_subgroup(self):
         project_parser = self.fixture.sample_xc_project_parser
-        xcode_project = project_parser.object
+        xcode_project = project_parser.xc_project
 
         target = xcode_project.target_with_name('SampleCore')
 
@@ -126,7 +126,7 @@ class XcProjectParserTests(TestCase):
     
     def test_xc_project_parser__reduces_double_dot_path_parts__for_files(self):
         project_parser = self.fixture.sample_xc_project_parser
-        xcode_project = project_parser.object
+        xcode_project = project_parser.xc_project
 
         target = xcode_project.target_with_name('SampleCore')
 
@@ -134,7 +134,7 @@ class XcProjectParserTests(TestCase):
     
     def test_xc_project_parser__gives_intentdefinition_as_source_file(self):
         project_parser = self.fixture.sample_xc_project_parser
-        xcode_project = project_parser.object
+        xcode_project = project_parser.xc_project
 
         target = xcode_project.target_with_name('SampleUI')
 
@@ -143,7 +143,7 @@ class XcProjectParserTests(TestCase):
 
     def test_xc_project_parser__gives_localized_intentdefinition_as_source_file(self):
         project_parser = self.fixture.sample_xc_project_parser
-        xcode_project = project_parser.object
+        xcode_project = project_parser.xc_project
 
         target = xcode_project.target_with_name('SampleUI')
 
@@ -154,7 +154,7 @@ class XcProjectParserTests(TestCase):
 
     def test_xc_project_parser__gives_resource_files_for_each_target(self):
         project_parser = self.fixture.sample_xc_project_parser
-        xcode_project = project_parser.object
+        xcode_project = project_parser.xc_project
 
         target = xcode_project.target_with_name('SampleiOSApp')
 
@@ -168,7 +168,7 @@ class XcProjectParserTests(TestCase):
     
     def test_xc_project_parser__gives_header_files_for_each_target(self):
         project_parser = self.fixture.sample_xc_project_parser
-        xcode_project = project_parser.object
+        xcode_project = project_parser.xc_project
 
         target = xcode_project.target_with_name('SampleCore')
 
@@ -177,7 +177,7 @@ class XcProjectParserTests(TestCase):
 
     def test_xc_project_parser__gives_linked_files_for_each_target(self):
         project_parser = self.fixture.sample_xc_project_parser
-        xcode_project = project_parser.object
+        xcode_project = project_parser.xc_project
 
         target = xcode_project.target_with_name('SampleiOSApp')
 
@@ -189,7 +189,7 @@ class XcProjectParserTests(TestCase):
 
     def test_xc_project_parser__gives_root_groups(self):
         project_parser = self.fixture.sample_xc_project_parser
-        xcode_project = project_parser.object
+        xcode_project = project_parser.xc_project
 
         groups = xcode_project.groups
 
@@ -200,7 +200,7 @@ class XcProjectParserTests(TestCase):
     
     def test_xc_project_parser__gives_children_groups(self):
         project_parser = self.fixture.sample_xc_project_parser
-        xcode_project = project_parser.object
+        xcode_project = project_parser.xc_project
         
         group = [g for g in xcode_project.groups if g.group_path == '/SampleCore'][0]
 
@@ -210,7 +210,7 @@ class XcProjectParserTests(TestCase):
     
     def test_xc_project_parser__gives_grand_children_groups(self):
         project_parser = self.fixture.sample_xc_project_parser
-        xcode_project = project_parser.object
+        xcode_project = project_parser.xc_project
         core_group = [g for g in xcode_project.groups if g.group_path == '/SampleCore'][0]
 
         group = [g for g in core_group.groups if g.group_path == '/SampleCore/Normal'][0]
@@ -220,14 +220,14 @@ class XcProjectParserTests(TestCase):
     
     def test_xc_project_parser__gives_variant_groups(self):
         project_parser = self.fixture.sample_xc_project_parser
-        xcode_project = project_parser.object
+        xcode_project = project_parser.xc_project
         app_group = [g for g in xcode_project.groups if g.group_path == '/SampleiOSApp'][0]
 
         self.assertTrue(XcGroup('/SampleiOSApp/Main.storyboard', '/SampleiOSApp/Main.storyboard') in app_group.groups)
     
     def test_xc_project_parser__set_project_relative_to_true__for_project_relative_group(self):
         project_parser = self.fixture.sample_xc_project_parser
-        xcode_project = project_parser.object
+        xcode_project = project_parser.xc_project
         core_group = [g for g in xcode_project.groups if g.group_path == '/SampleCore'][0]
 
         normal_group = [g for g in core_group.groups if g.group_path == '/SampleCore/Normal'][0]
@@ -242,7 +242,7 @@ class XcProjectParserTests(TestCase):
 
     def test_xc_project_parser__gives_root_files(self):
         project_parser = self.fixture.sample_xc_project_parser
-        xcode_project = project_parser.object
+        xcode_project = project_parser.xc_project
 
         files = xcode_project.files
 
@@ -250,7 +250,7 @@ class XcProjectParserTests(TestCase):
 
     def test_xc_project_parser__gives_files_of_root_groups(self):
         project_parser = self.fixture.sample_xc_project_parser
-        xcode_project = project_parser.object
+        xcode_project = project_parser.xc_project
         
         group = [g for g in xcode_project.groups if g.group_path == '/SampleCore'][0]
 
@@ -259,7 +259,7 @@ class XcProjectParserTests(TestCase):
     
     def test_xc_project_parser__gives_files_of_other_groups(self):
         project_parser = self.fixture.sample_xc_project_parser
-        xcode_project = project_parser.object
+        xcode_project = project_parser.xc_project
         
         core_group = [g for g in xcode_project.groups if g.group_path == '/SampleCore'][0]
         bar_group = [g for g in core_group.groups if g.group_path == '/SampleCore/RelativeToProject'][0]

@@ -1,3 +1,10 @@
+UI_VIEW_CONTROLLER_BASE_CLASSES = {
+    'UIViewController',
+    'UINavigationController',
+    'UISplitViewController',
+    'UITabBarController',
+}
+
 class SwiftAccessibility():
 
     PRIVATE = 'private'
@@ -49,13 +56,6 @@ class SwiftTypeType():
 
 class SwiftType():
 
-    UI_VIEW_CONTROLLER_BASE_CLASSES = {
-        'UIViewController',
-        'UINavigationController',
-        'UISplitViewController',
-        'UITabBarController',
-    }
-
     def __init__(self, type_identifier, name, accessibility, inherited_types=set()):
         assert type_identifier in SwiftTypeType.ALL
         assert accessibility in SwiftAccessibility.ALL
@@ -79,10 +79,10 @@ class SwiftType():
     
     @property
     def inherits_from_view_controller(self):
-        return bool(self.UI_VIEW_CONTROLLER_BASE_CLASSES & self.inherited_types)
+        return bool(UI_VIEW_CONTROLLER_BASE_CLASSES & self.inherited_types)
     
-    def inherits_from_one_of(self, swift_class_names):
-        return bool(swift_class_names & self.inherited_types)
+    def inherits_from_one_of(self, class_names):
+        return bool(class_names & self.inherited_types)
 
 
 class ObjcTypeType():
@@ -121,13 +121,24 @@ class ObjcEnumType():
     }
 
 
+class ObjcInterface():
+    
+    def __init__(self, class_name, super_class_name):
+        self.class_name = class_name
+        self.super_class_name = super_class_name
+
+
 class ObjcType():
 
-    def __init__(self, type_identifier, name):
+    def __init__(self, type_identifier, name, super_class_name=None):
         assert type_identifier in ObjcTypeType.ALL
 
         self.type_identifier = type_identifier
         self.name = name
+        self.super_class_name = super_class_name
 
     def __repr__(self):
         return '{:<15} {}'.format(self.type_identifier, self.name)
+
+    def inherits_from_one_of(self, class_names):
+        return self.super_class_name in class_names

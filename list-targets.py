@@ -41,7 +41,7 @@ except XcodeProjectReadException as e:
     exit()
 
 # Reporter
-reporter = XcProjReporter(xcode_project_reader.object)
+reporter = XcProjReporter(xcode_project_reader.xc_project)
 reporter.print_targets(by_type=(not args.sorted_by_name), verbose=args.verbose)
 if not args.sorted_by_name:
     reporter.print_targets_summary()

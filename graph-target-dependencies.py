@@ -88,7 +88,7 @@ except XcodeProjectReadException as e:
     exit()
 
 # Generator
-graph_generator = XcProjectGraphGenerator(xcode_project_reader.object)
+graph_generator = XcProjectGraphGenerator(xcode_project_reader.xc_project)
 
 # Default file path and title
 if args.dependency_type == 'build':
