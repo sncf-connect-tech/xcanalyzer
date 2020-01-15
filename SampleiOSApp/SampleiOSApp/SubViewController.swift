@@ -23,6 +23,6 @@ class FmkObjCInheritedViewController: ObjcViewController {
 }
 
 
-class ObjCInheritedViewController: MainObjcViewController {
-
-}
+//class ObjCInheritedViewController: MainObjcViewController {
+//
+//}

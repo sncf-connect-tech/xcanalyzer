@@ -14,7 +14,7 @@ from .models import XcTarget, XcProject, XcGroup, XcFile
 
 class XcProjectParser():
 
-    def __init__(self, project_folder_path, verbose=False):
+    def __init__(self, project_folder_path, verbose=True):
         self.project_folder_path = project_folder_path
         self.verbose = verbose
 
@@ -57,15 +57,27 @@ class XcProjectParser():
         if self.verbose:
             print("-> Parse targets")
         self.xc_project.targets = self._parse_targets()
+
+        if self.verbose:
+            print("=> Xcode project loading finished.")
     
     def parse_swift_files(self):
+        if self.verbose:
+            print("-> Parse Swift files.")
+
         for target in self.xc_project.targets_sorted_by_name:
             for swift_file in target.swift_files:
                 parser = SwiftFileParser(project_folder_path=self.xc_project.dirpath,
                                          xc_file=swift_file)
                 parser.parse()
+        
+        if self.verbose:
+            print("=> Swift files parsing finished.")
     
     def parse_objc_files(self):
+        if self.verbose:
+            print("-> Parse Objective-C files.")
+
         objc_super_class_names = dict()
 
         # Targets' objective-C files
@@ -92,6 +104,9 @@ class XcProjectParser():
             for objc_file in target.objc_files:
                 for objc_class in objc_file.objc_classes:
                     objc_class.super_class_name = objc_super_class_names.get(objc_class.name)
+
+        if self.verbose:
+            print("=> Objective-C files parsing finished.")
 
     def _check_folder_path(self):
         if not os.path.isdir(self.project_folder_path):
@@ -377,55 +392,74 @@ class XcProjectParser():
     
     def _find_type(self, swift_objc_type_name):
         for target in self.xc_project.targets_sorted_by_name:
-            for swift_type in target.swift_types:
-                if swift_type.name == swift_objc_type_name:
-                    return swift_type
+            for swift_file in target.swift_files:
+                for swift_type in swift_file.swift_types:
+                    if swift_type.type_identifier != SwiftTypeType.EXTENSION and swift_type.name == swift_objc_type_name:
+                        return swift_type, swift_file
 
-            for objc_type in target.objc_types:
-                if objc_type.name == swift_objc_type_name:
-                    return objc_type
+            for objc_file in target.objc_files:
+                for objc_type in objc_file.objc_types:
+                    if objc_type.name == swift_objc_type_name:
+                        return objc_type, objc_file
 
         for objc_file in self.xc_project.target_less_h_files:
-            for ojbc_type in objc_file.objc_types:
-                if objc_type.name == swift_objc_type_name:
-                    return objc_type
+            for objc_type in objc_file.objc_types:
+                if objc_type.type_identifier != ObjcTypeType.CATEGORY and objc_type.name == swift_objc_type_name:
+                    return objc_type, objc_file
         
         return None
     
-    def _find_files_that_contains(self, swift_objc_type):
+    def _find_files_that_contains(self, swift_objc_type, type_def_file):
         results = []
 
-        source_files = []
+        source_files = set()
 
         for target in self.xc_project.targets_sorted_by_name:
-            source_files += target.swift_files
-            source_files += target.objc_files
+            source_files |= target.swift_files
+            source_files |= target.objc_files
         
         # for objc_file in self.xc_project.target_less_h_files:
         #     pass
+
+        # Only used in case the source_file contains the definition of the type
+        occurrences_count_in_def_file = 0
 
         for source_file in source_files:
             xc_filepath = self.xc_project.relative_path_for_file(source_file)
             with open(xc_filepath) as opened_file:
                 for line in opened_file:
-                    if re.search(r'\W{}\W'.format(swift_objc_type.name), line):
-                        results.append(source_file)
-                        break
-        
-        for result in results:
-            print(result)
+                    if re.search(r'^(?!//).*\W{}\W'.format(swift_objc_type.name), line):
+                        if type_def_file != source_file:
+                            # We are not in the file where the type is defined
+                            # so we can stop iterating lines.
+                            results.append(source_file)
+                            break
+                        else:
+                            # We continue iterating lines to count
+                            # the number of occurrences
+                            occurrences_count_in_def_file += 1
 
-        return results
+        return results, occurrences_count_in_def_file
 
     def find_occurrences_of(self, swift_objc_type_name):
         # Check the type exist in the project
-        found_type = self._find_type(swift_objc_type_name)
+        found_type, xc_file = self._find_type(swift_objc_type_name)
+
+        print(found_type)
+        print(xc_file)
 
         if found_type is None:
             raise ValueError("Type not found in the Xcode project: '{}'".format(swift_objc_type_name))
 
         # Find files in which the type occurs
-        return self._find_files_that_contains(found_type)
+        source_files_that_use, occurrences_count_in_def_file = self._find_files_that_contains(found_type, xc_file)
+
+        return {
+            "swift_or_objc_type": found_type,
+            "source_file_containing_type_definition": xc_file, 
+            "occurrences_count_in_definition_file": occurrences_count_in_def_file,
+            "source_files_in_which_type_occurs": source_files_that_use,
+        }
 
 
 class SwiftFileParser():

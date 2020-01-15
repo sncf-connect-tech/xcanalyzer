@@ -1,5 +1,5 @@
 //
-//  MyProtocol.h
+//  MyObjcProtocol2.h
 //  SampleCore
 //
 //  Created by Deffrasnes Ghislain on 26/04/2019.
@@ -10,7 +10,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@protocol MyProtocol <NSObject>
+@protocol MyObjcProtocol2 <NSObject>
 
 @end
 

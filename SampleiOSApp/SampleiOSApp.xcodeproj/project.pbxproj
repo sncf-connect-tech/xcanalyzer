@@ -27,7 +27,7 @@
 		DF186B7E226A0D36005C5DC7 /* Accessors.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF186B7D226A0D36005C5DC7 /* Accessors.swift */; };
 		DF1B427D227320DE009B0355 /* NSString+Category.h in Headers */ = {isa = PBXBuildFile; fileRef = DF1B427B227320DE009B0355 /* NSString+Category.h */; };
 		DF1B427E227320DE009B0355 /* NSString+Category.m in Sources */ = {isa = PBXBuildFile; fileRef = DF1B427C227320DE009B0355 /* NSString+Category.m */; };
-		DF1B4280227326D6009B0355 /* MyProtocol.h in Headers */ = {isa = PBXBuildFile; fileRef = DF1B427F227326D6009B0355 /* MyProtocol.h */; };
+		DF1B4280227326D6009B0355 /* MyObjcProtocol2.h in Headers */ = {isa = PBXBuildFile; fileRef = DF1B427F227326D6009B0355 /* MyObjcProtocol2.h */; };
 		DF1B42832273853B009B0355 /* MySecondObjCClass.h in Headers */ = {isa = PBXBuildFile; fileRef = DF1B42812273853B009B0355 /* MySecondObjCClass.h */; };
 		DF1B42842273853B009B0355 /* MySecondObjCClass.m in Sources */ = {isa = PBXBuildFile; fileRef = DF1B42822273853B009B0355 /* MySecondObjCClass.m */; };
 		DF1B4286227387E5009B0355 /* MySecondObjCClass.m in Sources */ = {isa = PBXBuildFile; fileRef = DF1B42822273853B009B0355 /* MySecondObjCClass.m */; };
@@ -164,7 +164,7 @@
 		DF186B7D226A0D36005C5DC7 /* Accessors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Accessors.swift; sourceTree = "<group>"; };
 		DF1B427B227320DE009B0355 /* NSString+Category.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSString+Category.h"; sourceTree = "<group>"; };
 		DF1B427C227320DE009B0355 /* NSString+Category.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSString+Category.m"; sourceTree = "<group>"; };
-		DF1B427F227326D6009B0355 /* MyProtocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MyProtocol.h; sourceTree = "<group>"; };
+		DF1B427F227326D6009B0355 /* MyObjcProtocol2.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MyObjcProtocol2.h; sourceTree = "<group>"; };
 		DF1B42812273853B009B0355 /* MySecondObjCClass.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MySecondObjCClass.h; sourceTree = "<group>"; };
 		DF1B42822273853B009B0355 /* MySecondObjCClass.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MySecondObjCClass.m; sourceTree = "<group>"; };
 		DF1B428722738819009B0355 /* MySharedSwiftClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MySharedSwiftClass.swift; sourceTree = "<group>"; };
@@ -338,12 +338,12 @@
 				DF1B42822273853B009B0355 /* MySecondObjCClass.m */,
 				DF1B427B227320DE009B0355 /* NSString+Category.h */,
 				DF1B427C227320DE009B0355 /* NSString+Category.m */,
-				DF1B427F227326D6009B0355 /* MyProtocol.h */,
+				DF1B427F227326D6009B0355 /* MyObjcProtocol2.h */,
 				DF186B7D226A0D36005C5DC7 /* Accessors.swift */,
 				DF64A40A226F8F2700B0833F /* MyClass+Extension.swift */,
 				DF1B428722738819009B0355 /* MySharedSwiftClass.swift */,
-				DF8BA35622B3FB8500DB1326 /* MySwiftClass.swift */,
 				DF8BA35822B3FB9D00DB1326 /* Uses.swift */,
+				DF8BA35622B3FB8500DB1326 /* MySwiftClass.swift */,
 				DFA25C842370C7BE0004043E /* MyViewController.swift */,
 				DF3AB33523CF2AA3003070A0 /* SwiftTypes.swift */,
 			);
@@ -501,7 +501,7 @@
 				DF4ACD67224E1C2F00984A77 /* SampleCore.h in Headers */,
 				DF1B427D227320DE009B0355 /* NSString+Category.h in Headers */,
 				DF1B42832273853B009B0355 /* MySecondObjCClass.h in Headers */,
-				DF1B4280227326D6009B0355 /* MyProtocol.h in Headers */,
+				DF1B4280227326D6009B0355 /* MyObjcProtocol2.h in Headers */,
 				DF186B7A22690AFF005C5DC7 /* MyObjcClass.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

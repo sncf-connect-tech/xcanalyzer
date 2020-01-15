@@ -10,4 +10,6 @@ import UIKit
 
 class MySharedSwiftClass {
 
+    var instance: MySharedSwiftClass!
+
 }

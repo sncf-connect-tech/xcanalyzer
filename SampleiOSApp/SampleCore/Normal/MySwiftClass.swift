@@ -17,3 +17,7 @@ class MySwiftClass {
     }
 
 }
+
+extension MySwiftClass {
+    
+}

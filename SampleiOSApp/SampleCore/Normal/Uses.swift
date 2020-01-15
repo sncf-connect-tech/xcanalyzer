@@ -83,3 +83,7 @@ class Uses {
     }
 
 }
+
+extension MySwiftClass {
+
+}

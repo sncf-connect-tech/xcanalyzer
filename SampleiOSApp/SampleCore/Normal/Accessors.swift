@@ -15,3 +15,9 @@ internal struct InternalStruct {}
 struct DefaultAccessStruct {}
 
 public struct PublicStruct {}
+
+
+
+extension MySwiftClass {
+    
+}
