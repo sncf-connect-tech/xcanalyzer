@@ -777,3 +777,29 @@ class XcProjReporter():
 
         # Total view controllers count
         cprint('{} view controller(s) in total for the app {}'.format(total_view_controllers_count, app), attrs=['bold'])
+    
+
+class OccurrencesReporter():
+    
+    def print_type_occurrences_report(self, report, indent=0):
+        # Place of the type declaration
+        cprint("{}Declaration of type `{}` was found in file `{}`".format(
+            ' ' * indent,
+            report['swift_or_objc_type'].name,
+            report['source_file_containing_type_definition'].filepath),
+            attrs=['bold'])
+
+        # Other occurrences in the declaration source file
+        occurrences_count = report['occurrences_count_in_definition_file']
+        if occurrences_count >= 2:
+            cprint("{}In this file, {} line(s) of code contain(s) occurrence(s) of this type (excluding the line containing the declaration).".format(
+                ' ' * indent,
+                occurrences_count - 1))
+
+        # Other files that contains occurrences of the type
+        cprint("{}Other sources files containing occurrences of `{}`:".format(
+            ' ' * indent,
+            report['swift_or_objc_type'].name), attrs=['bold'])
+        source_files = report['source_files_in_which_type_occurs']
+        for source_file in source_files:
+            print(source_file.filepath)

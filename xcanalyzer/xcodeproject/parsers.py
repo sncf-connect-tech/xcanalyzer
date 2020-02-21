@@ -407,7 +407,7 @@ class XcProjectParser():
                 if objc_type.type_identifier != ObjcTypeType.CATEGORY and objc_type.name == swift_objc_type_name:
                     return objc_type, objc_file
         
-        return None
+        return (None, None)
     
     def _find_files_that_contains(self, swift_objc_type, type_def_file):
         results = []
@@ -444,9 +444,6 @@ class XcProjectParser():
     def find_occurrences_of(self, swift_objc_type_name):
         # Check the type exist in the project
         found_type, xc_file = self._find_type(swift_objc_type_name)
-
-        print(found_type)
-        print(xc_file)
 
         if found_type is None:
             raise ValueError("Type not found in the Xcode project: '{}'".format(swift_objc_type_name))

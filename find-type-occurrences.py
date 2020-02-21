@@ -6,7 +6,7 @@ import argparse
 import os
 
 from xcanalyzer.xcodeproject.parsers import XcProjectParser
-from xcanalyzer.xcodeproject.generators import XcProjReporter
+from xcanalyzer.xcodeproject.generators import OccurrencesReporter
 from xcanalyzer.xcodeproject.exceptions import XcodeProjectReadException
 
 
@@ -49,19 +49,4 @@ except XcodeProjectReadException as e:
     print("An error occurred when loading Xcode project: {}".format(e.message))
     exit()
 
-# Place of the type declaration
-cprint("Declaration of type `{}` was found in file `{}`".format(
-    report['swift_or_objc_type'].name,
-    report['source_file_containing_type_definition'].filepath),
-    attrs=['bold'])
-
-# Other occurrences in the declaration source file
-occurrences_count = report['occurrences_count_in_definition_file']
-if occurrences_count >= 2:
-    cprint("In this file, {} line(s) of code contain(s) occurrence(s) of this type (excluding the line containing the declaration).".format(occurrences_count - 1))
-
-# Other files that contains occurrences of the type
-cprint("Other sources files containing occurrences of `{}`:".format(report['swift_or_objc_type'].name), attrs=['bold'])
-source_files = report["source_files_in_which_type_occurs"]
-for source_file in source_files:
-    print(source_file.filepath)
+OccurrencesReporter().print_type_occurrences_report(report)
