@@ -34,6 +34,23 @@ enum MyEnum {
 }
 
 
+struct ContainerStruct {
+
+    enum ContainedEnum {
+
+    }
+
+    struct InnerContainedStruct {
+
+        enum InnerContainerEnum {
+
+        }
+
+    }
+
+}
+
+
 extension MyEnum {
 
 }

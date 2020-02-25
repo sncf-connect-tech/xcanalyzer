@@ -65,6 +65,7 @@ class SwiftType():
         self.accessibility = accessibility
         self.inherited_types = inherited_types
 
+        self.parent_type = None
         self.inner_types = list()
 
         self.used_types = set()
@@ -83,6 +84,16 @@ class SwiftType():
     
     def inherits_from_one_of(self, class_names):
         return bool(class_names & self.inherited_types)
+    
+    @property
+    def inner_types_all(self):
+        results = []
+
+        for inner_type in self.inner_types:
+            results.append(inner_type)
+            results += inner_type.inner_types_all
+        
+        return results
 
 
 class ObjcTypeType():

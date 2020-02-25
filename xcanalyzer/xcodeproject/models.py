@@ -244,7 +244,7 @@ class XcProject():
         return results
 
     @property
-    def swift_files(self):
+    def target_swift_files(self):
         """ All targets' swift files. """
         results = set()
 
@@ -253,6 +253,15 @@ class XcProject():
 
         return results
 
+    @property
+    def swift_types(self):
+        results = []
+        
+        for target in self.targets_sorted_by_name:
+            results += target.swift_types
+        
+        return results
+    
     def swift_types_filtered(self, type_in=SwiftTypeType.ALL, type_not_in=set(), flat=False):
         assert type_in.issubset(SwiftTypeType.ALL)
         assert type_not_in.issubset(SwiftTypeType.ALL)
@@ -282,21 +291,12 @@ class XcProject():
             return grouped_results
         
     @property
-    def swift_types(self):
-        results = []
-        
-        for swift_file in self.swift_files:
-            results += swift_file.swift_types
-        
-        return results
-    
-    @property
     def swift_extensions_grouped_by_scope(self):
         file_scoped_extensions = []
         remaining_extensions = []
 
         # File scoped extensions
-        for swift_file in self.swift_files:
+        for swift_file in self.target_swift_files:
             for swift_extension in swift_file.swift_extensions:
                 non_extension_swift_types = swift_file.swift_types_filtered(type_not_in={SwiftTypeType.EXTENSION})
 
@@ -429,6 +429,9 @@ class XcTarget():
         
         for swift_file in self.swift_files:
             results += swift_file.swift_types
+                
+            for swift_type in swift_file.swift_types:
+                results += swift_type.inner_types_all
         
         return results
 

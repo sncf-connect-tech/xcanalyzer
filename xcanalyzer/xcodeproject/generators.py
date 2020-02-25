@@ -224,6 +224,12 @@ class XcProjReporter():
             
             print()
 
+    def _print_swift_inner_types(self, inner_types, level):
+        for inner_swift_type in inner_types:
+            indent = '    ' * level
+            print('    {}└──{}'.format(indent, inner_swift_type))
+            self._print_swift_inner_types(inner_swift_type.inner_types, level + 1)
+
     def _print_swift_types(self, swift_files, display_files):
         for swift_file in swift_files:
             # File
@@ -233,6 +239,9 @@ class XcProjReporter():
             # Swift types
             for swift_type in swift_file.swift_types:
                 print('    {}'.format(swift_type))
+
+                # Inner Swift types
+                self._print_swift_inner_types(swift_type.inner_types, 0)
     
     def _print_objc_types(self, objc_files, display_files):
         for objc_file in objc_files:

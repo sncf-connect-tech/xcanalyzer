@@ -485,14 +485,14 @@ class SwiftFileParser():
         swift_file_structure = json.loads(result.stdout)
 
         debug = False
-        # debug = bool('MyViewController' in filepath)
+        # debug = bool('MyTypes' in filepath)
 
         root_substructures = swift_file_structure.get('key.substructure', []).copy()
-        swift_parser = SwiftCodeParser(substructures=root_substructures, debug=debug)
+        swift_parser = SwiftCodeParser(substructures=root_substructures, debug=False)
         swift_parser.parse()
 
         if debug:
-            import pprint; pprint.pprint(root_substructures)  
+            import pprint; pprint.pprint(swift_file_structure)
 
         self.xc_file.swift_types = swift_parser.swift_types
 
@@ -529,6 +529,13 @@ class SwiftCodeParser():
                 # Add type to file
                 swift_types.append(swift_type)
 
+                # Inner types
+                substructures = substructure.get('key.substructure', [])
+                inner_types, used_types = self.parse_substructures(substructures)
+                swift_type.inner_types += inner_types
+                for inner_type in swift_type.inner_types: inner_type.parent_type = swift_type
+                swift_type.used_types |= used_types
+
                 # Then we get the following substructure and check that it is this type body.
                 if substructs:
                     potential_closure = substructs.pop()
@@ -542,18 +549,20 @@ class SwiftCodeParser():
                             if body_substructures:
                                 inner_types, used_types = self.parse_substructures(body_substructures)
                                 swift_type.inner_types = inner_types
+                                for inner_type in swift_type.inner_types: inner_type.parent_type = swift_type
                                 swift_type.used_types = used_types
 
                                 is_closure = True
                     
-                    # Was not aclosure so we put it back to the substructures to manage
+                    # Was not a closure so we put it back to the substructures to manage
                     if not is_closure:
                         substructs.append(potential_closure)
             
             # Member declaration
             elif substructure.get('key.kind') == 'source.lang.swift.decl.var.local':
-                type_name = self.unwrapped_if_optional(substructure['key.typename'])
-                used_types.add(type_name)
+                type_name = substructure.get('key.typename')
+                if type_name:
+                    used_types.add(self.unwrapped_if_optional(type_name))
             
             # Method declaration
             elif substructure.get('key.kind') == 'source.lang.swift.decl.function.free':
