@@ -70,6 +70,7 @@
 		DFB4DBC1223997E6007DB426 /* SampleUI.h in Headers */ = {isa = PBXBuildFile; fileRef = DFB4DBB1223997E6007DB426 /* SampleUI.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		DFB4DBC4223997E6007DB426 /* SampleUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DFB4DBAF223997E5007DB426 /* SampleUI.framework */; };
 		DFB4DBC5223997E6007DB426 /* SampleUI.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = DFB4DBAF223997E5007DB426 /* SampleUI.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		DFDD3CF62408218A005EFA36 /* 3generationViewControllers.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFDD3CF52408218A005EFA36 /* 3generationViewControllers.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -215,6 +216,7 @@
 		DFB4DBB7223997E6007DB426 /* SampleUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SampleUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		DFB4DBBE223997E6007DB426 /* SampleUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleUITests.swift; sourceTree = "<group>"; };
 		DFB4DBC0223997E6007DB426 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		DFDD3CF52408218A005EFA36 /* 3generationViewControllers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = 3generationViewControllers.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -405,6 +407,7 @@
 				DFB4DB5922397A49007DB426 /* AppDelegate.swift */,
 				DFB4DB5B22397A49007DB426 /* ViewController.swift */,
 				DF56F75823CE654E00FDAA32 /* SubViewController.swift */,
+				DFDD3CF52408218A005EFA36 /* 3generationViewControllers.swift */,
 				DF3AB33223CF0B01003070A0 /* MainObjcViewController.h */,
 				DF3AB33323CF0B01003070A0 /* MainObjcViewController.m */,
 				DFB4DB5D22397A49007DB426 /* Main.storyboard */,
@@ -780,6 +783,7 @@
 				DFB4DB5C22397A49007DB426 /* ViewController.swift in Sources */,
 				DF186B57225F49FC005C5DC7 /* MyIntents.intentdefinition in Sources */,
 				DF56F75923CE654E00FDAA32 /* SubViewController.swift in Sources */,
+				DFDD3CF62408218A005EFA36 /* 3generationViewControllers.swift in Sources */,
 				DF1B4286227387E5009B0355 /* MySecondObjCClass.m in Sources */,
 				DF186B5B225F4A3A005C5DC7 /* LocalizedIntents.intentdefinition in Sources */,
 				DF3AB33423CF0B01003070A0 /* MainObjcViewController.m in Sources */,

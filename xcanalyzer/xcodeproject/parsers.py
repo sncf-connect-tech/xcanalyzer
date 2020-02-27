@@ -629,7 +629,7 @@ class SwiftCodeParser():
         return SwiftType(type_identifier=type_identifier,
                          name=substructure.get('key.name'),
                          accessibility=accessibility,
-                         inherited_types=inherited_types)
+                         raw_inherited_types=inherited_types)
 
     def parse_body_substructure(self, substructure):
         used_types = set()

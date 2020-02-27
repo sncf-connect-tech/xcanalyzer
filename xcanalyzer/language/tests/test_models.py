@@ -18,22 +18,27 @@ class SwiftTypeTests(TestCase):
         self.assertEqual(extension.inherits_from_view_controller, False)
 
     def test__inherits_from_view_controller__returns_false__when_class_not_inheriting_ui_view_controller(self):
-        my_class_1 = SwiftType('class', 'MyClass', 'internal', inherited_types=set())
-        my_class_2 = SwiftType('class', 'MyClass', 'internal', inherited_types={'OtherThanUIViewController'})
+        my_class_1 = SwiftType('class', 'MyClass', 'internal', raw_inherited_types=set())
+        my_class_2 = SwiftType('class', 'MyClass', 'internal', raw_inherited_types={'OtherThanUIViewController'})
 
         self.assertEqual(my_class_1.inherits_from_view_controller, False)
         self.assertEqual(my_class_2.inherits_from_view_controller, False)
 
     def test__inherits_from_view_controller__returns_true__when_class_inherits_ui_view_controller(self):
-        my_class_1 = SwiftType('class', 'MyClass', 'internal', inherited_types={'UIViewController'})
-        my_class_2 = SwiftType('class', 'MyClass', 'internal', inherited_types={'UINavigationController'})
-        my_class_3 = SwiftType('class', 'MyClass', 'internal', inherited_types={'UITabBarController'})
+        my_class_1 = SwiftType('class', 'MyClass', 'internal', raw_inherited_types={'UIViewController'})
+        my_class_2 = SwiftType('class', 'MyClass', 'internal', raw_inherited_types={'UINavigationController'})
+        my_class_3 = SwiftType('class', 'MyClass', 'internal', raw_inherited_types={'UITabBarController'})
 
         self.assertEqual(my_class_1.inherits_from_view_controller, True)
         self.assertEqual(my_class_2.inherits_from_view_controller, True)
         self.assertEqual(my_class_3.inherits_from_view_controller, True)
 
     def test__inherits_from_view_controller__returns_true__when_class_inherits_ui_view_controller__and_other_protocol(self):
-        my_class = SwiftType('class', 'MyClass', 'internal', inherited_types={'UIViewController', 'Protocol1', 'Procotol2'})
+        my_class = SwiftType('class', 'MyClass', 'internal', raw_inherited_types={'UIViewController', 'Protocol1', 'Procotol2'})
         
+        self.assertEqual(my_class.inherits_from_view_controller, True)
+
+    def test__inherits_from_view_controller__returns_true_when_class_inherits__from_generic_ui_view_controller(self):
+        my_class = SwiftType('class', 'MyClass', 'internal', raw_inherited_types={'UIViewController<Bool>'})
+
         self.assertEqual(my_class.inherits_from_view_controller, True)

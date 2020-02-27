@@ -56,14 +56,14 @@ class SwiftTypeType():
 
 class SwiftType():
 
-    def __init__(self, type_identifier, name, accessibility, inherited_types=set()):
+    def __init__(self, type_identifier, name, accessibility, raw_inherited_types=set()):
         assert type_identifier in SwiftTypeType.ALL
         assert accessibility in SwiftAccessibility.ALL
 
         self.type_identifier = type_identifier
         self.name = name
         self.accessibility = accessibility
-        self.inherited_types = inherited_types
+        self.raw_inherited_types = raw_inherited_types
 
         self.parent_type = None
         self.inner_types = list()
@@ -78,6 +78,19 @@ class SwiftType():
             self.name == other.name and \
             self.accessibility == other.accessibility
     
+    @property
+    def inherited_types(self):
+        results = set()
+        
+        for raw_inherited_type in self.raw_inherited_types:
+            if '<' in raw_inherited_type:
+                inherited_type = raw_inherited_type[:raw_inherited_type.index('<')]
+                results.add(inherited_type)
+            else:
+                results.add(raw_inherited_type)
+
+        return results
+
     @property
     def inherits_from_view_controller(self):
         return bool(UI_VIEW_CONTROLLER_BASE_CLASSES & self.inherited_types)
