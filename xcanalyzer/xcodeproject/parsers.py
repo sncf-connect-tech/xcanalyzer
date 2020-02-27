@@ -1,4 +1,5 @@
 import json
+import pickle
 import os
 import re
 import subprocess
@@ -30,6 +31,12 @@ class XcProjectParser():
             print("-> Load pbxproj")
         pbxproj_path = '{}/{}/project.pbxproj'.format(self.project_folder_path, xcode_proj_name)
 
+        # Load from cache if existing
+        xc_project_from_cache = self.load_from_cache(xcode_proj_name)
+        if xc_project_from_cache is not None:
+            self.xc_project = xc_project_from_cache
+            return
+
         with open(pbxproj_path, 'r') as f:  # To avoid ResourceWarning: unclosed file
             tree = osp.OpenStepDecoder.ParseFromFile(f)
             self.xcode_project = XcodeProject(tree, pbxproj_path)
@@ -43,10 +50,10 @@ class XcProjectParser():
 
         # Output object
         self.xc_project = XcProject(self.project_folder_path,
-                                xcode_proj_name,
-                                targets=set(),
-                                groups=list(),
-                                files=root_files)
+                                    xcode_proj_name,
+                                    targets=set(),
+                                    groups=list(),
+                                    files=root_files)
 
         # Groups
         if self.verbose:
@@ -60,8 +67,27 @@ class XcProjectParser():
 
         if self.verbose:
             print("=> Xcode project loading finished.")
+
+        self.save_project_to_cache()
     
+    def save_project_to_cache(self):
+        project_name = self.xc_project.name
+        with open('build/{}.pkl'.format(project_name), 'wb') as output:
+            pickle.dump(self.xc_project, output, pickle.HIGHEST_PROTOCOL)
+
+    def load_from_cache(self, project_name):
+        cache_filepath = 'build/{}.pkl'.format(project_name)
+        
+        if not os.path.exists(cache_filepath):
+            return None
+
+        with open(cache_filepath, 'rb') as input_data:
+            return pickle.load(input_data)
+
     def parse_swift_files(self):
+        if self.xc_project.swift_files_parsed:
+            return
+
         if self.verbose:
             print("-> Parse Swift files.")
 
@@ -73,8 +99,15 @@ class XcProjectParser():
         
         if self.verbose:
             print("=> Swift files parsing finished.")
+        
+        self.xc_project.swift_files_parsed = True
+
+        self.save_project_to_cache()
     
     def parse_objc_files(self):
+        if self.xc_project.objc_files_parsed:
+            return
+
         if self.verbose:
             print("-> Parse Objective-C files.")
 
@@ -107,6 +140,10 @@ class XcProjectParser():
 
         if self.verbose:
             print("=> Objective-C files parsing finished.")
+        
+        self.xc_project.objc_files_parsed = True
+
+        self.save_project_to_cache()
 
     def _check_folder_path(self):
         if not os.path.isdir(self.project_folder_path):

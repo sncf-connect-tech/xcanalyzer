@@ -80,6 +80,9 @@ class XcProject():
         self.targets = targets
         self.groups = groups
         self.root_files = files
+
+        self.swift_files_parsed = False
+        self.objc_files_parsed = False
     
     def targets_of_type(self, target_type):
         results = {t for t in self.targets if t.type == target_type}
