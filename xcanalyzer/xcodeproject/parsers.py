@@ -24,15 +24,15 @@ class XcProjectParser():
         self._check_folder_path()
 
         # Find xcode proj folder
-        xcode_proj_name = self._find_xcodeproj()
+        self.xcode_proj_name = self._find_xcodeproj()
 
         # Load pbxproj
         if self.verbose:
             print("-> Load pbxproj")
-        pbxproj_path = '{}/{}/project.pbxproj'.format(self.project_folder_path, xcode_proj_name)
+        pbxproj_path = '{}/{}/project.pbxproj'.format(self.project_folder_path, self.xcode_proj_name)
 
         # Load from cache if existing
-        xc_project_from_cache = self.load_from_cache(xcode_proj_name)
+        xc_project_from_cache = self.load_from_cache()
         if xc_project_from_cache is not None:
             self.xc_project = xc_project_from_cache
             return
@@ -50,7 +50,7 @@ class XcProjectParser():
 
         # Output object
         self.xc_project = XcProject(self.project_folder_path,
-                                    xcode_proj_name,
+                                    self.xcode_proj_name,
                                     targets=set(),
                                     groups=list(),
                                     files=root_files)
@@ -70,18 +70,23 @@ class XcProjectParser():
 
         self.save_project_to_cache()
     
+    @property
+    def cache_filepath(self):
+        command = ['git', '-C', self.project_folder_path, 'rev-parse', 'HEAD']
+        result = subprocess.run(command, capture_output=True)
+        git_ref = result.stdout.decode()[:8]
+        
+        return 'build/{}_{}.pkl'.format(self.xcode_proj_name, git_ref)
+
     def save_project_to_cache(self):
-        project_name = self.xc_project.name
-        with open('build/{}.pkl'.format(project_name), 'wb') as output:
+        with open(self.cache_filepath, 'wb') as output:
             pickle.dump(self.xc_project, output, pickle.HIGHEST_PROTOCOL)
 
-    def load_from_cache(self, project_name):
-        cache_filepath = 'build/{}.pkl'.format(project_name)
-        
-        if not os.path.exists(cache_filepath):
+    def load_from_cache(self):
+        if not os.path.exists(self.cache_filepath):
             return None
 
-        with open(cache_filepath, 'rb') as input_data:
+        with open(self.cache_filepath, 'rb') as input_data:
             return pickle.load(input_data)
 
     def parse_swift_files(self):
