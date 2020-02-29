@@ -27,15 +27,18 @@ class XcProjectParser():
         self.xcode_proj_name = self._find_xcodeproj()
 
         # Load pbxproj
-        if self.verbose:
-            print("-> Load pbxproj")
         pbxproj_path = '{}/{}/project.pbxproj'.format(self.project_folder_path, self.xcode_proj_name)
 
         # Load from cache if existing
         xc_project_from_cache = self.load_from_cache()
         if xc_project_from_cache is not None:
+            if self.verbose:
+                print("-> Load pbxproj from cache")
             self.xc_project = xc_project_from_cache
             return
+
+        if self.verbose:
+            print("-> Load pbxproj")
 
         with open(pbxproj_path, 'r') as f:  # To avoid ResourceWarning: unclosed file
             tree = osp.OpenStepDecoder.ParseFromFile(f)
@@ -451,39 +454,50 @@ class XcProjectParser():
         
         return (None, None)
     
-    def _find_files_that_contains(self, swift_objc_type, type_def_file):
-        results = []
+    def _find_files_that_contains(self, swift_objc_types_with_def_files, source_files):
+        assert type(swift_objc_types_with_def_files) == list
+        assert type(source_files) == set
 
-        source_files = set()
-
-        for target in self.xc_project.targets_sorted_by_name:
-            source_files |= target.swift_files
-            source_files |= target.objc_files
+        # Prepare occurrences
+        occurrences = list()
+        for swift_objc_type, type_def_file in swift_objc_types_with_def_files:
+            occurrence = TypeOccurrences(swift_or_objc_type=swift_objc_type,
+                                        definition_file=type_def_file,
+                                        source_files_that_use=set(),  # filled in the following lines
+                                        occurrences_count_in_definition_file=0)  # filled in the following lines
+            occurrences.append(occurrence)
         
-        # for objc_file in self.xc_project.target_less_h_files:
-        #     pass
-
-        # Only used in case the source_file contains the definition of the type
-        occurrences_count_in_def_file = 0
-
-        for source_file in source_files:
+        # Regex
+        regex = list()
+        for swift_objc_type, type_def_file in swift_objc_types_with_def_files:
+            pattern = re.compile(r'^(?!//).*\W{}\W'.format(swift_objc_type.name))
+            regex.append(pattern)
+        
+        source_files_count = len(source_files)
+        for file_index, source_file in enumerate(source_files):
             xc_filepath = self.xc_project.relative_path_for_file(source_file)
+            print('{}/{} Searching: {}'.format(file_index, source_files_count, xc_filepath))
             with open(xc_filepath) as opened_file:
                 for line in opened_file:
-                    if re.search(r'^(?!//).*\W{}\W'.format(swift_objc_type.name), line):
-                        if type_def_file != source_file:
-                            # We are not in the file where the type is defined
-                            # so we can stop iterating lines.
-                            results.append(source_file)
-                            break
+                    if line.startswith('//'):  # optimization
+                        continue
+
+                    for (index, (swift_objc_type, type_def_file)) in enumerate(swift_objc_types_with_def_files):
+
+                        if swift_objc_type.name not in line:  # optimization
+                            continue
+                        
+                        if not regex[index].search(line):
+                            continue
+
+                        if type_def_file == source_file:
+                            occurrences[index].occurrences_count_in_definition_file += 1
                         else:
-                            # We continue iterating lines to count
-                            # the number of occurrences
-                            occurrences_count_in_def_file += 1
+                            occurrences[index].source_files_that_use.add(source_file)
 
-        return results, occurrences_count_in_def_file
+        return occurrences
 
-    def find_occurrences_of(self, swift_objc_type_name):
+    def find_type_and_occurrences(self, swift_objc_type_name):
         # Check the type exist in the project
         found_type, xc_file = self._find_type(swift_objc_type_name)
 
@@ -491,14 +505,12 @@ class XcProjectParser():
             raise ValueError("Type not found in the Xcode project: '{}'".format(swift_objc_type_name))
 
         # Find files in which the type occurs
-        source_files_that_use, occurrences_count_in_def_file = self._find_files_that_contains(found_type, xc_file)
+        return self._find_files_that_contains([(found_type, xc_file)], self.xc_project.source_files)[0]
 
-        return {
-            "swift_or_objc_type": found_type,
-            "source_file_containing_type_definition": xc_file, 
-            "occurrences_count_in_definition_file": occurrences_count_in_def_file,
-            "source_files_in_which_type_occurs": source_files_that_use,
-        }
+    def find_occurrences_of(self, swift_objc_types_with_files, in_target, and_other_source_files):
+        source_files = in_target.dependant_source_files | and_other_source_files
+
+        return self._find_files_that_contains(swift_objc_types_with_files, source_files)
 
 
 class SwiftFileParser():
@@ -783,3 +795,15 @@ class ObjcFileParser():
                     objc_type = ObjcType(type_identifier=ObjcTypeType.PROTOCOL, name=protocol_name)
                     self.xc_file.objc_types.append(objc_type)
 
+
+class TypeOccurrences():
+
+    def __init__(self,
+                 swift_or_objc_type,
+                 definition_file,
+                 source_files_that_use,
+                 occurrences_count_in_definition_file):
+        self.swift_or_objc_type = swift_or_objc_type
+        self.definition_file = definition_file
+        self.source_files_that_use = source_files_that_use
+        self.occurrences_count_in_definition_file = occurrences_count_in_definition_file

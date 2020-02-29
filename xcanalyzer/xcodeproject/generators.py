@@ -790,25 +790,38 @@ class XcProjReporter():
 
 class OccurrencesReporter():
     
-    def print_type_occurrences_report(self, report, indent=0):
+    def print_type_occurrences_one_type(self, type_occurrences, indent=0):
         # Place of the type declaration
         cprint("{}Declaration of type `{}` was found in file `{}`".format(
             ' ' * indent,
-            report['swift_or_objc_type'].name,
-            report['source_file_containing_type_definition'].filepath),
+            type_occurrences.swift_or_objc_type.name,
+            type_occurrences.definition_file.filepath),
             attrs=['bold'])
 
         # Other occurrences in the declaration source file
-        occurrences_count = report['occurrences_count_in_definition_file']
-        if occurrences_count >= 2:
-            cprint("{}In this file, {} line(s) of code contain(s) occurrence(s) of this type (excluding the line containing the declaration).".format(
-                ' ' * indent,
-                occurrences_count - 1))
+        def_occurrences_count = type_occurrences.occurrences_count_in_definition_file
+        if def_occurrences_count >= 2:
+            message_format = "{}In this file, {} line(s) of code contain(s) occurrence(s) of this type (excluding the line containing the declaration)."
+            cprint(message_format.format(' ' * indent,
+                                         def_occurrences_count - 1))
 
         # Other files that contains occurrences of the type
         cprint("{}Other sources files containing occurrences of `{}`:".format(
             ' ' * indent,
-            report['swift_or_objc_type'].name), attrs=['bold'])
-        source_files = report['source_files_in_which_type_occurs']
-        for source_file in source_files:
+            type_occurrences.swift_or_objc_type.name), attrs=['bold'])
+        for source_file in type_occurrences.source_files_that_use:
             print(source_file.filepath)
+    
+    def print_type_occurrences_multiple_types(self, type_occurrences_set):
+        total_type_count = len(type_occurrences_set)
+
+        for index, type_occurrences in enumerate(type_occurrences_set):
+            inside_count = type_occurrences.occurrences_count_in_definition_file
+            outside_count = len(type_occurrences.source_files_that_use)
+
+            message_format = "{:<7} {:<15} {:<40} \"Inside decl. occurrences\": {:<3} | \"Outside decl. occurrences\": {:<3}"
+            print(message_format.format('/'.join([str(index), str(total_type_count)]),
+                                        type_occurrences.swift_or_objc_type.type_identifier,
+                                        type_occurrences.swift_or_objc_type.name,
+                                        inside_count,
+                                        outside_count))

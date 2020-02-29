@@ -44,9 +44,9 @@ try:
     xcode_project_reader.parse_objc_files()
 
     # Find occurrences of the given type
-    report = xcode_project_reader.find_occurrences_of(args.type)
+    type_occurrences = xcode_project_reader.find_type_and_occurrences(args.type)
 except XcodeProjectReadException as e:
     print("An error occurred when loading Xcode project: {}".format(e.message))
     exit()
 
-OccurrencesReporter().print_type_occurrences_report(report)
+OccurrencesReporter().print_type_occurrences_one_type(type_occurrences)

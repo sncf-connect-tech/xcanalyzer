@@ -98,16 +98,18 @@ class SwiftType():
     def inherits_from_one_of(self, class_names):
         return bool(class_names & self.inherited_types)
     
-    @property
-    def inner_types_all(self):
+    def inner_types_all_filtered(self, type_not_in=set()):
         results = []
 
         for inner_type in self.inner_types:
             results.append(inner_type)
             results += inner_type.inner_types_all
         
-        return results
+        return [t for t in results if t.type_identifier not in type_not_in]
 
+    @property
+    def inner_types_all(self):
+        return self.inner_types_all_filtered(type_not_in=set())
 
 class ObjcTypeType():
 

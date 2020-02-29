@@ -53,31 +53,24 @@ app_target = xcode_project_reader.xc_project.target_with_name(args.app)
 if not app_target:
     raise ValueError("No app target found with name '{}'.".format(args.app))
 
-# App target dependencies sorted by name
-app_target_dependencies = list(app_target.dependencies_all)
-app_target_dependencies.sort(key=lambda t: t.name.lower())
-targets = app_target_dependencies + [app_target]
+# Find occurrences
+swift_types_with_files = app_target.swift_types_dependencies_filtered(with_file=True)
+type_occurrences_set = xcode_project_reader.find_occurrences_of(
+    swift_types_with_files,
+    in_target=app_target,
+    and_other_source_files=xcode_project_reader.xc_project.target_less_h_files)
 
-objc_classes = set()
-for target in targets:
-    objc_classes |= set(target.objc_classes)
-
-objc_classes = list(objc_classes)
-objc_classes.sort(key=lambda t: t.name.lower())
-total_class_count = len(objc_classes)
-
+# Print occurrences for each type
 occurrences_reporter = OccurrencesReporter()
-for index, objc_class in enumerate(objc_classes):
-    report = xcode_project_reader.find_occurrences_of(objc_class.name)
-    
-    # occurrences_reporter.print_type_occurrences_report(report, indent=4)
+occurrences_reporter.print_type_occurrences_multiple_types(type_occurrences_set)
 
-    inside_count = report['occurrences_count_in_definition_file']
-    outside_count = len(report['source_files_in_which_type_occurs'])
-
-    print("{:<7} {:<15} {:<40} \"Inside decl. occurrences\": {:<3} | \"Outside decl. occurrences\": {:<3}".format(
-        '/'.join([str(index), str(total_class_count)]),
-        objc_class.type_identifier,
-        objc_class.name,
-        inside_count,
-        outside_count))
+# TODO:
+# exclude Swift extensions from Swift types
+# add objc types excluding categories
+# temporary exclude constants from objc types
+# save/load cache for type occurrences
+# report print really dead types: manage a mode:
+    # display all
+    # display only types with 0 outside occurrence
+    # display only types with exactly 1 inside occurrence (the declaration)
+    # ...

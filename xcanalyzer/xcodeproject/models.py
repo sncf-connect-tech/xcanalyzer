@@ -111,6 +111,18 @@ class XcProject():
         return results
     
     @property
+    def source_files(self):
+        results = set()
+
+        for target in self.targets:
+            results |= target.swift_files
+            results |= target.objc_files
+        
+        results |= self.target_less_h_files
+
+        return results
+    
+    @property
     def target_less_files(self):
         return self.files - self.target_files
     
@@ -425,17 +437,57 @@ class XcTarget():
             result.update(dependency.dependencies)
 
         return result
-
+    
     @property
-    def swift_types(self):
+    def dependant_source_files(self):
+        results = set()
+
+        results |= self.swift_files
+        results |= self.objc_files
+
+        for target in self.dependencies_all:
+            results |= target.swift_files
+            results |= target.objc_files
+        
+        return results
+
+    def swift_types_filtered(self, type_not_in=set(), with_file=False):
+        assert type_not_in.issubset(SwiftTypeType.ALL)
+
         results = []
         
         for swift_file in self.swift_files:
-            results += swift_file.swift_types
+            swift_types = swift_file.swift_types_filtered(type_not_in=type_not_in)
+            if with_file:
+                results += [(t, swift_file) for t in swift_types]
+            else:
+                results += swift_types
                 
             for swift_type in swift_file.swift_types:
-                results += swift_type.inner_types_all
+                swift_types = swift_type.inner_types_all_filtered(type_not_in=type_not_in)
+                if with_file:
+                    results += [(t, swift_file) for t in swift_types]
+                else:
+                    results += swift_types
         
+        return results
+
+    @property
+    def swift_types(self):
+        return self.swift_types_filtered(type_not_in=set())
+    
+    def swift_types_dependencies_filtered(self, type_not_in=set(), with_file=False):
+        """ Return, filtered by given filter, swift types of self and all its target dependencies """
+        assert type_not_in.issubset(SwiftTypeType.ALL)
+
+        results = []
+        
+        for target_dependency in self.dependencies_all:
+            results += target_dependency.swift_types_filtered(type_not_in=type_not_in,
+                                                              with_file=with_file)
+        
+        results += self.swift_types_filtered(type_not_in=type_not_in, with_file=with_file)
+
         return results
 
     @property
