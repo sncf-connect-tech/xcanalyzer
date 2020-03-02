@@ -8,6 +8,7 @@ import os
 from xcanalyzer.xcodeproject.parsers import XcProjectParser
 from xcanalyzer.xcodeproject.generators import OccurrencesReporter
 from xcanalyzer.xcodeproject.exceptions import XcodeProjectReadException
+from xcanalyzer.language.models import SwiftTypeType
 
 
 # --- Arguments ---
@@ -54,7 +55,7 @@ if not app_target:
     raise ValueError("No app target found with name '{}'.".format(args.app))
 
 # Find occurrences
-swift_types_with_files = app_target.swift_types_dependencies_filtered(with_file=True)
+swift_types_with_files = app_target.swift_types_dependencies_filtered(type_not_in={SwiftTypeType.EXTENSION})
 type_occurrences_set = xcode_project_reader.find_occurrences_of(
     swift_types_with_files,
     in_target=app_target,
@@ -65,7 +66,6 @@ occurrences_reporter = OccurrencesReporter()
 occurrences_reporter.print_type_occurrences_multiple_types(type_occurrences_set)
 
 # TODO:
-# exclude Swift extensions from Swift types
 # add objc types excluding categories
 # temporary exclude constants from objc types
 # save/load cache for type occurrences

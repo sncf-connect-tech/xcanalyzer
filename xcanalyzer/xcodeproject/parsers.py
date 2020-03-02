@@ -460,16 +460,16 @@ class XcProjectParser():
 
         # Prepare occurrences
         occurrences = list()
-        for swift_objc_type, type_def_file in swift_objc_types_with_def_files:
+        for swift_objc_type in swift_objc_types_with_def_files:
             occurrence = TypeOccurrences(swift_or_objc_type=swift_objc_type,
-                                        definition_file=type_def_file,
+                                        definition_file=swift_objc_type.file,
                                         source_files_that_use=set(),  # filled in the following lines
                                         occurrences_count_in_definition_file=0)  # filled in the following lines
             occurrences.append(occurrence)
         
         # Regex
         regex = list()
-        for swift_objc_type, type_def_file in swift_objc_types_with_def_files:
+        for swift_objc_type in swift_objc_types_with_def_files:
             pattern = re.compile(r'^(?!//).*\W{}\W'.format(swift_objc_type.name))
             regex.append(pattern)
         
@@ -482,7 +482,7 @@ class XcProjectParser():
                     if line.startswith('//'):  # optimization
                         continue
 
-                    for (index, (swift_objc_type, type_def_file)) in enumerate(swift_objc_types_with_def_files):
+                    for (index, swift_objc_type) in enumerate(swift_objc_types_with_def_files):
 
                         if swift_objc_type.name not in line:  # optimization
                             continue
@@ -490,7 +490,7 @@ class XcProjectParser():
                         if not regex[index].search(line):
                             continue
 
-                        if type_def_file == source_file:
+                        if swift_objc_type.file == source_file:
                             occurrences[index].occurrences_count_in_definition_file += 1
                         else:
                             occurrences[index].source_files_that_use.add(source_file)
@@ -549,6 +549,12 @@ class SwiftFileParser():
             import pprint; pprint.pprint(swift_file_structure)
 
         self.xc_file.swift_types = swift_parser.swift_types
+
+        # Set file into the type
+        for swift_type in self.xc_file.swift_types:
+            swift_type.file = self.xc_file
+            for inner_type in swift_type.inner_types_all:
+                inner_type.file = self.xc_file
 
 
 class SwiftCodeParser():

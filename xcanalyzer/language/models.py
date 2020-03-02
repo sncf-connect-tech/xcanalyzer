@@ -69,6 +69,8 @@ class SwiftType():
         self.inner_types = list()
 
         self.used_types = set()
+
+        self.file = None
     
     def __repr__(self):
         return '{:<11} {:<9} {}'.format(self.accessibility, self.type_identifier, self.name)
