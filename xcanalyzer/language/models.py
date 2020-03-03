@@ -165,6 +165,8 @@ class ObjcType():
         self.name = name
         self.super_class_name = super_class_name
 
+        self.file = None
+
     def __repr__(self):
         return '{:<15} {}'.format(self.type_identifier, self.name)
 

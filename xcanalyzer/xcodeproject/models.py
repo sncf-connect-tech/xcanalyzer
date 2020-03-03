@@ -27,6 +27,11 @@ class XcFile():
 
         return [t for t in self.swift_types if t.type_identifier not in type_not_in]
     
+    def objc_types_filtered(self, type_not_in=set()):
+        assert type_not_in.issubset(ObjcTypeType.ALL)
+
+        return [t for t in self.objc_types if t.type_identifier not in type_not_in]
+    
     @property
     def swift_extensions(self):
         return [t for t in self.swift_types if t.type_identifier == SwiftTypeType.EXTENSION]
@@ -451,6 +456,8 @@ class XcTarget():
         
         return results
 
+    # Swift types
+
     def swift_types_filtered(self, type_not_in=set()):
         assert type_not_in.issubset(SwiftTypeType.ALL)
 
@@ -471,7 +478,7 @@ class XcTarget():
         return self.swift_types_filtered(type_not_in=set())
     
     def swift_types_dependencies_filtered(self, type_not_in=set()):
-        """ Return, filtered by given filter, swift types of self and all its target dependencies. """
+        """ Return, filtered by given filter, Swift types of self and all its target dependencies. """
         assert type_not_in.issubset(SwiftTypeType.ALL)
 
         results = []
@@ -483,15 +490,36 @@ class XcTarget():
 
         return results
 
-    @property
-    def objc_types(self):
+    # Objective-C types
+
+    def objc_types_filtered(self, type_not_in=set()):
+        assert type_not_in.issubset(ObjcTypeType.ALL)
+
         results = []
         
         for objc_file in self.objc_files:
-            results += objc_file.objc_types
-        
+            objc_types = objc_file.objc_types_filtered(type_not_in=type_not_in)
+            results += objc_types
+                
         return results
-    
+
+    @property
+    def objc_types(self):
+        return self.objc_types_filtered(type_not_in=set())
+
+    def objc_types_dependencies_filtered(self, type_not_in=set()):
+        """ Return, filtered by given filter, Objective-C types of self and all its target dependencies. """
+        assert type_not_in.issubset(ObjcTypeType.ALL)
+
+        results = []
+        
+        for target_dependency in self.dependencies_all:
+            results += target_dependency.objc_types_filtered(type_not_in=type_not_in)
+        
+        results += self.objc_types_filtered(type_not_in=type_not_in)
+
+        return results
+
     @property
     def swift_types_grouped_by_type(self):
         results = dict()

@@ -253,31 +253,40 @@ class XcProjReporter():
             for objc_type in objc_file.objc_types:
                 print('    {}'.format(objc_type))
 
-    def print_target_types_title(self, target):
+    def print_target_types_title(self, target, languages):
+        printable_types_counts = []
+
         # Swift types counts
-        printable_swift_types_counts = []
-        for swift_type_type, swift_types in target.swift_types_grouped_by_type.items():
-            if len(swift_types):
-                printable_swift_types_counts.append('{} {}'.format(len(swift_types), swift_type_type))
+        if 'swift' in languages:
+            printable_swift_types_counts = []
+            for swift_type_type, swift_types in target.swift_types_grouped_by_type.items():
+                if len(swift_types):
+                    printable_swift_types_counts.append('{} {}'.format(len(swift_types), swift_type_type))
+            
+            printable_swift_types_counts = ', '.join(printable_swift_types_counts) or '<none>'
         
-        printable_swift_types_counts = ', '.join(printable_swift_types_counts) or '<none>'
+            printable_types_counts.append('Swift: {}'.format(printable_swift_types_counts))
 
         # ObjC types counts
-        printable_objc_types_counts = []
-        for objc_type_type, objc_types in target.objc_types_grouped_by_type.items():
-            if len(objc_types):
-                printable_objc_types_counts.append('{} {}'.format(len(objc_types), objc_type_type))
-        
-        printable_objc_types_counts = ', '.join(printable_objc_types_counts) or '<none>'
+        if 'objc' in languages:
+            printable_objc_types_counts = []
+            for objc_type_type, objc_types in target.objc_types_grouped_by_type.items():
+                if len(objc_types):
+                    printable_objc_types_counts.append('{} {}'.format(len(objc_types), objc_type_type))
+            
+            printable_objc_types_counts = ', '.join(printable_objc_types_counts) or '<none>'
+
+            printable_types_counts.append('ObjC: {}'.format(printable_objc_types_counts))
 
         # Print target
-        cprint('{} [Swift: {} | ObjC: {}]'.format(target.name, printable_swift_types_counts, printable_objc_types_counts), attrs=['bold'])
+        types_count_display = ' | '.join(printable_types_counts)
+        cprint('{} [{}]'.format(target.name, types_count_display), attrs=['bold'])
 
     def print_types_by_file(self, languages, display_files):
         # Swift types
         for target in self.xcode_project.targets_sorted_by_name:
             # Target
-            self.print_target_types_title(target)
+            self.print_target_types_title(target, languages=languages)
 
             # Swift files
             if 'swift' in languages:

@@ -801,6 +801,10 @@ class ObjcFileParser():
                     objc_type = ObjcType(type_identifier=ObjcTypeType.PROTOCOL, name=protocol_name)
                     self.xc_file.objc_types.append(objc_type)
 
+        # Set definition type of the type
+        for objc_type in self.xc_file.objc_types:
+            objc_type.file = self.xc_file
+
 
 class TypeOccurrences():
 

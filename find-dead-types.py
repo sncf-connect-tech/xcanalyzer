@@ -8,7 +8,7 @@ import os
 from xcanalyzer.xcodeproject.parsers import XcProjectParser
 from xcanalyzer.xcodeproject.generators import OccurrencesReporter
 from xcanalyzer.xcodeproject.exceptions import XcodeProjectReadException
-from xcanalyzer.language.models import SwiftTypeType
+from xcanalyzer.language.models import SwiftTypeType, ObjcTypeType
 
 
 # --- Arguments ---
@@ -56,8 +56,9 @@ if not app_target:
 
 # Find occurrences
 swift_types_with_files = app_target.swift_types_dependencies_filtered(type_not_in={SwiftTypeType.EXTENSION})
+objc_types_with_files = app_target.objc_types_dependencies_filtered(type_not_in={ObjcTypeType.CATEGORY, ObjcTypeType.CONSTANT})  # temporary exclude constants from objc types
 type_occurrences_set = xcode_project_reader.find_occurrences_of(
-    swift_types_with_files,
+    swift_types_with_files + objc_types_with_files,
     in_target=app_target,
     and_other_source_files=xcode_project_reader.xc_project.target_less_h_files)
 
@@ -66,8 +67,6 @@ occurrences_reporter = OccurrencesReporter()
 occurrences_reporter.print_type_occurrences_multiple_types(type_occurrences_set)
 
 # TODO:
-# add objc types excluding categories
-# temporary exclude constants from objc types
 # save/load cache for type occurrences
 # report print really dead types: manage a mode:
     # display all
