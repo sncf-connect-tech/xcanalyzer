@@ -54,7 +54,7 @@ class XcProjectParser():
         # Output object
         self.xc_project = XcProject(self.project_folder_path,
                                     self.xcode_proj_name,
-                                    targets=set(),
+                                    targets=list(),
                                     groups=list(),
                                     files=root_files)
 
@@ -99,7 +99,7 @@ class XcProjectParser():
         if self.verbose:
             print("-> Parse Swift files.")
 
-        for target in self.xc_project.targets_sorted_by_name:
+        for target in self.xc_project.targets:
             for swift_file in target.swift_files:
                 parser = SwiftFileParser(project_folder_path=self.xc_project.dirpath,
                                          xc_file=swift_file)
@@ -122,7 +122,7 @@ class XcProjectParser():
         objc_super_class_names = dict()
 
         # Targets' objective-C files
-        for target in self.xc_project.targets_sorted_by_name:
+        for target in self.xc_project.targets:
             for objc_file in target.objc_files:
                 parser = ObjcFileParser(xc_project=self.xc_project,
                                         xc_file=objc_file)
@@ -141,7 +141,7 @@ class XcProjectParser():
                 objc_super_class_names[objc_interface.class_name] = objc_interface.super_class_name
         
         # Set superclass to classes
-        for target in self.xc_project.targets_sorted_by_name:
+        for target in self.xc_project.targets:
             for objc_file in target.objc_files:
                 for objc_class in objc_file.objc_classes:
                     objc_class.super_class_name = objc_super_class_names.get(objc_class.name)
@@ -433,10 +433,11 @@ class XcProjectParser():
                 if embed_framework_ref in product_references:
                     xcode_target.embed_frameworks.add(product_references[embed_framework_ref])
     
-        return xcode_targets
+        # Sort target by name
+        return sorted(list(xcode_targets), key=lambda t: t.name)
     
     def _find_type(self, swift_objc_type_name):
-        for target in self.xc_project.targets_sorted_by_name:
+        for target in self.xc_project.targets:
             for swift_file in target.swift_files:
                 for swift_type in swift_file.swift_types:
                     if swift_type.type_identifier != SwiftTypeType.EXTENSION and swift_type.name == swift_objc_type_name:
@@ -454,22 +455,22 @@ class XcProjectParser():
         
         return None
     
-    def _find_files_that_contains(self, swift_objc_types_with_def_files, source_files):
-        assert type(swift_objc_types_with_def_files) == list
+    def _find_files_that_contains(self, swift_objc_types, source_files):
+        assert type(swift_objc_types) == list
         assert type(source_files) == set
 
         # Prepare occurrences
         occurrences = list()
-        for swift_objc_type in swift_objc_types_with_def_files:
-            occurrence = TypeOccurrences(swift_or_objc_type=swift_objc_type,
-                                        definition_file=swift_objc_type.file,
-                                        source_files_that_use=set(),  # filled in the following lines
-                                        occurrences_count_in_definition_file=0)  # filled in the following lines
+        for swift_objc_type in swift_objc_types:
+            occurrence = TypeOccurrencesFromFile(swift_or_objc_type=swift_objc_type,
+                                               definition_file=swift_objc_type.file,
+                                               source_files_that_use=set(),  # filled in the following lines
+                                               occurrences_count_in_definition_file=0)  # filled in the following lines
             occurrences.append(occurrence)
         
         # Regex
         regex = list()
-        for swift_objc_type in swift_objc_types_with_def_files:
+        for swift_objc_type in swift_objc_types:
             pattern = re.compile(r'^(?!//).*\W{}\W'.format(swift_objc_type.name))
             regex.append(pattern)
         
@@ -482,7 +483,7 @@ class XcProjectParser():
                     if line.startswith('//'):  # optimization
                         continue
 
-                    for (index, swift_objc_type) in enumerate(swift_objc_types_with_def_files):
+                    for (index, swift_objc_type) in enumerate(swift_objc_types):
 
                         if swift_objc_type.name not in line:  # optimization
                             continue
@@ -497,7 +498,7 @@ class XcProjectParser():
 
         return occurrences
 
-    def find_type_and_occurrences(self, swift_objc_type_name):
+    def find_type_and_occurrences_from_files(self, swift_objc_type_name):
         # Check the type exist in the project
         found_type = self._find_type(swift_objc_type_name)
 
@@ -507,10 +508,10 @@ class XcProjectParser():
         # Find files in which the type occurs
         return self._find_files_that_contains([found_type], self.xc_project.source_files)[0]
 
-    def find_occurrences_of(self, swift_objc_types_with_files, in_target, and_other_source_files):
+    def find_type_occurrences_from_files(self, swift_objc_types, in_target, and_other_source_files):
         source_files = in_target.dependant_source_files | and_other_source_files
 
-        return self._find_files_that_contains(swift_objc_types_with_files, source_files)
+        return self._find_files_that_contains(swift_objc_types, source_files)
 
 
 class SwiftFileParser():
@@ -806,7 +807,7 @@ class ObjcFileParser():
             objc_type.file = self.xc_file
 
 
-class TypeOccurrences():
+class TypeOccurrencesFromFile():
 
     def __init__(self,
                  swift_or_objc_type,

@@ -206,7 +206,7 @@ class XcProjReporter():
         cprint('{:>2} Targets in total'.format(len(self.xcode_project.targets)), attrs=['bold'])
 
     def print_files_by_targets(self):
-        for target in self.xcode_project.targets_sorted_by_name:
+        for target in self.xcode_project.targets:
             counters = [
                 '{} source files'.format(len(target.source_files)),
                 '{} resource files'.format(len(target.resource_files)),
@@ -284,7 +284,7 @@ class XcProjReporter():
 
     def print_types_by_file(self, languages, display_files):
         # Swift types
-        for target in self.xcode_project.targets_sorted_by_name:
+        for target in self.xcode_project.targets:
             # Target
             self.print_target_types_title(target, languages=languages)
 
@@ -751,7 +751,7 @@ class XcProjReporter():
         # Search for the type
         found_swift_types = set()
 
-        for target in self.xcode_project.targets_sorted_by_name:
+        for target in self.xcode_project.targets:
             # Swift
             for swift_file in target.swift_files:
                 for swift_type in swift_file.swift_types:

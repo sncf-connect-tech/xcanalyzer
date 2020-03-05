@@ -55,10 +55,10 @@ if not app_target:
     raise ValueError("No app target found with name '{}'.".format(args.app))
 
 # Find occurrences
-swift_types_with_files = app_target.swift_types_dependencies_filtered(type_not_in={SwiftTypeType.EXTENSION})
-objc_types_with_files = app_target.objc_types_dependencies_filtered(type_not_in={ObjcTypeType.CATEGORY, ObjcTypeType.CONSTANT})  # temporary exclude constants from objc types
-type_occurrences_set = xcode_project_reader.find_occurrences_of(
-    swift_types_with_files + objc_types_with_files,
+swift_types = app_target.swift_types_dependencies_filtered(type_not_in={SwiftTypeType.EXTENSION})
+objc_types = app_target.objc_types_dependencies_filtered(type_not_in={ObjcTypeType.CATEGORY, ObjcTypeType.CONSTANT})  # temporary exclude constants from objc types
+type_occurrences_set = xcode_project_reader.find_type_occurrences_from_files(
+    swift_types + objc_types,
     in_target=app_target,
     and_other_source_files=xcode_project_reader.xc_project.target_less_h_files)
 

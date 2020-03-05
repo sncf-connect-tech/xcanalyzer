@@ -102,11 +102,6 @@ class XcProject():
         return candidates[0]
     
     @property
-    def targets_sorted_by_name(self):
-        results = list(self.targets)
-        return sorted(results, key=lambda t: t.name)
-    
-    @property
     def target_files(self):
         results = set()
 
@@ -233,7 +228,7 @@ class XcProject():
         results = set()
 
         # .h and .m targets' files
-        for target in self.targets_sorted_by_name:
+        for target in self.targets:
             results |= target.objc_files
         
         # .h target less files
@@ -268,7 +263,7 @@ class XcProject():
         """ All targets' swift files. """
         results = set()
 
-        for target in self.targets_sorted_by_name:
+        for target in self.targets:
             results |= target.swift_files
 
         return results
@@ -277,7 +272,7 @@ class XcProject():
     def swift_types(self):
         results = []
         
-        for target in self.targets_sorted_by_name:
+        for target in self.targets:
             results += target.swift_types
         
         return results
