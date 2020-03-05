@@ -328,7 +328,7 @@ class XcProjReporter():
         }
 
         # Counters
-        extensions_by_scope = self.xcode_project.swift_extensions_grouped_by_scope
+        extensions_by_scope = self.xcode_project.target_swift_extensions_grouped_by_scope
         counters = {scope: len(extensions) for scope, extensions in extensions_by_scope.items()}
 
         ext_max_count = max([v for v in counters.values()])
@@ -365,15 +365,15 @@ class XcProjReporter():
         counters = dict()
 
         # Objc types
-        objc_classes = self.xcode_project.objc_types_filtered(type_in={ObjcTypeType.CLASS})[ObjcTypeType.CLASS]
+        objc_classes = self.xcode_project.target_objc_types_filtered(type_in={ObjcTypeType.CLASS})[ObjcTypeType.CLASS]
         objc_class_names = [c.name for c in objc_classes]
 
         # Swift types
-        for swift_type_type, swift_types in self.xcode_project.swift_types_filtered().items():
+        for swift_type_type, swift_types in self.xcode_project.target_swift_types_filtered().items():
             counters[swift_type_type] = len(swift_types)
 
         # Total
-        total_types_count = len(self.xcode_project.swift_types)
+        total_types_count = len(self.xcode_project.target_swift_types)
 
         # Display
         width = len(str(total_types_count))
@@ -406,11 +406,11 @@ class XcProjReporter():
         counters = dict()
 
         # Obj-C types
-        for objc_type_type, objc_types in self.xcode_project.objc_types_filtered().items():
+        for objc_type_type, objc_types in self.xcode_project.target_objc_types_filtered().items():
             counters[objc_type_type] = len(objc_types)
 
         # Total
-        total_types_count = len(self.xcode_project.objc_types)
+        total_types_count = len(self.xcode_project.target_objc_types)
 
         # Display
         width = len(str(total_types_count))
@@ -696,7 +696,7 @@ class XcProjReporter():
         h_file_names = set()
         m_file_names = set()
 
-        for objc_file in self.xcode_project.objc_files:
+        for objc_file in self.xcode_project.target_objc_files:
             filename = objc_file.filepath.split('/')[-1]
             base_filename = filename[:-2]  # filename without extension
 

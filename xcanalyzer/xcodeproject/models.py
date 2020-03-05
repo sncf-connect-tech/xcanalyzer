@@ -223,7 +223,7 @@ class XcProject():
         return results
     
     @property
-    def objc_files(self):
+    def target_objc_files(self):
         """ Union of targets' objc files and target .h files. """
         results = set()
 
@@ -237,20 +237,20 @@ class XcProject():
         return results
     
     @property
-    def objc_types(self):
+    def target_objc_types(self):
         results = []
 
-        for objc_file in self.objc_files:
+        for objc_file in self.target_objc_files:
             results += objc_file.objc_types
         
         return results
 
-    def objc_types_filtered(self, type_in=ObjcTypeType.ALL):
+    def target_objc_types_filtered(self, type_in=ObjcTypeType.ALL):
         assert type_in.issubset(ObjcTypeType.ALL)
 
         results = {objc_type_type: [] for objc_type_type in type_in}
         
-        for objc_type in self.objc_types:
+        for objc_type in self.target_objc_types:
             if objc_type.type_identifier not in type_in:
                 continue
             
@@ -269,7 +269,7 @@ class XcProject():
         return results
 
     @property
-    def swift_types(self):
+    def target_swift_types(self):
         results = []
         
         for target in self.targets:
@@ -277,7 +277,7 @@ class XcProject():
         
         return results
     
-    def swift_types_filtered(self, type_in=SwiftTypeType.ALL, type_not_in=set(), flat=False):
+    def target_swift_types_filtered(self, type_in=SwiftTypeType.ALL, type_not_in=set(), flat=False):
         assert type_in.issubset(SwiftTypeType.ALL)
         assert type_not_in.issubset(SwiftTypeType.ALL)
 
@@ -289,7 +289,7 @@ class XcProject():
 
         grouped_results = {swift_type_type: [] for swift_type_type in types}
         
-        for swift_type in self.swift_types:
+        for swift_type in self.target_swift_types:
             if swift_type.type_identifier not in types:
                 continue
             
@@ -306,7 +306,7 @@ class XcProject():
             return grouped_results
         
     @property
-    def swift_extensions_grouped_by_scope(self):
+    def target_swift_extensions_grouped_by_scope(self):
         file_scoped_extensions = []
         remaining_extensions = []
 
@@ -321,8 +321,8 @@ class XcProject():
                     remaining_extensions.append(swift_extension)
         
         # Project-scoped extensions: Objc and swift
-        objc_type_names = [t.name for t in self.objc_types]
-        swift_type_names = [t.name for t in self.swift_types_filtered(type_not_in={SwiftTypeType.EXTENSION}, flat=True)]
+        objc_type_names = [t.name for t in self.target_objc_types]
+        swift_type_names = [t.name for t in self.target_swift_types_filtered(type_not_in={SwiftTypeType.EXTENSION}, flat=True)]
 
         objc_scoped_extensions = []
         swift_scoped_extensions = []
