@@ -57,6 +57,10 @@ extension MyEnum {
 
 class MyClass {
 
+    var myVar: ContainerStruct.ContainedEnum?
+    var myVar2: ContainerStruct.InnerContainedStruct?
+    var myVar3: ContainerStruct.InnerContainedStruct.InnerContainerEnum?
+
 }
 
 extension MyClass {

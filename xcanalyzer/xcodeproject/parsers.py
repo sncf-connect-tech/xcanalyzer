@@ -509,7 +509,7 @@ class XcProjectParser():
         occurrences = list()
         for swift_objc_type in swift_objc_types:
             occurrence = TypeOccurrencesFromType(swift_or_objc_type=swift_objc_type,
-                                                 swift_objc_types_that_use=list(),  # filled in the following lines
+                                                 swift_objc_types_that_use=set(),  # filled in the following lines
                                                  occurrences_count_in_type_body=0,  # filled in the following lines
                                                  files_that_use=set())  # filled in the following lines
             occurrences.append(occurrence)
@@ -527,7 +527,6 @@ class XcProjectParser():
             occurrence_pattern = re.compile(r'\W{}\W'.format(swift_objc_type.name))
             occurrences_regex.append(occurrence_pattern)
 
-        # TODO: manage inner types
         # TODO: manage type aliases
         # TODO: manage extensions and categories
 
@@ -539,8 +538,8 @@ class XcProjectParser():
             with open(xc_filepath) as opened_file:
                 if source_file.is_swift:
                     # Processing data: current type we're in
-                    current_type = None
-                    bracket_count = 0
+                    current_types = list()
+                    bracket_counters = list()
 
                     for line in opened_file:
                         if line.startswith('//'):  # we ignore the line if it is a commented one
@@ -551,10 +550,6 @@ class XcProjectParser():
 
                         for (index, swift_objc_type) in enumerate(swift_objc_types):
                             if swift_objc_type.name not in line:  # optimization
-                                continue
-
-                            # TODO: manage inner types
-                            if swift_objc_type.parent_type:
                                 continue
 
                             # Declaration occurrence
@@ -571,32 +566,31 @@ class XcProjectParser():
                                 # TODO: Manage case of multi match in the same line
                             
                         # Manage current type
-                        if found_declaration_type_in_line and current_type is not None:
-                            # TODO: manage inner types
-                            raise Exception("Found a declaration whereas we are already in!")
-                        elif found_declaration_type_in_line:
-                            current_type = found_declaration_type_in_line
+                        if found_declaration_type_in_line:
+                            current_types.append(found_declaration_type_in_line)
+                            bracket_counters.append(0)
                         
                         # Found types
                         for (index, found_type) in found_types_in_line:
-                            if current_type:
-                                if found_type == current_type:
+                            if current_types:
+                                if found_type == current_types[-1]:
                                     occurrences[index].occurrences_count_in_type_body += 1
                                 else:
-                                    occurrences[index].swift_objc_types_that_use.append(current_type)
+                                    occurrences[index].swift_objc_types_that_use.add(current_types[-1])
                             else:
                                 occurrences[index].files_that_use.add(source_file)
 
                         # Manage end of declaration type through the lines
-                        if current_type:
+                        if current_types:
                             for character in line:
                                 if character == '{':
-                                    bracket_count += 1
+                                    bracket_counters[-1] += 1
                                 elif character == '}':
-                                    bracket_count -= 1
+                                    bracket_counters[-1] -= 1
                             
-                            if bracket_count == 0:
-                                current_type = None
+                            if bracket_counters[-1] == 0:
+                                current_types.pop()
+                                bracket_counters.pop()
                         
         return occurrences
 
