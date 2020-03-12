@@ -456,8 +456,10 @@ class XcProjectParser():
         return None
     
     def _find_files_that_contains(self, swift_objc_types, source_files):
-        assert type(swift_objc_types) == list
+        assert type(swift_objc_types) == set
         assert type(source_files) == set
+
+        swift_objc_types = list(swift_objc_types)
 
         # Prepare occurrences
         occurrences = list()
@@ -498,12 +500,11 @@ class XcProjectParser():
         return occurrences
 
     def _find_types_that_contains(self, swift_objc_types, source_files):
-        # TODO: assert that is a set
-        assert type(swift_objc_types) == list
+        assert type(swift_objc_types) == set
         assert type(source_files) == set
 
         # Remove duplicate types
-        swift_objc_types = list(set(swift_objc_types))
+        swift_objc_types = list(swift_objc_types)
 
         # Prepare occurrences
         occurrences = list()

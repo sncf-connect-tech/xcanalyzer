@@ -58,7 +58,7 @@ if not app_target:
 swift_types = app_target.swift_types_dependencies_filtered(type_not_in={SwiftTypeType.EXTENSION})
 objc_types = app_target.objc_types_dependencies_filtered(type_not_in={ObjcTypeType.CATEGORY, ObjcTypeType.CONSTANT})  # temporary exclude constants from objc types
 type_occurrences_set = xcode_project_reader.find_type_occurrences_from_files(
-    swift_types + objc_types,
+    swift_types | objc_types,
     from_target=app_target)
 
 # Print occurrences for each type

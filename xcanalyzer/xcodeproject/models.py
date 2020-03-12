@@ -471,15 +471,13 @@ class XcTarget():
     def swift_types_filtered(self, type_not_in=set()):
         assert type_not_in.issubset(SwiftTypeType.ALL)
 
-        results = []
+        results = set()
         
         for swift_file in self.swift_files:
-            swift_types = swift_file.swift_types_filtered(type_not_in=type_not_in)
-            results += swift_types
+            results |= set(swift_file.swift_types_filtered(type_not_in=type_not_in))
                 
             for swift_type in swift_file.swift_types:
-                swift_types = swift_type.inner_types_all_filtered(type_not_in=type_not_in)
-                results += swift_types
+                results |= swift_type.inner_types_all_filtered(type_not_in=type_not_in)
         
         return results
 
@@ -491,12 +489,12 @@ class XcTarget():
         """ Return, filtered by given filter, Swift types of self and all its target dependencies. """
         assert type_not_in.issubset(SwiftTypeType.ALL)
 
-        results = []
+        results = set()
         
         for target_dependency in self.dependencies_all:
-            results += target_dependency.swift_types_filtered(type_not_in=type_not_in)
+            results |= target_dependency.swift_types_filtered(type_not_in=type_not_in)
         
-        results += self.swift_types_filtered(type_not_in=type_not_in)
+        results |= self.swift_types_filtered(type_not_in=type_not_in)
 
         return results
 
@@ -505,11 +503,10 @@ class XcTarget():
     def objc_types_filtered(self, type_not_in=set()):
         assert type_not_in.issubset(ObjcTypeType.ALL)
 
-        results = []
+        results = set()
         
         for objc_file in self.objc_files:
-            objc_types = objc_file.objc_types_filtered(type_not_in=type_not_in)
-            results += objc_types
+            results |= set(objc_file.objc_types_filtered(type_not_in=type_not_in))
                 
         return results
 
@@ -521,12 +518,12 @@ class XcTarget():
         """ Return, filtered by given filter, Objective-C types of self and all its target dependencies. """
         assert type_not_in.issubset(ObjcTypeType.ALL)
 
-        results = []
+        results = set()
         
         for target_dependency in self.dependencies_all:
-            results += target_dependency.objc_types_filtered(type_not_in=type_not_in)
+            results |= target_dependency.objc_types_filtered(type_not_in=type_not_in)
         
-        results += self.objc_types_filtered(type_not_in=type_not_in)
+        results |= self.objc_types_filtered(type_not_in=type_not_in)
 
         return results
 
