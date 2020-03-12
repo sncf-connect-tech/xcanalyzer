@@ -185,5 +185,9 @@ class ObjcType():
     def __repr__(self):
         return '{:<15} {}'.format(self.type_identifier, self.name)
 
+    @property
+    def fullname(self):
+        return self.name
+
     def inherits_from_one_of(self, class_names):
         return self.super_class_name in class_names

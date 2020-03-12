@@ -499,6 +499,69 @@ class XcProjectParser():
 
         return occurrences
 
+    def _find_occurrences_from_swift_file(self,
+                                          opened_file,
+                                          source_file,
+                                          swift_objc_types,
+                                          declarations_regex,
+                                          occurrences_regex,
+                                          occurrences):
+        # Processing data: current type we're in
+        current_types = list()
+        bracket_counters = list()
+
+        for line in opened_file:
+            if line.startswith('//'):  # we ignore the line if it is a commented one
+                continue
+
+            found_declaration_type_in_line = None
+            found_types_in_line = []
+
+            for (index, swift_objc_type) in enumerate(swift_objc_types):
+                if swift_objc_type.name not in line:  # optimization
+                    continue
+
+                # Declaration occurrence
+                declaration_search = declarations_regex[index].search(line)
+                if declaration_search:
+                    if found_declaration_type_in_line:
+                        raise Exception("Already found declaration of a type in this line!")
+                    found_declaration_type_in_line = swift_objc_type
+
+                # Other occurrences
+                elif occurrences_regex[index].search(line):
+                    found_types_in_line.append((index, swift_objc_type))
+
+                    # TODO: Manage case of multi match in the same line
+                
+            # Manage current type
+            if found_declaration_type_in_line:
+                current_types.append(found_declaration_type_in_line)
+                bracket_counters.append(0)
+            
+            # Found types
+            for (index, found_type) in found_types_in_line:
+                if current_types:
+                    if found_type == current_types[-1]:
+                        occurrences[index].occurrences_count_in_type_body += 1
+                    else:
+                        occurrences[index].swift_objc_types_that_use.add(current_types[-1])
+                else:
+                    occurrences[index].files_that_use.add(source_file)
+
+            # Manage end of declaration type through the lines
+            if current_types:
+                for character in line:
+                    if character == '{':
+                        bracket_counters[-1] += 1
+                    elif character == '}':
+                        bracket_counters[-1] -= 1
+                
+                if bracket_counters[-1] == 0:
+                    current_types.pop()
+                    bracket_counters.pop()
+
+
     def _find_types_that_contains(self, swift_objc_types, source_files):
         assert type(swift_objc_types) == set
         assert type(source_files) == set
@@ -524,8 +587,7 @@ class XcProjectParser():
             declarations_regex.append(declaration_pattern)
 
             # Occurrence regex
-            # TODO: manage case of inner types: full name
-            occurrence_pattern = re.compile(r'\W{}\W'.format(swift_objc_type.name))
+            occurrence_pattern = re.compile(r'\W{}\W'.format(swift_objc_type.fullname))
             occurrences_regex.append(occurrence_pattern)
 
         # TODO: manage type aliases
@@ -538,60 +600,12 @@ class XcProjectParser():
 
             with open(xc_filepath) as opened_file:
                 if source_file.is_swift:
-                    # Processing data: current type we're in
-                    current_types = list()
-                    bracket_counters = list()
-
-                    for line in opened_file:
-                        if line.startswith('//'):  # we ignore the line if it is a commented one
-                            continue
-
-                        found_declaration_type_in_line = None
-                        found_types_in_line = []
-
-                        for (index, swift_objc_type) in enumerate(swift_objc_types):
-                            if swift_objc_type.name not in line:  # optimization
-                                continue
-
-                            # Declaration occurrence
-                            declaration_search = declarations_regex[index].search(line)
-                            if declaration_search:
-                                if found_declaration_type_in_line:
-                                    raise Exception("Already found declaration of a type in this line!")
-                                found_declaration_type_in_line = swift_objc_type
-
-                            # Other occurrences
-                            elif occurrences_regex[index].search(line):
-                                found_types_in_line.append((index, swift_objc_type))
-
-                                # TODO: Manage case of multi match in the same line
-                            
-                        # Manage current type
-                        if found_declaration_type_in_line:
-                            current_types.append(found_declaration_type_in_line)
-                            bracket_counters.append(0)
-                        
-                        # Found types
-                        for (index, found_type) in found_types_in_line:
-                            if current_types:
-                                if found_type == current_types[-1]:
-                                    occurrences[index].occurrences_count_in_type_body += 1
-                                else:
-                                    occurrences[index].swift_objc_types_that_use.add(current_types[-1])
-                            else:
-                                occurrences[index].files_that_use.add(source_file)
-
-                        # Manage end of declaration type through the lines
-                        if current_types:
-                            for character in line:
-                                if character == '{':
-                                    bracket_counters[-1] += 1
-                                elif character == '}':
-                                    bracket_counters[-1] -= 1
-                            
-                            if bracket_counters[-1] == 0:
-                                current_types.pop()
-                                bracket_counters.pop()
+                    self._find_occurrences_from_swift_file(opened_file,
+                                                           source_file,
+                                                           swift_objc_types,
+                                                           declarations_regex,
+                                                           occurrences_regex,
+                                                           occurrences)
                         
         return occurrences
 
@@ -619,18 +633,16 @@ class XcProjectParser():
 
         # Source files in which to search for types occurrences
         source_files = from_target.dependant_source_files | self.xc_project.target_less_h_files
-        source_files = set([s for s in source_files if s.is_swift])  # temporary
 
         # Find types in which the type occurs
-        # self.xc_project.target_swift_types
-        # self.xc_project.target_objc_types
+        swift_types = from_target.swift_types_dependencies_filtered(type_not_in={SwiftTypeType.EXTENSION})
+        objc_types = from_target.objc_types_dependencies_filtered(type_not_in={ObjcTypeType.CATEGORY})
 
-        # types = self.xc_project.target_swift_types_filtered(type_not_in={SwiftTypeType.EXTENSION})
+        # types = swift_types | objc_types
 
-        types = from_target.swift_types_dependencies_filtered(type_not_in={SwiftTypeType.EXTENSION})
+        types = swift_types
+
         return self._find_types_that_contains(types, source_files)
-
-        # return self._find_types_that_contains(self.xc_project.target_swift_types, self.xc_project.source_files)
     
     def _find_duplicate_swift_names(self, swift_types):
         swift_names_by_type_identifier = dict()
