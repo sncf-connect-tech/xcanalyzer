@@ -80,6 +80,9 @@ class SwiftType():
             self.name == other.name and \
             self.accessibility == other.accessibility
     
+    def __hash__(self):
+        return hash((self.type_identifier, self.name, self.accessibility))
+
     @property
     def inherited_types(self):
         results = set()

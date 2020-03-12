@@ -15,8 +15,12 @@ argument_parser = argparse.ArgumentParser(description="Gives all the Swift or Ob
 argument_parser.add_argument('path',
                              help='Path of the folder containing your `.xcodeproj` folder.')
 
+# App name
+argument_parser.add_argument('app',
+                             help='Name of the iOS app target.')
+
 # Type name
-argument_parser.add_argument('type_name',
+argument_parser.add_argument('type',
                              help='Name of the Swift or Objective-C type to search from.')
 
 
@@ -45,6 +49,17 @@ except XcodeProjectReadException as e:
     print("An error occurred when loading Xcode project: {}".format(e.message))
     exit()
 
+
+# App target
+app_target = xcode_project_reader.xc_project.target_with_name(args.app)
+if not app_target:
+    raise ValueError("No app target found with name '{}'.".format(args.app))
+
+# Find occurrences
+occurrences_from_types = xcode_project_reader.find_type_occurrences_from_types(args.type, from_target=app_target)
+
 # Reporter
+print()
+print("--- Occurrences results ---")
 reporter = XcProjReporter(xcode_project_reader.xc_project)
-reporter.print_uses_of_type(type_name=args.type_name)
+reporter.print_types_occurrences_from_types(occurrences_from_types)

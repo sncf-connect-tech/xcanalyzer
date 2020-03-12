@@ -465,9 +465,9 @@ class XcProjReporter():
         other_source_files = set()
         
         for source_file in source_files:
-            if source_file.filepath.endswith('.swift'):
+            if source_file.is_swift:
                 swift_source_files.add(source_file)
-            elif source_file.filepath.endswith('.m'):
+            elif source_file.is_objc_m:
                 objc_source_files.add(source_file)
             else:
                 other_source_files.add(source_file)
@@ -612,7 +612,7 @@ class XcProjReporter():
                 if target_file.filepath.endswith('Info.plist'):
                     continue
                 
-                if target_file.filepath.endswith('.h'):
+                if target_file.is_objc_h:
                     continue
                 
                 # Filter ignored dirpaths
@@ -636,7 +636,7 @@ class XcProjReporter():
             filepaths = []
             for target_file in self.xcode_project.target_files:
                 if not target_file.filepath.endswith('Info.plist') \
-                    and not target_file.filepath.endswith('.h'):
+                    and not target_file.is_objc_h:
                     continue
                 filepaths.append(target_file.filepath)
         
@@ -645,7 +645,7 @@ class XcProjReporter():
             filepaths = []
             for target_file in self.xcode_project.target_less_files:
                 if not target_file.filepath.endswith('Info.plist') \
-                    and not target_file.filepath.endswith('.h'):
+                    and not target_file.is_objc_h:
                     continue
                 filepaths.append(target_file.filepath)
 
@@ -747,6 +747,14 @@ class XcProjReporter():
                                                missing_h_file_names=missing_h_file_names,
                                                missing_m_file_names=missing_m_file_names)
     
+    def print_types_occurrences_from_types(self, occurrences_from_types):
+        for occurrence in occurrences_from_types:
+            print(occurrence.swift_or_objc_type)
+            
+            for (index, type_that_use) in enumerate(occurrence.swift_objc_types_that_use):
+                end_character = '└' if index == len(occurrence.swift_objc_types_that_use) - 1 else '├'
+                print('{}── {}'.format(end_character, type_that_use))
+
     def print_uses_of_type(self, type_name):
         # Search for the type
         found_swift_types = set()

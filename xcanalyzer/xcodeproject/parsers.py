@@ -463,14 +463,14 @@ class XcProjectParser():
         occurrences = list()
         for swift_objc_type in swift_objc_types:
             occurrence = TypeOccurrencesFromFile(swift_or_objc_type=swift_objc_type,
-                                               definition_file=swift_objc_type.file,
-                                               source_files_that_use=set(),  # filled in the following lines
-                                               occurrences_count_in_definition_file=0)  # filled in the following lines
+                                                 source_files_that_use=set(),  # filled in the following lines
+                                                 occurrences_count_in_definition_file=0)  # filled in the following lines
             occurrences.append(occurrence)
         
         # Regex
         regex = list()
         for swift_objc_type in swift_objc_types:
+            # TODO: manage case of inner types: full name
             pattern = re.compile(r'^(?!//).*\W{}\W'.format(swift_objc_type.name))
             regex.append(pattern)
         
@@ -484,7 +484,6 @@ class XcProjectParser():
                         continue
 
                     for (index, swift_objc_type) in enumerate(swift_objc_types):
-
                         if swift_objc_type.name not in line:  # optimization
                             continue
                         
@@ -498,6 +497,109 @@ class XcProjectParser():
 
         return occurrences
 
+    def _find_types_that_contains(self, swift_objc_types, source_files):
+        # TODO: assert that is a set
+        assert type(swift_objc_types) == list
+        assert type(source_files) == set
+
+        # Remove duplicate types
+        swift_objc_types = list(set(swift_objc_types))
+
+        # Prepare occurrences
+        occurrences = list()
+        for swift_objc_type in swift_objc_types:
+            occurrence = TypeOccurrencesFromType(swift_or_objc_type=swift_objc_type,
+                                                 swift_objc_types_that_use=list(),  # filled in the following lines
+                                                 occurrences_count_in_type_body=0,  # filled in the following lines
+                                                 files_that_use=set())  # filled in the following lines
+            occurrences.append(occurrence)
+        
+        # Regex
+        declarations_regex = list()
+        occurrences_regex = list()
+        for swift_objc_type in swift_objc_types:
+            # Type declaration regex
+            declaration_pattern = re.compile(r'(^|\W){} +{}\W'.format(swift_objc_type.type_identifier, swift_objc_type.name))
+            declarations_regex.append(declaration_pattern)
+
+            # Occurrence regex
+            # TODO: manage case of inner types: full name
+            occurrence_pattern = re.compile(r'\W{}\W'.format(swift_objc_type.name))
+            occurrences_regex.append(occurrence_pattern)
+
+        # TODO: manage inner types
+        # TODO: manage type aliases
+        # TODO: manage extensions and categories
+
+        source_files_count = len(source_files)
+        for file_index, source_file in enumerate(source_files):
+            xc_filepath = self.xc_project.relative_path_for_file(source_file)
+            print('{}/{} Searching: {}'.format(file_index + 1, source_files_count, xc_filepath))
+
+            with open(xc_filepath) as opened_file:
+                if source_file.is_swift:
+                    # Processing data: current type we're in
+                    current_type = None
+                    bracket_count = 0
+
+                    for line in opened_file:
+                        if line.startswith('//'):  # we ignore the line if it is a commented one
+                            continue
+
+                        found_declaration_type_in_line = None
+                        found_types_in_line = []
+
+                        for (index, swift_objc_type) in enumerate(swift_objc_types):
+                            if swift_objc_type.name not in line:  # optimization
+                                continue
+
+                            # TODO: manage inner types
+                            if swift_objc_type.parent_type:
+                                continue
+
+                            # Declaration occurrence
+                            declaration_search = declarations_regex[index].search(line)
+                            if declaration_search:
+                                if found_declaration_type_in_line:
+                                    raise Exception("Already found declaration of a type in this line!")
+                                found_declaration_type_in_line = swift_objc_type
+
+                            # Other occurrences
+                            elif occurrences_regex[index].search(line):
+                                found_types_in_line.append((index, swift_objc_type))
+
+                                # TODO: Manage case of multi match in the same line
+                            
+                        # Manage current type
+                        if found_declaration_type_in_line and current_type is not None:
+                            # TODO: manage inner types
+                            raise Exception("Found a declaration whereas we are already in!")
+                        elif found_declaration_type_in_line:
+                            current_type = found_declaration_type_in_line
+                        
+                        # Found types
+                        for (index, found_type) in found_types_in_line:
+                            if current_type:
+                                if found_type == current_type:
+                                    occurrences[index].occurrences_count_in_type_body += 1
+                                else:
+                                    occurrences[index].swift_objc_types_that_use.append(current_type)
+                            else:
+                                occurrences[index].files_that_use.add(source_file)
+
+                        # Manage end of declaration type through the lines
+                        if current_type:
+                            for character in line:
+                                if character == '{':
+                                    bracket_count += 1
+                                elif character == '}':
+                                    bracket_count -= 1
+                            
+                            if bracket_count == 0:
+                                current_type = None
+                        
+        return occurrences
+
     def find_type_and_occurrences_from_files(self, swift_objc_type_name):
         # Check the type exist in the project
         found_type = self._find_type(swift_objc_type_name)
@@ -508,10 +610,33 @@ class XcProjectParser():
         # Find files in which the type occurs
         return self._find_files_that_contains([found_type], self.xc_project.source_files)[0]
 
-    def find_type_occurrences_from_files(self, swift_objc_types, in_target, and_other_source_files):
-        source_files = in_target.dependant_source_files | and_other_source_files
+    def find_type_occurrences_from_files(self, swift_objc_types, from_target):
+        source_files = from_target.dependant_source_files | self.xc_project.target_less_h_files
 
         return self._find_files_that_contains(swift_objc_types, source_files)
+    
+    def find_type_occurrences_from_types(self, swift_objc_type_name, from_target):
+        # Check the type exist in the project
+        found_type = self._find_type(swift_objc_type_name)
+
+        if found_type is None:
+            raise ValueError("Type not found in the Xcode project: '{}'".format(swift_objc_type_name))
+
+        # Source files in which to search for types occurrences
+        source_files = from_target.dependant_source_files | self.xc_project.target_less_h_files
+        source_files = set([s for s in source_files if s.is_swift])  # temporary
+
+        # Find types in which the type occurs
+        # self.xc_project.target_swift_types
+        # self.xc_project.target_objc_types
+
+        # types = self.xc_project.target_swift_types_filtered(type_not_in={SwiftTypeType.EXTENSION})
+
+        types = from_target.swift_types_dependencies_filtered(type_not_in={SwiftTypeType.EXTENSION})
+        return self._find_types_that_contains(types, source_files)
+
+        # return self._find_types_that_contains(self.xc_project.target_swift_types, self.xc_project.source_files)
+
 
 
 class SwiftFileParser():
@@ -525,7 +650,7 @@ class SwiftFileParser():
     }
 
     def __init__(self, project_folder_path, xc_file):
-        assert xc_file.filename.endswith('.swift')
+        assert xc_file.is_swift
 
         self.project_folder_path = project_folder_path
         self.xc_file = xc_file
@@ -708,7 +833,7 @@ class SwiftCodeParser():
 class ObjcFileParser():
 
     def __init__(self, xc_project, xc_file):
-        assert xc_file.filename.endswith('.h') or xc_file.filename.endswith('.m')
+        assert xc_file.is_objc
 
         self.xc_project = xc_project
         self.xc_file = xc_file
@@ -811,10 +936,31 @@ class TypeOccurrencesFromFile():
 
     def __init__(self,
                  swift_or_objc_type,
-                 definition_file,
                  source_files_that_use,
                  occurrences_count_in_definition_file):
         self.swift_or_objc_type = swift_or_objc_type
-        self.definition_file = definition_file
         self.source_files_that_use = source_files_that_use
         self.occurrences_count_in_definition_file = occurrences_count_in_definition_file
+
+
+class TypeOccurrencesFromType():
+
+    def __init__(self,
+                 swift_or_objc_type,
+                 swift_objc_types_that_use,
+                 occurrences_count_in_type_body,
+                 files_that_use):
+        self.swift_or_objc_type = swift_or_objc_type
+        self.swift_objc_types_that_use = swift_objc_types_that_use
+        self.occurrences_count_in_type_body = occurrences_count_in_type_body
+        self.files_that_use = files_that_use
+    
+    def __repr__(self):
+        types_message = ', '.join([t.name for t in self.swift_objc_types_that_use])
+        files_message = ', '.join([f.filename for f in self.files_that_use])
+
+        message_format = '{} used in: {} [occurrences in body: {} | files that use: {}]'
+        return message_format.format(self.swift_or_objc_type.name,
+                                     types_message,
+                                     self.occurrences_count_in_type_body,
+                                    files_message)

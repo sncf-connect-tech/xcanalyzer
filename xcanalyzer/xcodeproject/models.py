@@ -43,7 +43,22 @@ class XcFile():
     @property
     def objc_classes(self):
         return [t for t in self.objc_types if t.type_identifier == ObjcTypeType.CLASS]
+    
+    @property
+    def is_swift(self):
+        return self.filepath.endswith('.swift')
 
+    @property
+    def is_objc_h(self):
+        return self.filepath.endswith('.h')
+
+    @property
+    def is_objc_m(self):
+        return self.filepath.endswith('.m')
+
+    @property
+    def is_objc(self):
+        return self.is_objc_h or self.is_objc_m
 
 class XcGroup():
 
@@ -128,7 +143,7 @@ class XcProject():
     
     @property
     def target_less_h_files(self):
-        return set([f for f in self.target_less_files if f.filepath.endswith('.h')])
+        return set([f for f in self.target_less_files if f.is_objc_h])
     
     @property
     def group_files(self):
@@ -411,15 +426,15 @@ class XcTarget():
     
     @property
     def swift_files(self):
-        return set([f for f in self.source_files if f.filepath.endswith('.swift')])
+        return set([f for f in self.source_files if f.is_swift])
     
     @property
     def h_files(self):
-        return set([f for f in self.header_files if f.filepath.endswith('.h')])
+        return set([f for f in self.header_files if f.is_objc_h])
 
     @property
     def m_files(self):
-        return set([f for f in self.source_files if f.filepath.endswith('.m')])
+        return set([f for f in self.source_files if f.is_objc_m])
 
     @property
     def objc_files(self):
