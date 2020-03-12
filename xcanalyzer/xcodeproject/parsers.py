@@ -631,7 +631,86 @@ class XcProjectParser():
         return self._find_types_that_contains(types, source_files)
 
         # return self._find_types_that_contains(self.xc_project.target_swift_types, self.xc_project.source_files)
+    
+    def _find_duplicate_swift_names(self, swift_types):
+        swift_names_by_type_identifier = dict()
 
+        type_identifiers = SwiftTypeType.ALL - {SwiftTypeType.EXTENSION}
+
+        for type_identifier in type_identifiers:
+            swift_names_by_type_identifier[type_identifier] = dict()
+        
+        for swift_type in swift_types:
+            name = swift_type.fullname
+            swift_names = swift_names_by_type_identifier[swift_type.type_identifier]
+
+            if name not in swift_names:
+                swift_names[name] = list()
+            swift_names[name].append(swift_type)
+        
+        # Results
+        results = list()
+
+        for type_identifier in type_identifiers:
+            swift_names = swift_names_by_type_identifier[type_identifier]
+            swift_duplicates = [types for types in swift_names.values() if len(types) >= 2]
+
+            results += swift_duplicates
+        
+        return results
+
+    def _find_duplicate_objc_names(self, objc_types):
+        objc_names_by_type_identifier = dict()
+
+        type_identifiers = ObjcTypeType.ALL - {ObjcTypeType.CATEGORY, ObjcTypeType.MACRO_CONSTANT}
+
+        for type_identifier in type_identifiers:
+            objc_names_by_type_identifier[type_identifier] = dict()
+        
+        for objc_type in objc_types:
+            name = objc_type.name
+            type_identifier = objc_type.type_identifier
+            if type_identifier == ObjcTypeType.MACRO_CONSTANT:
+                type_identifier = ObjcTypeType.CONSTANT
+            objc_names = objc_names_by_type_identifier[type_identifier]
+
+            if name not in objc_names:
+                objc_names[name] = list()
+            objc_names[name].append(objc_type)
+        
+        # Results
+        results = list()
+
+        for type_identifier in type_identifiers:
+            objc_names = objc_names_by_type_identifier[type_identifier]
+            objc_duplicates = [types for types in objc_names.values() if len(types) >= 2]
+
+            results += objc_duplicates
+        
+        return results
+
+    def _find_duplicate_between_swift_and_objc(self, swift_classes, objc_classes):
+        swift_names = set([c.fullname for c in swift_classes])
+        objc_names = set([c.name for c in objc_classes])
+
+        return swift_names & objc_names
+
+    def find_duplicate_type_names(self, from_target):
+        swift_types = from_target.swift_types_dependencies_filtered(type_not_in={SwiftTypeType.EXTENSION})
+        objc_types = from_target.objc_types_dependencies_filtered(type_not_in={ObjcTypeType.CATEGORY})
+
+        # Duplicates in Swift
+        swift_duplicate_lists = self._find_duplicate_swift_names(swift_types)
+
+        # Duplicates in Objective-C
+        objc_duplicate_lists = self._find_duplicate_objc_names(objc_types)
+        
+        # Potential duplicates between Swift and Objective-C
+        swift_classes = [t for t in swift_types if t.type_identifier == SwiftTypeType.CLASS]
+        objc_classes = [t for t in objc_types if t.type_identifier == ObjcTypeType.CLASS]
+        swift_objc_common_classes = self._find_duplicate_between_swift_and_objc(swift_classes, objc_classes)
+        
+        return swift_duplicate_lists, objc_duplicate_lists, swift_objc_common_classes
 
 
 class SwiftFileParser():

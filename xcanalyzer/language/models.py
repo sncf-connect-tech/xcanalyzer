@@ -77,11 +77,22 @@ class SwiftType():
     
     def __eq__(self, other):
         return self.type_identifier == other.type_identifier and \
-            self.name == other.name and \
+            self.fullname == other.fullname and \
             self.accessibility == other.accessibility
     
     def __hash__(self):
         return hash((self.type_identifier, self.name, self.accessibility))
+
+    @property
+    def fullname(self):
+        names = [self.name]
+
+        parent = self.parent_type
+        while parent:
+            names.append(parent.name)
+            parent = parent.parent_type
+        
+        return '.'.join(reversed(names))
 
     @property
     def inherited_types(self):
@@ -115,6 +126,7 @@ class SwiftType():
     @property
     def inner_types_all(self):
         return self.inner_types_all_filtered(type_not_in=set())
+
 
 class ObjcTypeType():
 

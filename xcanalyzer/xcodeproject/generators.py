@@ -842,3 +842,40 @@ class OccurrencesReporter():
                                         type_occurrences.swift_or_objc_type.name,
                                         inside_count,
                                         outside_count))
+    
+    def print_duplicate_names(self, swift_duplicate_lists, objc_duplicate_lists, swift_objc_common_classes):
+        # Swift duplicates
+        cprint("Swift types that have the same name", attrs=['bold'])
+        for swift_duplicate_list in swift_duplicate_lists:
+            for index, swift_type in enumerate(swift_duplicate_list):
+                if index == 0:
+                    first_character = '┌'
+                elif index == len(swift_duplicate_list) - 1:
+                    first_character = '└'
+                else:
+                    first_character = '│'
+                print('{} {} [from: {}]'.format(first_character, swift_type, swift_type.file.filename))
+
+        # Objc duplicates
+        cprint("Objective-C types that have the same name", attrs=['bold'])
+        for objc_duplicate_list in objc_duplicate_lists:
+            for index, objc_type in enumerate(objc_duplicate_list):
+                if index == 0:
+                    first_character = '┌'
+                elif index == len(objc_duplicate_list) - 1:
+                    first_character = '└'
+                else:
+                    first_character = '│'
+                print('{} {} [from: {}]'.format(first_character, objc_type, objc_type.file.filename))
+
+        # Swift and Objective-C classes that have the same name
+        cprint("Swift and Objective-C classes that have the same name", attrs=['bold'])
+        for swift_objc_common_classes_list in swift_objc_common_classes:
+            for index, swit_objc_type in enumerate(swift_objc_common_classes_list):
+                if index == 0:
+                    first_character = '┌'
+                elif index == len(objc_duplicate_list) - 1:
+                    first_character = '└'
+                else:
+                    first_character = '│'
+                print('{} {} [from: {}]'.format(first_character, swit_objc_type, swit_objc_type.file.filename))
