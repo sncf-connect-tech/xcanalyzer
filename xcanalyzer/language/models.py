@@ -170,15 +170,20 @@ class ObjcInterface():
         self.class_name = class_name
         self.super_class_name = super_class_name
 
+    def __repr__(self):
+        # We consider that an objective-c interface defines an objective-c class
+        return '{:<15} {}'.format(ObjcTypeType.CLASS, self.class_name)
+
 
 class ObjcType():
 
-    def __init__(self, type_identifier, name, super_class_name=None):
+    def __init__(self, type_identifier, name, super_class_name=None, category_name=None):
         assert type_identifier in ObjcTypeType.ALL
 
         self.type_identifier = type_identifier
         self.name = name
         self.super_class_name = super_class_name
+        self.category_name = category_name
 
         self.file = None
 

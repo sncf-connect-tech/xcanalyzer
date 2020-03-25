@@ -947,7 +947,7 @@ class ObjcFileParser():
                     self.xc_file.objc_interfaces.append(objc_interface)
 
                 # Objc class
-                for match in re.finditer(r'@implementation ([a-zA-Z0-9_]+)( \{)?$', line):
+                for match in re.finditer(r'@implementation\s+(\w+)\s*(\{)?\s*$', line):
                     class_name = match.group(1)
 
                     # Add class in objective-C types of the file
@@ -955,12 +955,12 @@ class ObjcFileParser():
                     self.xc_file.objc_types.append(objc_type)
 
                 # Objc category
-                for match in re.finditer(r'@implementation (\w+) \((\w*)\)', line):
+                for match in re.finditer(r'@implementation\s+(\w+)\s+\((\w*)\)', line):
                     class_name = match.group(1)
                     category_name = match.group(2)
 
                     # Add category in objective-C types of the file
-                    objc_type = ObjcType(type_identifier=ObjcTypeType.CATEGORY, name=class_name)
+                    objc_type = ObjcType(type_identifier=ObjcTypeType.CATEGORY, name=class_name, category_name=category_name)
                     self.xc_file.objc_types.append(objc_type)
                 
                 # Objc enum
@@ -985,7 +985,7 @@ class ObjcFileParser():
 
                             enum_has_started = False
                             break
-                    elif re.findall(r'typedef enum \{', line):
+                    elif re.findall(r'typedef enum .* \{', line):
                         enum_has_started = True
                         continue
                 
@@ -1006,7 +1006,7 @@ class ObjcFileParser():
                     self.xc_file.objc_types.append(objc_type)
                 
                 # Objc protocol
-                for match in re.finditer(r'@protocol (\w+)(;| ).*', line):
+                for match in re.finditer(r'@protocol (\w+) *[^\w; ].*', line):
                     protocol_name = match.group(1)
 
                     # Add enum in objective-C types of the file

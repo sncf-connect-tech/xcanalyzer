@@ -253,6 +253,21 @@ class XcProjReporter():
             for objc_type in objc_file.objc_types:
                 print('    {}'.format(objc_type))
 
+    def _print_objc_interfaces(self, objc_files, display_files, omitting_classes):
+        assert set([c.type_identifier for c in omitting_classes]) == {ObjcTypeType.CLASS}
+
+        class_names_to_omit = set([c.name for c in omitting_classes])
+
+        for objc_file in objc_files:
+            # File
+            if display_files:
+                cprint(objc_file.filepath)
+
+            # Objc-C interfaces
+            for objc_interface in objc_file.objc_interfaces:
+                if objc_interface.class_name not in class_names_to_omit:
+                    print('    {}'.format(objc_interface))
+
     def print_target_types_title(self, target, languages):
         printable_types_counts = []
 
@@ -299,10 +314,12 @@ class XcProjReporter():
             print()  # Empty line
         
         # Objective-C types from project .h files
+        objc_classes = self.xcode_project.target_objc_types_filtered(type_in={ObjcTypeType.CLASS})[ObjcTypeType.CLASS]
         if 'objc' in languages:
             cprint('Project "target less" .h files', attrs=['bold'])
-            self._print_objc_types(self.xcode_project.target_less_h_files,
-                                   display_files=display_files)
+            self._print_objc_interfaces(self.xcode_project.target_less_h_files,
+                                        display_files=display_files,
+                                        omitting_classes=objc_classes)
     
     def print_types_summary(self, languages):
         assert languages
@@ -408,9 +425,21 @@ class XcProjReporter():
         # Obj-C types
         for objc_type_type, objc_types in self.xcode_project.target_objc_types_filtered().items():
             counters[objc_type_type] = len(objc_types)
+        
+        # Target-less .h files that defines Objective-C interfaces
+        objc_classes = self.xcode_project.target_objc_types_filtered(type_in={ObjcTypeType.CLASS})[ObjcTypeType.CLASS]
+        class_names_to_omit = set([c.name for c in objc_classes])
+
+        objc_interfaces = set()
+        for h_file in self.xcode_project.target_less_h_files:
+            for objc_interface in h_file.objc_interfaces:
+                if objc_interface.class_name not in class_names_to_omit:
+                    objc_interfaces.add(objc_interface)
+        
+        counters[ObjcTypeType.CLASS] += len(objc_interfaces)
 
         # Total
-        total_types_count = len(self.xcode_project.target_objc_types)
+        total_types_count = len(self.xcode_project.target_objc_types) + len(objc_interfaces)
 
         # Display
         width = len(str(total_types_count))
