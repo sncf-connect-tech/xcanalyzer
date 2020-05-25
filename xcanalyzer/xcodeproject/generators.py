@@ -111,7 +111,9 @@ class FolderReporter():
         self.ignored_dirpaths = ignored_dirpaths
         self.ignored_dirs = ignored_dirs
     
-    def print_empty_dirs(self):
+    def find_empty_dirs(self):
+        results = []
+
         # Walk to find empty folders
         for (dirpath, dirnames, filenames) in os.walk(self.folder_path):
             relative_dirpath = dirpath[len(self.folder_path):]
@@ -154,7 +156,14 @@ class FolderReporter():
                 hidden_filenames_display = ', '.join([f for f in hidden_filenames])
                 display += ' [{}]'.format(hidden_filenames_display)
             
-            print(display)
+            results.append(display)
+        
+        return results
+    
+    def print_empty_dirs(self):
+        empty_dirs = self.find_empty_dirs()
+        for empty_dir in empty_dirs:
+            print(empty_dir)
 
 
 class XcProjReporter():
@@ -529,14 +538,23 @@ class XcProjReporter():
         print('{:>{width}} header files'.format(header_files_count, width=width))
         cprint('{:>{width}} files in total'.format(total_files_count, width=width), attrs=['bold'])
     
-    def print_groups(self, filter_mode=False):
+    def find_groups(self, filter_mode=False):
+        results = []
+
         groups = self.xcode_project.groups_filtered(filter_mode=filter_mode)
         group_paths = [g.group_path for g in groups]
 
         group_paths.sort()
 
         for group_path in group_paths:
-            print(group_path)
+            results.append(group_path)
+        
+        return results
+    
+    def print_groups(self, filter_mode=False):
+        groups = self.find_groups(filter_mode=filter_mode)
+        for group in groups:
+            print(group)
     
     def print_all_groups_summary(self):
         self._print_horizontal_line()
@@ -563,7 +581,7 @@ class XcProjReporter():
         folder_filepaths = set()
 
         for (dirpath, dirnames, filenames) in os.walk(self.xcode_project.dirpath):
-            relative_dirpath = dirpath[len(self.xcode_project.dirpath):]
+            relative_dirpath = dirpath[len(self.xcode_project.dirpath) - 1:]  # -1 to ignore ending slash from self.xcode_project.dirpath
             folder_parts = relative_dirpath.split(os.path.sep)
 
             # Filter folder to ignore by path
@@ -604,7 +622,7 @@ class XcProjReporter():
                 pass
 
             # Add as file folder considered as file by Xcode,
-            # and don not add its inner files.
+            # and do not add its inner files.
             elif folder_parts[-1].endswith('.bundle'):
                 folder_filepaths.add(relative_dirpath)
             
@@ -615,9 +633,66 @@ class XcProjReporter():
             else:
                 for filename in filenames:
                     if filename not in ignored_files:
-                        folder_filepaths.add('{}/{}'.format(relative_dirpath, filename))
+                        filepath = os.path.join(relative_dirpath, filename)
+                        folder_filepaths.add(filepath)
         
         return folder_filepaths
+    
+    def find_orphan_referenced_files(self):
+        # Get all '*.Info.plist' and '*.h' files from target files
+        filepaths = []
+        for target_file in self.xcode_project.target_files:
+            if not target_file.filepath.endswith('Info.plist') \
+                and not target_file.is_objc_h:
+                continue
+            filepaths.append(target_file.filepath)
+        
+        filepaths.sort()
+
+        return filepaths
+    
+    def find_orphan_project_missing_files(self, ignored_dirpaths, ignored_dirs):
+        # Folder's filepaths
+        folder_filepaths = self._find_folder_filepaths(ignored_dirpaths, ignored_dirs)
+
+        project_filepaths = {f.filepath for f in self.xcode_project.files}
+
+        filepaths = list(folder_filepaths - project_filepaths)
+        filepaths.sort()
+
+        return filepaths
+
+    def find_orphan_target_missing_files(self, ignored_dirpaths, ignored_dirs):
+        target_less_files = self.xcode_project.files - self.xcode_project.target_files
+        filepaths = []
+
+        for target_file in target_less_files:
+            # In this mode we ignore .h files and Info.plist files
+            if target_file.filepath.endswith('Info.plist'):
+                continue
+            
+            if target_file.is_objc_h:
+                continue
+            
+            # Filter ignored dirpaths
+            ignore_current_file = False
+            for ignored_dirpath in ignored_dirpaths:
+                if target_file.filepath.startswith(ignored_dirpath):
+                    ignore_current_file = True
+                    break
+            if ignore_current_file:
+                continue
+
+            # Filter folder to ignore by name
+            folder_parts = target_file.filepath.split('/')[:-1]
+            if ignored_dirs & set(folder_parts):
+                continue
+        
+            filepaths.append(target_file.filepath)
+        
+        filepaths.sort()
+        
+        return filepaths
 
     def print_orphan_files(self, ignored_dirpaths, ignored_dirs, mode):
         # Folder's filepaths
@@ -629,45 +704,13 @@ class XcProjReporter():
             filepaths = list(folder_filepaths - target_filepaths)
         
         elif mode == 'project':
-            project_filepaths = {f.filepath for f in self.xcode_project.files}
-            filepaths = list(folder_filepaths - project_filepaths)
+            filepaths = self.find_orphan_project_missing_files(ignored_dirpaths, ignored_dirs)
         
         elif mode == 'target':
-            target_less_files = self.xcode_project.files - self.xcode_project.target_files
-            filepaths = []
-
-            for target_file in target_less_files:
-                # In this mode we ignore .h files and Info.plist files
-                if target_file.filepath.endswith('Info.plist'):
-                    continue
-                
-                if target_file.is_objc_h:
-                    continue
-                
-                # Filter ignored dirpaths
-                ignore_current_file = False
-                for ignored_dirpath in ignored_dirpaths:
-                    if target_file.filepath.startswith(ignored_dirpath):
-                        ignore_current_file = True
-                        break
-                if ignore_current_file:
-                    continue
-
-                # Filter folder to ignore by name
-                folder_parts = target_file.filepath.split('/')[:-1]
-                if ignored_dirs & set(folder_parts):
-                    continue
-            
-                filepaths.append(target_file.filepath)
+            filepaths = self.find_orphan_target_missing_files(ignored_dirpaths, ignored_dirs)
         
         elif mode == 'referenced':
-            # Get all '*.Info.plist' and '*.h' files from target files
-            filepaths = []
-            for target_file in self.xcode_project.target_files:
-                if not target_file.filepath.endswith('Info.plist') \
-                    and not target_file.is_objc_h:
-                    continue
-                filepaths.append(target_file.filepath)
+            filepaths = self.find_orphan_referenced_files()
         
         elif mode == 'unreferenced':
             # Get all '*.Info.plist' and '*.h' files project's target less files set
@@ -687,7 +730,9 @@ class XcProjReporter():
         for filepath in filepaths:
             print(filepath)
     
-    def print_nonregular_files(self):
+    def find_nonregular_files(self):
+        results = []
+
         # Sort by filepath the results
         file_group_paths = dict()
 
@@ -699,7 +744,14 @@ class XcProjReporter():
 
         # Display filepaths and group paths
         for filepath in filepaths:
-            print("{} [{}]".format(filepath, file_group_paths[filepath]))
+            results.append("{} [{}]".format(filepath, file_group_paths[filepath]))
+        
+        return results
+        
+    def print_nonregular_files(self):
+        nonregular_files = self.find_nonregular_files()
+        for nonregular_file in nonregular_files:
+            print(nonregular_file)
 
     def _print_missing_objc_files_summary(self,
                                           duplicate_h_file_names,
@@ -718,7 +770,7 @@ class XcProjReporter():
 
         cprint('{:>{width}} duplicate or missing file names in total'.format(total_count, width=width), attrs=['bold'])
 
-    def print_missing_objc_files(self):
+    def find_missing_objc_files(self):
         duplicate_h_file_names = set()
         duplicate_m_file_names = set()
 
@@ -746,24 +798,30 @@ class XcProjReporter():
         # .h files with same names
         duplicate_h_file_names_list = list(duplicate_h_file_names)
         duplicate_h_file_names_list.sort()
-        for duplicate_h_file_name in duplicate_h_file_names_list:
-            print("[Duplicate .h file name] {}.h".format(duplicate_h_file_name))
 
         # .m files with same names
         duplicate_m_file_names_list = list(duplicate_m_file_names)
         duplicate_m_file_names_list.sort()
-        for duplicate_m_file_name in duplicate_m_file_names_list:
-            print("[Duplicate .m file name] {}.m".format(duplicate_m_file_name))
 
         # .m files missing .h files
         missing_h_file_names = list(m_file_names - h_file_names)
         missing_h_file_names.sort()
-        for missing_h_file_name in missing_h_file_names:
-            print("[Missing .h file] {}.h".format(missing_h_file_name))
 
         # .h files missing .m files
         missing_m_file_names = list(h_file_names - m_file_names)
         missing_m_file_names.sort()
+
+        return duplicate_h_file_names_list, duplicate_m_file_names_list, missing_h_file_names, missing_m_file_names
+
+    def print_missing_objc_files(self):
+        duplicate_h_file_names_list, duplicate_m_file_names_list, missing_h_file_names, missing_m_file_names = self.find_missing_objc_files()
+
+        for duplicate_h_file_name in duplicate_h_file_names_list:
+            print("[Duplicate .h file name] {}.h".format(duplicate_h_file_name))
+        for duplicate_m_file_name in duplicate_m_file_names_list:
+            print("[Duplicate .m file name] {}.m".format(duplicate_m_file_name))
+        for missing_h_file_name in missing_h_file_names:
+            print("[Missing .h file] {}.h".format(missing_h_file_name))
         for missing_m_file_name in missing_m_file_names:
             print("[Missing .m file] {}.h".format(missing_m_file_name))
 
