@@ -14,6 +14,12 @@ argument_parser = argparse.ArgumentParser(description="List all build settings b
 argument_parser.add_argument('path',
                              help='Path of the folder containing your `.xcodeproj` folder.')
 
+# App name
+argument_parser.add_argument('target',
+                             nargs='?',
+                             default=None,
+                             help='Name of the iOS target to filter on. If not given, build settings for all targets are displayed.')
+
 
 # --- Parse arguments ---
 args = argument_parser.parse_args()
@@ -30,4 +36,4 @@ except XcodeProjectReadException as e:
 
 # Reporter
 reporter = XcProjReporter(xcode_project_reader.xc_project)
-reporter.print_build_settings()
+reporter.print_build_settings(for_target=args.target)
