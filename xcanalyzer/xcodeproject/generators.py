@@ -204,6 +204,30 @@ class XcProjReporter():
                 
                 self.target_type_counts[target_type] = (target_type_display, len(targets))
     
+    def print_build_settings(self):
+        for target_type in XcTarget.Type.AVAILABLES:
+            targets = self.xcode_project.targets_of_type(target_type)
+
+            # Target type
+            target_type_display = '{}s'.format(target_type.replace('_', ' ').capitalize())
+            cprint('{} ({}):'.format(target_type_display, len(targets)), attrs=['bold'])
+            
+            for target in targets:
+                # Target
+                cprint('- {}'.format(target.name), attrs=['bold'])
+                
+                for build_configuration in target.build_configurations:
+                    # Build configuration
+                    cprint('  - {}/{}'.format(target.name, build_configuration.name), attrs=['bold'])
+
+                    # Build settings
+                    for build_setting in build_configuration.build_settings:
+                        if len(build_setting.value) == 1:
+                            display_value = build_setting.value[0]
+                        else:
+                            display_value = build_setting.value
+                        print('      {}: {}'.format(build_setting.key, display_value))
+
     def print_targets_summary(self):
         # Targets summary
         self._print_horizontal_line()

@@ -1,3 +1,4 @@
+import errno
 import json
 import pickle
 import os
@@ -10,14 +11,20 @@ from pbxproj import XcodeProject
 from ..language.models import SwiftType, SwiftTypeType, SwiftAccessibility, ObjcTypeType, ObjcType, ObjcEnumType, ObjcInterface
 
 from .exceptions import XcodeProjectReadException
-from .models import XcTarget, XcProject, XcGroup, XcFile
+from .models import XcTarget, XcProject, XcGroup, XcFile, XcBuildSetting, XcBuildConfiguration
 
 
 class XcProjectParser():
 
-    def __init__(self, project_folder_path, verbose=True):
+    def __init__(self,
+                 project_folder_path,
+                 verbose=True,
+                 working_dir_relative=False,
+                 cache_active=True):
         self.project_folder_path = project_folder_path
         self.verbose = verbose
+        self.working_dir_relative = working_dir_relative
+        self.cache_active = cache_active
 
     def load(self):
         # Check given path
@@ -26,16 +33,28 @@ class XcProjectParser():
         # Find xcode proj folder
         self.xcode_proj_name = self._find_xcodeproj()
 
+        # Create working directory if relative to project dir
+        if self.working_dir_relative:
+            working_dir = os.path.join(self.project_folder_path, 'build')
+            try:
+                os.makedirs(working_dir)
+            except OSError as exc:
+                if exc.errno == errno.EEXIST and os.path.isdir(working_dir):
+                    pass
+                else:
+                    raise
+
         # Load pbxproj
         pbxproj_path = '{}/{}/project.pbxproj'.format(self.project_folder_path, self.xcode_proj_name)
 
         # Load from cache if existing
-        xc_project_from_cache = self.load_from_cache()
-        if xc_project_from_cache is not None:
-            if self.verbose:
-                print("-> Load pbxproj from cache")
-            self.xc_project = xc_project_from_cache
-            return
+        if self.cache_active:
+            xc_project_from_cache = self.load_from_cache()
+            if xc_project_from_cache is not None:
+                if self.verbose:
+                    print("-> Load pbxproj from cache")
+                self.xc_project = xc_project_from_cache
+                return
 
         if self.verbose:
             print("-> Load pbxproj")
@@ -178,6 +197,32 @@ class XcProjectParser():
             'com.apple.product-type.application': XcTarget.Type.APPLICATION,
             'com.apple.product-type.application.watchapp2': XcTarget.Type.WATCH_APPLICATION,
         }.get(target.productType, XcTarget.Type.OTHER)
+    
+    def _map_target_build_configurations(self, target):
+        build_configuration_list = self.xcode_project.get_object(target.buildConfigurationList)
+
+        result_build_configurations = list()
+        
+        for build_configuration_id in build_configuration_list.buildConfigurations:
+            build_configuration = self.xcode_project.get_object(build_configuration_id)
+
+            result_build_settings = list()
+            
+            build_config_keys = build_configuration.buildSettings.get_keys()
+            for setting_key in build_config_keys:
+                setting_value = getattr(build_configuration.buildSettings, setting_key)
+                if type(setting_value) == str:
+                    result_build_setting = XcBuildSetting(setting_key, [setting_value])
+                else:  # expected to be a list of str
+                    result_build_setting = XcBuildSetting(setting_key, setting_value)
+                
+                result_build_settings.append(result_build_setting)
+            
+            result_build_configuration = XcBuildConfiguration(build_configuration.name,
+                                                              result_build_settings)
+            result_build_configurations.append(result_build_configuration)
+        
+        return result_build_configurations
 
     @property
     def _main_group(self):
@@ -334,10 +379,14 @@ class XcProjectParser():
             # We don't use target.productName because its seems to not be used by Xcode
             product_name = self.xcode_project.get_object(target.productReference).path
 
+            # Build configuration list
+            build_configurations = self._map_target_build_configurations(target)
+
             # Transform into XcTarget
             xcode_target = XcTarget(target.name,
                                     xcode_target_type,
                                     product_name=product_name,
+                                    build_configurations=build_configurations,
                                     dependencies=set(),
                                     source_files=set())
             xcode_targets.add(xcode_target)

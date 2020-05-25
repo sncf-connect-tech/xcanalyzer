@@ -362,6 +362,21 @@ class XcProject():
         }
 
 
+class XcBuildSetting():
+
+    def __init__(self, key, value):
+        # value must be a list of str
+        self.key = key
+        self.value = value
+
+
+class XcBuildConfiguration():
+
+    def __init__(self, name, build_settings):  # TODO: base reference build file
+        self.name = name
+        self.build_settings = build_settings
+
+
 class XcTarget():
 
     class Type():
@@ -389,6 +404,7 @@ class XcTarget():
                  name,
                  target_type,
                  product_name,
+                 build_configurations,
                  dependencies=None,
                  linked_frameworks=None,
                  embed_frameworks=None,
@@ -399,6 +415,7 @@ class XcTarget():
         self.name = name
         self.type = target_type
         self.product_name = product_name
+        self.build_configurations = build_configurations
         self.dependencies = dependencies or set()  # Set of targets
         self.linked_frameworks = linked_frameworks or set()  # Set of targets
         self.embed_frameworks = embed_frameworks or set()  # Set of targets
