@@ -92,11 +92,12 @@ class XcGroup():
 
 class XcProject():
 
-    def __init__(self, dirpath, name, targets, groups, files):
+    def __init__(self, dirpath, name, build_configurations, targets, groups, files):
         assert type(groups) == list
 
         self.dirpath = dirpath
         self.name = name
+        self.build_configurations = build_configurations
         self.targets = targets
         self.groups = groups
         self.root_files = files
@@ -368,6 +369,9 @@ class XcBuildSetting():
         # value must be a list of str
         self.key = key
         self.value = value
+
+    def __repr__(self):
+        return "{}: {}".format(self.key, self.value)
 
 
 class XcBuildConfiguration():

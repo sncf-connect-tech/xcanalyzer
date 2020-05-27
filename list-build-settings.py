@@ -25,7 +25,7 @@ argument_parser.add_argument('target',
 args = argument_parser.parse_args()
 
 # Xcode code project reader
-xcode_project_reader = XcProjectParser(args.path, verbose=True)
+xcode_project_reader = XcProjectParser(args.path, verbose=True, cache_active=True)
 
 # Loading the project
 try:
@@ -37,3 +37,4 @@ except XcodeProjectReadException as e:
 # Reporter
 reporter = XcProjReporter(xcode_project_reader.xc_project)
 reporter.print_build_settings(for_target=args.target)
+reporter.print_project_build_settings()

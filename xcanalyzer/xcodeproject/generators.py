@@ -204,6 +204,13 @@ class XcProjReporter():
                 
                 self.target_type_counts[target_type] = (target_type_display, len(targets))
     
+    def print_project_build_settings(self):
+        # Project
+        print()
+        cprint("- Xcode Project:", attrs=['bold'])
+
+        self._print_build_settings_of(self.xcode_project.build_configurations, self.xcode_project.name)
+
     def print_build_settings(self, for_target=None):
         if for_target is not None:
             target = self.xcode_project.target_with_name(for_target)
@@ -216,19 +223,18 @@ class XcProjReporter():
                 targets = self.xcode_project.targets_of_type(target_type)
 
                 # Target type
+                print()
                 target_type_display = '{}s'.format(target_type.replace('_', ' ').capitalize())
-                cprint('{} ({}):'.format(target_type_display, len(targets)), attrs=['bold'])
+                cprint('- {} ({}):'.format(target_type_display, len(targets)), attrs=['bold'])
                 
                 for target in targets:
-                    # Target
-                    cprint('- {}'.format(target.name), attrs=['bold'])
-        
-                    self._print_build_settings_of(target, indent='  ')
+                    self._print_build_settings_of(target.build_configurations, target.name)
     
-    def _print_build_settings_of(self, target, indent=''):
-        for build_configuration in target.build_configurations:
+    def _print_build_settings_of(self, build_configurations, name):
+        for build_configuration in build_configurations:
             # Build configuration
-            cprint('{}- {}/{}'.format(indent, target.name, build_configuration.name), attrs=['bold'])
+            print()
+            cprint('-- {}/{}'.format(name, build_configuration.name), attrs=['bold'])
 
             # Build settings
             for build_setting in build_configuration.build_settings:
@@ -236,7 +242,7 @@ class XcProjReporter():
                     display_value = build_setting.value[0]
                 else:
                     display_value = build_setting.value
-                print('{}  {}: {}'.format(indent, build_setting.key, display_value))
+                print('{}: {}'.format(build_setting.key, display_value))
 
     def print_targets_summary(self):
         # Targets summary

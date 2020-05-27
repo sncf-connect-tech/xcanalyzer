@@ -73,9 +73,15 @@ class XcProjectParser():
         # Output object
         self.xc_project = XcProject(self.project_folder_path,
                                     self.xcode_proj_name,
+                                    build_configurations=list(),
                                     targets=list(),
                                     groups=list(),
                                     files=root_files)
+
+        # Project build settings (from build configurations)
+        if self.verbose:
+            print("-> Parse project build configurations")
+        self.xc_project.build_configurations = self._parse_project_build_configurations()
 
         # Groups
         if self.verbose:
@@ -198,8 +204,8 @@ class XcProjectParser():
             'com.apple.product-type.application.watchapp2': XcTarget.Type.WATCH_APPLICATION,
         }.get(target.productType, XcTarget.Type.OTHER)
     
-    def _map_target_build_configurations(self, target):
-        build_configuration_list = self.xcode_project.get_object(target.buildConfigurationList)
+    def _map_target_build_configurations(self, buildConfigurationList):
+        build_configuration_list = self.xcode_project.get_object(buildConfigurationList)
 
         result_build_configurations = list()
         
@@ -283,6 +289,10 @@ class XcProjectParser():
         
         new_parts.reverse()
         return '/'.join(new_parts)
+    
+    def _parse_project_build_configurations(self):
+        root = self.xcode_project.get_object(self.xcode_project.rootObject)
+        return self._map_target_build_configurations(root.buildConfigurationList)
 
     def _parse_groups(self):
         # key is a child key reference
@@ -380,7 +390,7 @@ class XcProjectParser():
             product_name = self.xcode_project.get_object(target.productReference).path
 
             # Build configuration list
-            build_configurations = self._map_target_build_configurations(target)
+            build_configurations = self._map_target_build_configurations(target.buildConfigurationList)
 
             # Transform into XcTarget
             xcode_target = XcTarget(target.name,
