@@ -21,11 +21,11 @@ class XcModelsFixture():
                    target_type=XcTarget.Type.APPLICATION,
                    product_name='MyXcProduct',
                    resource_files=set()):
-        return XcTarget(name=name, target_type=target_type, product_name=product_name, resource_files=resource_files)
+        return XcTarget(name=name, target_type=target_type, product_name=product_name, resource_files=resource_files, build_configurations=list())
     
     def any_project(self):
         targets = set([self.any_target()])
-        return XcProject('/', 'MyXcProject', targets=targets, groups=list(), files=set())
+        return XcProject('/', 'MyXcProject', build_configurations=list(), targets=targets, groups=list(), files=set())
     
     def any_group(self, group_path='/MyGroup', filepath='/MyGroup', groups=list(), files=set()):
         return XcGroup(group_path, filepath, groups=groups, files=files)

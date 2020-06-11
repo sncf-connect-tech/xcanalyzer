@@ -136,7 +136,7 @@ class XcProjectTests(TestCase):
     # __init__
 
     def test_instantiate_xc_project(self):
-        xc_project = XcProject(dirpath='/', name="MyXcProject", targets=set(), groups=list(), files=set())
+        xc_project = XcProject(dirpath='/', name="MyXcProject", build_configurations=list(), targets=set(), groups=list(), files=set())
 
         self.assertTrue(xc_project)
         self.assertEqual(xc_project.dirpath, '/')
@@ -146,7 +146,7 @@ class XcProjectTests(TestCase):
         target = self.fixture.any_target()
         targets = set([target])
         
-        xc_project = XcProject(dirpath='/', name="MyXcProject", targets=targets, groups=list(), files=set())
+        xc_project = XcProject(dirpath='/', name="MyXcProject", build_configurations=list(), targets=targets, groups=list(), files=set())
 
         self.assertEqual(xc_project.targets, targets)
 
@@ -154,7 +154,7 @@ class XcProjectTests(TestCase):
         group = self.fixture.any_group()
         groups = [group]
         
-        xc_project = XcProject(dirpath='/', name="MyXcProject", targets=set(), groups=groups, files=set())
+        xc_project = XcProject(dirpath='/', name="MyXcProject", build_configurations=list(), targets=set(), groups=groups, files=set())
 
         self.assertEqual(xc_project.groups, groups)
 
@@ -165,7 +165,7 @@ class XcProjectTests(TestCase):
         target_2 = self.fixture.any_target(target_type=XcTarget.Type.TEST)
         target_3 = self.fixture.any_target(target_type=XcTarget.Type.APPLICATION)
         targets = set([target_1, target_2, target_3])
-        xc_project = XcProject(dirpath='/', name="MyXcProject", targets=targets, groups=list(), files=set())
+        xc_project = XcProject(dirpath='/', name="MyXcProject", build_configurations=list(), targets=targets, groups=list(), files=set())
 
         targets = xc_project.targets_of_type(XcTarget.Type.UI_TEST)
 
@@ -175,7 +175,7 @@ class XcProjectTests(TestCase):
 
     def test_target_with_name__returns_none__when_no_matching_target_name(self):
         target_1 = self.fixture.any_target(name='MyTarget1')
-        xc_project = XcProject(dirpath='/', name="MyXcProject", targets=set([target_1]), groups=list(), files=set())
+        xc_project = XcProject(dirpath='/', name="MyXcProject", build_configurations=list(), targets=set([target_1]), groups=list(), files=set())
 
         target_2 = xc_project.target_with_name('MyTarget2')
 
@@ -183,7 +183,7 @@ class XcProjectTests(TestCase):
 
     def test_target_with_name__returns_target__when_a_target_name_matches(self):
         target = self.fixture.any_target(name='MyTarget')
-        xc_project = XcProject(dirpath='/', name="MyXcProject", targets=set([target]), groups=list(), files=set())
+        xc_project = XcProject(dirpath='/', name="MyXcProject", build_configurations=list(), targets=set([target]), groups=list(), files=set())
 
         resulting_target = xc_project.target_with_name('MyTarget')
 
@@ -195,7 +195,7 @@ class XcProjectTests(TestCase):
         group_C = XcGroup(group_path="/MyGroupA/MyGroupB/MyGroupC", filepath="/MyGroupA/MyGroupB/MyGroupC")
         group_B = XcGroup(group_path="/MyGroupA/MyGroupB", filepath="/MyGroupA/MyGroupB", groups=set([group_C]))
         group_A = XcGroup(group_path="/MyGroupA", filepath="/MyGroupA", groups=set([group_B]))
-        project = XcProject(dirpath='/', name="MyProject", targets=set(), groups=[group_A], files=set())
+        project = XcProject(dirpath='/', name="MyProject", build_configurations=list(), targets=set(), groups=[group_A], files=set())
 
         groups = project.groups_filtered()
 
@@ -211,7 +211,7 @@ class XcProjectTests(TestCase):
     
     def test_groups_filtered__gives_empty_groups__when_filter_empty(self):
         group = XcGroup(group_path="/MyGroup", filepath="/MyGroup")
-        project = XcProject(dirpath='/', name="MyProject", targets=set(), groups=[group], files=set())
+        project = XcProject(dirpath='/', name="MyProject", build_configurations=list(), targets=set(), groups=[group], files=set())
 
         groups = project.groups_filtered(filter_mode='empty')
 
@@ -221,7 +221,7 @@ class XcProjectTests(TestCase):
     def test_groups_filtered__exclude_groups_with_files__when_filter_empty(self):
         file = self.fixture.any_file()
         group = XcGroup(group_path="/MyGroup", filepath="/MyGroup", files=set([file]))
-        project = XcProject(dirpath='/', name="MyProject", targets=set(), groups=[group], files=set())
+        project = XcProject(dirpath='/', name="MyProject", build_configurations=list(), targets=set(), groups=[group], files=set())
 
         groups = project.groups_filtered(filter_mode='empty')
 
@@ -230,7 +230,7 @@ class XcProjectTests(TestCase):
     def test_groups_filtered__exclude_groups_with_groups__when_filter_empty(self):
         subgroup = XcGroup(group_path="/MyGroup/MySubGroup", filepath="/MyGroup/MySubGroup")
         group = XcGroup(group_path="/MyGroup", filepath="/MyGroup", groups=set([subgroup]))
-        project = XcProject(dirpath='/', name="MyProject", targets=set(), groups=[group], files=set())
+        project = XcProject(dirpath='/', name="MyProject", build_configurations=list(), targets=set(), groups=[group], files=set())
 
         groups = project.groups_filtered(filter_mode='empty')
 
@@ -241,7 +241,7 @@ class XcProjectTests(TestCase):
 
     def test_groups_filtered__gives_project_relative_groups__when_filter_project_relative(self):
         group = XcGroup(group_path="/MyGroup", filepath="/MyGroup", is_project_relative=True)
-        project = XcProject(dirpath='/', name="MyProject", targets=set(), groups=[group], files=set())
+        project = XcProject(dirpath='/', name="MyProject", build_configurations=list(), targets=set(), groups=[group], files=set())
 
         groups = project.groups_filtered(filter_mode='project_relative')
         
@@ -251,7 +251,7 @@ class XcProjectTests(TestCase):
     
     def test_groups_filtered__exclude_groups_non_project_relative__when_filter_project_relative(self):
         group = XcGroup(group_path="/MyGroup", filepath="/MyGroup", is_project_relative=False)
-        project = XcProject(dirpath='/', name="MyProject", targets=set(), groups=[group], files=set())
+        project = XcProject(dirpath='/', name="MyProject", build_configurations=list(), targets=set(), groups=[group], files=set())
 
         groups = project.groups_filtered(filter_mode='project_relative')
 
@@ -262,7 +262,7 @@ class XcProjectTests(TestCase):
     def test_groups_filtered__gives_groups_without_folder__when_filter_without_folder(self):
         group_relative_group = XcGroup(group_path="/Parent/Group1", filepath="/Parent", is_project_relative=False)
         project_relative_group = XcGroup(group_path="/Parent/Group2", filepath="/Parent", is_project_relative=True)
-        project = XcProject(dirpath='/', name="MyProject", targets=set(), groups=[group_relative_group, project_relative_group], files=set())
+        project = XcProject(dirpath='/', name="MyProject", build_configurations=list(), targets=set(), groups=[group_relative_group, project_relative_group], files=set())
 
         groups = project.groups_filtered(filter_mode='without_folder')
 
@@ -271,7 +271,7 @@ class XcProjectTests(TestCase):
     def test_groups_filtered__excludes_groups_with_folder__when_filter_without_folder(self):
         group_relative_group = XcGroup(group_path="/Parent/Group1", filepath="/Parent/Group1", is_project_relative=False)
         project_relative_group = XcGroup(group_path="/Parent/Group2", filepath="/Parent/Group2", is_project_relative=True)
-        project = XcProject(dirpath='/', name="MyProject", targets=set(), groups=[group_relative_group, project_relative_group], files=set())
+        project = XcProject(dirpath='/', name="MyProject", build_configurations=list(), targets=set(), groups=[group_relative_group, project_relative_group], files=set())
 
         groups = project.groups_filtered(filter_mode='without_folder')
 
@@ -279,7 +279,7 @@ class XcProjectTests(TestCase):
     
     def test_groups_filtered__excludes_variant_groups__when_filter_without_folder(self):
         variant_group = XcGroup(group_path="/VariantGroup", filepath="/", is_variant=True)
-        project = XcProject(dirpath='/', name="MyProject", targets=set(), groups=[variant_group], files=set())
+        project = XcProject(dirpath='/', name="MyProject", build_configurations=list(), targets=set(), groups=[variant_group], files=set())
 
         groups = project.groups_filtered(filter_mode='without_folder')
 
@@ -289,7 +289,7 @@ class XcProjectTests(TestCase):
     
     def test_groups_filtered__gives_variant_groups__when_filter_variant(self):
         variant_group = XcGroup(group_path="/MyGroup", filepath="/MyGroup", is_variant=True)
-        project = XcProject(dirpath='/', name="MyProject", targets=set(), groups=[variant_group], files=set())
+        project = XcProject(dirpath='/', name="MyProject", build_configurations=list(), targets=set(), groups=[variant_group], files=set())
 
         groups = project.groups_filtered(filter_mode='variant')
 
@@ -297,7 +297,7 @@ class XcProjectTests(TestCase):
     
     def test_groups_filtered__excludes_non_variant_groups__when_filter_variant(self):
         group = XcGroup(group_path="/MyGroup", filepath="/MyGroup", is_variant=False)
-        project = XcProject(dirpath='/', name="MyProject", targets=set(), groups=[group], files=set())
+        project = XcProject(dirpath='/', name="MyProject", build_configurations=list(), targets=set(), groups=[group], files=set())
 
         groups = project.groups_filtered(filter_mode='variant')
 
@@ -313,7 +313,7 @@ class XcProjectTests(TestCase):
         file_2 = XcFile('/MyFile2')
         target_2 = self.fixture.any_target(name='MyTarget2', resource_files=set([file_2]))
 
-        project = XcProject(dirpath='/', name="MyProject", targets=set([target_1, target_2]), groups=[], files=set())
+        project = XcProject(dirpath='/', name="MyProject", build_configurations=list(), targets=set([target_1, target_2]), groups=[], files=set())
 
         # When
         target_files = project.target_files
@@ -338,7 +338,7 @@ class XcProjectTests(TestCase):
                                          files=set([file_1]),
                                          groups=[group_2])
 
-        project = XcProject(dirpath='/', name="MyProject", targets=set(), groups=[group_1, group_2], files=set())
+        project = XcProject(dirpath='/', name="MyProject", build_configurations=list(), targets=set(), groups=[group_1, group_2], files=set())
 
         # When
         group_files = project.group_files
@@ -359,7 +359,7 @@ class XcProjectTests(TestCase):
                                          filepath='/MyGroup1',
                                          files=set([group_file]))
 
-        project = XcProject(dirpath='/', name="MyProject", targets=set(), groups=[group], files=set([root_file]))
+        project = XcProject(dirpath='/', name="MyProject", build_configurations=list(), targets=set(), groups=[group], files=set([root_file]))
 
         # When
         files = project.files
@@ -377,14 +377,14 @@ class XcTargetTests(TestCase):
     # __init__
 
     def test_instantiate_xc_target(self):
-        xc_target = XcTarget(name="MyXcTarget", target_type=XcTarget.Type.UI_TEST, product_name='MyProduct')
+        xc_target = XcTarget(name="MyXcTarget", target_type=XcTarget.Type.UI_TEST, product_name='MyProduct', build_configurations=list())
 
         self.assertTrue(xc_target)
         self.assertEqual(xc_target.name, "MyXcTarget")
         self.assertEqual(xc_target.product_name, "MyProduct")
 
     def test_instantiate_xc_target__without_dependencies__has_no_dependency(self):
-        xc_target = XcTarget(name="MyXcTarget", target_type=XcTarget.Type.UI_TEST, product_name='MyProduct')
+        xc_target = XcTarget(name="MyXcTarget", target_type=XcTarget.Type.UI_TEST, product_name='MyProduct', build_configurations=list())
 
         self.assertFalse(xc_target.dependencies)
     
@@ -396,7 +396,8 @@ class XcTargetTests(TestCase):
         xc_target = XcTarget(name="MyXcTarget",
                              target_type=XcTarget.Type.UI_TEST,
                              product_name='MyProduct',
-                             dependencies=set([target_dep]))
+                             dependencies=set([target_dep]),
+                             build_configurations=list())
 
         self.assertTrue(target_dep in xc_target.dependencies)
     
@@ -408,7 +409,8 @@ class XcTargetTests(TestCase):
         xc_target = XcTarget(name="MyXcTarget",
                              target_type=XcTarget.Type.FRAMEWORK,
                              product_name='MyProduct',
-                             linked_frameworks=set([linked_framework]))
+                             linked_frameworks=set([linked_framework]),
+                             build_configurations=list())
         
         self.assertTrue(linked_framework in xc_target.linked_frameworks)
 
@@ -420,14 +422,15 @@ class XcTargetTests(TestCase):
         xc_target = XcTarget(name="MyXcTarget",
                              target_type=XcTarget.Type.FRAMEWORK,
                              product_name='MyProduct',
-                             embed_frameworks=set([embed_framework]))
+                             embed_frameworks=set([embed_framework]),
+                             build_configurations=list())
         
         self.assertTrue(embed_framework in xc_target.embed_frameworks)
 
     # __init__ - source files
 
     def test_instantiate_xc_target__without__source_files_has_no_source_file(self):
-        xc_target = XcTarget(name="MyXcTarget", target_type=XcTarget.Type.UI_TEST, product_name='MyProduct')
+        xc_target = XcTarget(name="MyXcTarget", target_type=XcTarget.Type.UI_TEST, product_name='MyProduct', build_configurations=list())
 
         self.assertFalse(xc_target.source_files)
 
@@ -437,14 +440,15 @@ class XcTargetTests(TestCase):
         xc_target = XcTarget(name="MyXcTarget",
                              target_type=XcTarget.Type.UI_TEST,
                              product_name='MyProduct',
-                             source_files=set([any_file]))
+                             source_files=set([any_file]),
+                             build_configurations=list())
 
         self.assertTrue(any_file in xc_target.source_files)
     
     # __init__ - resource files
 
     def test_instantiate_xc_target__without__resource_files_has_no_resource_file(self):
-        xc_target = XcTarget(name="MyXcTarget", target_type=XcTarget.Type.UI_TEST, product_name='MyProduct')
+        xc_target = XcTarget(name="MyXcTarget", target_type=XcTarget.Type.UI_TEST, product_name='MyProduct', build_configurations=list())
 
         self.assertFalse(xc_target.resource_files)
 
@@ -454,7 +458,8 @@ class XcTargetTests(TestCase):
         xc_target = XcTarget(name="MyXcTarget",
                              target_type=XcTarget.Type.UI_TEST,
                              product_name='MyProduct',
-                             resource_files=set([any_file]))
+                             resource_files=set([any_file]),
+                             build_configurations=list())
 
         self.assertTrue(any_file in xc_target.resource_files)
     
@@ -466,12 +471,13 @@ class XcTargetTests(TestCase):
         xc_target = XcTarget(name="MyXcTarget",
                              target_type=XcTarget.Type.UI_TEST,
                              product_name='MyProduct',
-                             header_files=set([any_file]))
+                             header_files=set([any_file]),
+                             build_configurations=list())
 
         self.assertTrue(any_file in xc_target.header_files)
 
     def test_instantiate_xc_target__without__header_files_has_no_header_file(self):
-        xc_target = XcTarget(name="MyXcTarget", target_type=XcTarget.Type.UI_TEST, product_name='MyProduct')
+        xc_target = XcTarget(name="MyXcTarget", target_type=XcTarget.Type.UI_TEST, product_name='MyProduct', build_configurations=list())
 
         self.assertFalse(xc_target.header_files)
 
@@ -483,40 +489,41 @@ class XcTargetTests(TestCase):
         xc_target = XcTarget(name="MyXcTarget",
                              target_type=XcTarget.Type.UI_TEST,
                              product_name='MyProduct',
-                             linked_files=set([any_file]))
+                             linked_files=set([any_file]),
+                             build_configurations=list())
 
         self.assertTrue(any_file in xc_target.linked_files)
 
     def test_instantiate_xc_target__without__linked_files_has_no_linked_file(self):
-        xc_target = XcTarget(name="MyXcTarget", target_type=XcTarget.Type.UI_TEST, product_name='MyProduct')
+        xc_target = XcTarget(name="MyXcTarget", target_type=XcTarget.Type.UI_TEST, product_name='MyProduct', build_configurations=list())
 
         self.assertFalse(xc_target.linked_files)
 
     # __eq__
 
     def test_xc_targets_are_not_equal__when_different_type(self):
-        xc_target_1 = XcTarget(name="MyXcTarget", target_type=XcTarget.Type.UI_TEST, product_name='MyProduct')
-        xc_target_2 = XcTarget(name="MyXcTarget", target_type=XcTarget.Type.TEST, product_name='MyProduct')
+        xc_target_1 = XcTarget(name="MyXcTarget", target_type=XcTarget.Type.UI_TEST, product_name='MyProduct', build_configurations=list())
+        xc_target_2 = XcTarget(name="MyXcTarget", target_type=XcTarget.Type.TEST, product_name='MyProduct', build_configurations=list())
 
         self.assertFalse(xc_target_1 == xc_target_2)
 
     def test_xc_targets_are_not_equal__when_different_name(self):
-        xc_target_1 = XcTarget(name="MyXcTarget1", target_type=XcTarget.Type.UI_TEST, product_name='MyProduct')
-        xc_target_2 = XcTarget(name="MyXcTarget2", target_type=XcTarget.Type.UI_TEST, product_name='MyProduct')
+        xc_target_1 = XcTarget(name="MyXcTarget1", target_type=XcTarget.Type.UI_TEST, product_name='MyProduct', build_configurations=list())
+        xc_target_2 = XcTarget(name="MyXcTarget2", target_type=XcTarget.Type.UI_TEST, product_name='MyProduct', build_configurations=list())
 
         self.assertFalse(xc_target_1 == xc_target_2)
     
     def test_xc_targets_are_equal__when_same_name_and_type(self):
-        xc_target_1 = XcTarget(name="MyXcTarget", target_type=XcTarget.Type.UI_TEST, product_name='MyProduct')
-        xc_target_2 = XcTarget(name="MyXcTarget", target_type=XcTarget.Type.UI_TEST, product_name='MyProduct')
+        xc_target_1 = XcTarget(name="MyXcTarget", target_type=XcTarget.Type.UI_TEST, product_name='MyProduct', build_configurations=list())
+        xc_target_2 = XcTarget(name="MyXcTarget", target_type=XcTarget.Type.UI_TEST, product_name='MyProduct', build_configurations=list())
 
         self.assertTrue(xc_target_1 == xc_target_2)
     
     # __hash__
 
     def test_xc_targets_hashes_are_same__when_same_type_and_name(self):
-        xc_target_1 = XcTarget(name="MyXcTarget", target_type=XcTarget.Type.UI_TEST, product_name='MyProduct')
-        xc_target_2 = XcTarget(name="MyXcTarget", target_type=XcTarget.Type.UI_TEST, product_name='MyProduct')
+        xc_target_1 = XcTarget(name="MyXcTarget", target_type=XcTarget.Type.UI_TEST, product_name='MyProduct', build_configurations=list())
+        xc_target_2 = XcTarget(name="MyXcTarget", target_type=XcTarget.Type.UI_TEST, product_name='MyProduct', build_configurations=list())
 
         hash_1 = hash(xc_target_1)
         hash_2 = hash(xc_target_2)
@@ -526,7 +533,7 @@ class XcTargetTests(TestCase):
     # __repr__
 
     def test_xc_target_repr_contain_name(self):
-        xc_target = XcTarget(name="MyXcTarget", target_type=XcTarget.Type.UI_TEST, product_name='MyProduct')
+        xc_target = XcTarget(name="MyXcTarget", target_type=XcTarget.Type.UI_TEST, product_name='MyProduct', build_configurations=list())
 
         representation = str(xc_target)
 
@@ -545,7 +552,8 @@ class XcTargetTests(TestCase):
                         source_files=set([source_file]),
                         resource_files=set([resource_file]),
                         header_files=set([header_file]),
-                        linked_files=set([linked_file]))
+                        linked_files=set([linked_file]),
+                        build_configurations=list())
         
         files = xc_target.files
         

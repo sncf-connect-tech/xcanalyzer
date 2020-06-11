@@ -47,16 +47,20 @@ class XcProjectParserTests(TestCase):
         # Then - expected targets
         app_target = XcTarget(name='SampleiOSApp',
                               product_name='SampleiOSApp',
-                              target_type=XcTarget.Type.APPLICATION)
+                              target_type=XcTarget.Type.APPLICATION,
+                              build_configurations=list())
         test_target = XcTarget(name='SampleiOSAppTests',
                                product_name='SampleiOSAppTests',
-                               target_type=XcTarget.Type.TEST)
+                               target_type=XcTarget.Type.TEST,
+                               build_configurations=list())
         ui_test_target = XcTarget(name='SampleiOSAppUITests',
                                   product_name='SampleiOSAppUITests',
-                                  target_type=XcTarget.Type.UI_TEST)
+                                  target_type=XcTarget.Type.UI_TEST,
+                                  build_configurations=list())
         framework_target = XcTarget(name='SampleCore',
                                     product_name='SampleCore',
-                                    target_type=XcTarget.Type.FRAMEWORK)
+                                    target_type=XcTarget.Type.FRAMEWORK,
+                                    build_configurations=list())
 
         # Then - assertions
         self.assertTrue(app_target in xcode_project.targets)
@@ -462,10 +466,6 @@ class SwiftCodeParserTests(TestCase):
 
                 public enum MyEnum \{\}
 
-                public protocol MyProtocol \{\}
-
-                public extension MyExtension \{\}
-
             \}
         """
         parser = self.fixture.any_swift_code_parser(swift_code)
@@ -478,11 +478,9 @@ class SwiftCodeParserTests(TestCase):
         self.assertTrue(SwiftType('class', 'OuterClass', 'public') in types, types)
 
         inner_types = types[0].inner_types
-        self.assertTrue(SwiftType('class', 'MyClass', 'public') in inner_types)
-        self.assertTrue(SwiftType('struct', 'MyStruct', 'public') in inner_types)
-        self.assertTrue(SwiftType('enum', 'MyEnum', 'public') in inner_types)
-        self.assertTrue(SwiftType('protocol', 'MyProtocol', 'public') in inner_types)
-        self.assertTrue(SwiftType('extension', 'MyExtension', 'public') in inner_types)
+        self.assertTrue(SwiftType('class', 'OuterClass.MyClass', 'public') in inner_types)
+        self.assertTrue(SwiftType('struct', 'OuterClass.MyStruct', 'public') in inner_types)
+        self.assertTrue(SwiftType('enum', 'OuterClass.MyEnum', 'public') in inner_types)
 
     # swift_types - inner types - inside class - 2 inner level
 
@@ -510,11 +508,11 @@ class SwiftCodeParserTests(TestCase):
 
         inner_types = types[0].inner_types
         self.assertEqual(len(inner_types), 1)
-        self.assertTrue(SwiftType('class', 'InnerClass', 'public') in inner_types)
+        self.assertTrue(SwiftType('class', 'MyClass.InnerClass', 'public') in inner_types)
 
         inner_inner_types = inner_types[0].inner_types
         self.assertEqual(len(inner_inner_types), 1)
-        self.assertTrue(SwiftType('class', 'InnerInnerClass', 'public') in inner_inner_types)
+        self.assertTrue(SwiftType('class', 'MyClass.InnerClass.InnerInnerClass', 'public') in inner_inner_types)
 
     # swift_types - inner types - inside struct
 
@@ -529,10 +527,6 @@ class SwiftCodeParserTests(TestCase):
 
                 public enum MyEnum \{\}
 
-                public protocol MyProtocol \{\}
-
-                public extension MyExtension \{\}
-
             \}
         """
         parser = self.fixture.any_swift_code_parser(swift_code)
@@ -545,11 +539,9 @@ class SwiftCodeParserTests(TestCase):
         self.assertTrue(SwiftType('struct', 'OuterStruct', 'public') in types, types)
 
         inner_types = types[0].inner_types
-        self.assertTrue(SwiftType('class', 'MyClass', 'public') in inner_types)
-        self.assertTrue(SwiftType('struct', 'MyStruct', 'public') in inner_types)
-        self.assertTrue(SwiftType('enum', 'MyEnum', 'public') in inner_types)
-        self.assertTrue(SwiftType('protocol', 'MyProtocol', 'public') in inner_types)
-        self.assertTrue(SwiftType('extension', 'MyExtension', 'public') in inner_types)
+        self.assertTrue(SwiftType('class', 'OuterStruct.MyClass', 'public') in inner_types)
+        self.assertTrue(SwiftType('struct', 'OuterStruct.MyStruct', 'public') in inner_types)
+        self.assertTrue(SwiftType('enum', 'OuterStruct.MyEnum', 'public') in inner_types)
 
     # used_types - member types
 
