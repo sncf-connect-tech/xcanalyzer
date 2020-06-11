@@ -934,12 +934,12 @@ class XcProjReporter():
 
 class OccurrencesReporter():
     
-    def print_type_occurrences_one_type(self, type_occurrences, indent=0):
+    def print_occurrences_of_one_type_in_files(self, type_occurrences, indent=0):
         # Place of the type declaration
         cprint("{}Declaration of type `{}` was found in file `{}`".format(
             ' ' * indent,
             type_occurrences.swift_or_objc_type.name,
-            type_occurrences.definition_file.filepath),
+            type_occurrences.swift_or_objc_type.file.filepath),
             attrs=['bold'])
 
         # Other occurrences in the declaration source file

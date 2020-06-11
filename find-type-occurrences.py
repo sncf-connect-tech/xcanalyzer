@@ -49,4 +49,5 @@ except XcodeProjectReadException as e:
     print("An error occurred when loading Xcode project: {}".format(e.message))
     exit()
 
-OccurrencesReporter().print_type_occurrences_one_type(type_occurrences)
+print()
+OccurrencesReporter().print_occurrences_of_one_type_in_files(type_occurrences)

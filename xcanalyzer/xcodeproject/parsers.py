@@ -539,7 +539,10 @@ class XcProjectParser():
         source_files_count = len(source_files)
         for file_index, source_file in enumerate(source_files):
             xc_filepath = self.xc_project.relative_path_for_file(source_file)
-            print('{}/{} Searching: {}'.format(file_index, source_files_count, xc_filepath))
+
+            if self.verbose:
+                print('{}/{} Searching: {}'.format(file_index + 1, source_files_count, xc_filepath))
+            
             with open(xc_filepath) as opened_file:
                 for line in opened_file:
                     if line.startswith('//'):  # optimization
@@ -677,7 +680,7 @@ class XcProjectParser():
             raise ValueError("Type not found in the Xcode project: '{}'".format(swift_objc_type_name))
 
         # Find files in which the type occurs
-        return self._find_files_that_contains([found_type], self.xc_project.source_files)[0]
+        return self._find_files_that_contains(set([found_type]), self.xc_project.source_files)[0]
 
     def find_type_occurrences_from_files(self, swift_objc_types, from_target):
         source_files = from_target.dependant_source_files | self.xc_project.target_less_h_files
