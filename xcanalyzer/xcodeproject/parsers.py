@@ -59,6 +59,7 @@ class XcProjectParser():
         if self.verbose:
             print("-> Load pbxproj")
 
+        # Open pbxproj
         with open(pbxproj_path, 'r') as f:  # To avoid ResourceWarning: unclosed file
             tree = osp.OpenStepDecoder.ParseFromFile(f)
             self.xcode_project = XcodeProject(tree, pbxproj_path)
