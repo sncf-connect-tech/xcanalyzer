@@ -23,6 +23,9 @@ argument_parser.add_argument('app',
                              help='Name of the iOS app target.')
 
 
+
+
+
 # --- Parse arguments ---
 args = argument_parser.parse_args()
 
@@ -32,7 +35,7 @@ while path and path[-1] == os.path.sep:
     path = path[:-1]
 
 # Xcode code project reader
-xcode_project_reader = XcProjectParser(path)
+xcode_project_reader = XcProjectParser(path, verbose=False)
 
 # Loading the project
 try:
@@ -58,12 +61,13 @@ if not app_target:
 swift_types = app_target.swift_types_dependencies_filtered(type_not_in={SwiftTypeType.EXTENSION})
 objc_types = app_target.objc_types_dependencies_filtered(type_not_in={ObjcTypeType.CATEGORY, ObjcTypeType.CONSTANT})  # temporary exclude constants from objc types
 type_occurrences_set = xcode_project_reader.find_type_occurrences_from_files(
-    swift_types | objc_types,
+    # swift_types | objc_types,
+    objc_types,
     from_target=app_target)
 
 # Print occurrences for each type
 occurrences_reporter = OccurrencesReporter()
-occurrences_reporter.print_type_occurrences_multiple_types(type_occurrences_set)
+occurrences_reporter.print_occurrences_of_multiple_types_in_files(type_occurrences_set)
 
 # TODO:
 # save/load cache for type occurrences

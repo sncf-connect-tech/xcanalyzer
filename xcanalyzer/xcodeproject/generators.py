@@ -956,19 +956,34 @@ class OccurrencesReporter():
         for source_file in type_occurrences.source_files_that_use:
             print(source_file.filepath)
     
-    def print_type_occurrences_multiple_types(self, type_occurrences_set):
+    def print_occurrences_of_multiple_types_in_files(self, type_occurrences_set):
         total_type_count = len(type_occurrences_set)
 
-        for index, type_occurrences in enumerate(type_occurrences_set):
-            inside_count = type_occurrences.occurrences_count_in_definition_file
-            outside_count = len(type_occurrences.source_files_that_use)
+        occurrences_by_count = dict()
 
-            message_format = "{:<7} {:<15} {:<40} \"Inside decl. occurrences\": {:<3} | \"Outside decl. occurrences\": {:<3}"
-            print(message_format.format('/'.join([str(index), str(total_type_count)]),
-                                        type_occurrences.swift_or_objc_type.type_identifier,
-                                        type_occurrences.swift_or_objc_type.name,
-                                        inside_count,
-                                        outside_count))
+        for type_occurrences in type_occurrences_set:
+            if type_occurrences.total_count not in occurrences_by_count:
+                occurrences_by_count[type_occurrences.total_count] = list()
+            occurrences_by_count[type_occurrences.total_count].append(type_occurrences)
+        
+        total_counts = list(occurrences_by_count.keys())
+        total_counts.sort(reverse=True)
+
+        cprint("  IN  OUT TOTAL Type", attrs=['bold'])
+
+        for total_count in total_counts:
+            occurrences = occurrences_by_count[total_count]
+
+            occurrences = sorted(occurrences, key=lambda occ: occ.swift_or_objc_type.name)
+
+            for type_occurrences in occurrences:
+                message_format = "{:>4} {:>4} {:>5} {} [{}]"
+                print(message_format.format(type_occurrences.inside_count,
+                                            type_occurrences.outside_count,
+                                            type_occurrences.total_count,
+                                            type_occurrences.swift_or_objc_type.name,
+                                            type_occurrences.swift_or_objc_type.type_identifier,
+                                            ))
     
     def print_duplicate_names(self, swift_duplicate_lists, objc_duplicate_lists, swift_objc_common_classes):
         # Swift duplicates

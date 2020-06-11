@@ -1090,6 +1090,18 @@ class TypeOccurrencesFromFile():
         self.swift_or_objc_type = swift_or_objc_type
         self.source_files_that_use = source_files_that_use
         self.occurrences_count_in_definition_file = occurrences_count_in_definition_file
+    
+    @property
+    def inside_count(self):
+        return self.occurrences_count_in_definition_file
+
+    @property
+    def outside_count(self):
+        return len(self.source_files_that_use)
+
+    @property
+    def total_count(self):
+        return self.inside_count + self.outside_count
 
 
 class TypeOccurrencesFromType():
