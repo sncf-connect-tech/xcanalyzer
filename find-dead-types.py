@@ -22,7 +22,17 @@ argument_parser.add_argument('path',
 argument_parser.add_argument('app',
                              help='Name of the iOS app target.')
 
+# Verbose
+argument_parser.add_argument('-v', '--verbose',
+                             dest='verbose',
+                             action='store_true', 
+                             help='Verbose display.')
 
+# Display files
+argument_parser.add_argument('-d', '--display-files',
+                             dest='display_files',
+                             action='store_true', 
+                             help='Display files mode.')
 
 
 
@@ -35,7 +45,7 @@ while path and path[-1] == os.path.sep:
     path = path[:-1]
 
 # Xcode code project reader
-xcode_project_reader = XcProjectParser(path, verbose=False)
+xcode_project_reader = XcProjectParser(path, verbose=args.verbose)
 
 # Loading the project
 try:
@@ -67,7 +77,7 @@ type_occurrences_set = xcode_project_reader.find_type_occurrences_from_files(
 
 # Print occurrences for each type
 occurrences_reporter = OccurrencesReporter()
-occurrences_reporter.print_occurrences_of_multiple_types_in_files(type_occurrences_set)
+occurrences_reporter.print_occurrences_of_multiple_types_in_files(type_occurrences_set, args.display_files)
 
 # TODO:
 # save/load cache for type occurrences

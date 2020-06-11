@@ -956,7 +956,7 @@ class OccurrencesReporter():
         for source_file in type_occurrences.source_files_that_use:
             print(source_file.filepath)
     
-    def print_occurrences_of_multiple_types_in_files(self, type_occurrences_set):
+    def print_occurrences_of_multiple_types_in_files(self, type_occurrences_set, display_files=False):
         total_type_count = len(type_occurrences_set)
 
         occurrences_by_count = dict()
@@ -984,6 +984,12 @@ class OccurrencesReporter():
                                             type_occurrences.swift_or_objc_type.name,
                                             type_occurrences.swift_or_objc_type.type_identifier,
                                             ))
+                
+                if display_files:
+                    print("                  {} [DEF]".format(type_occurrences.swift_or_objc_type.file.filepath))
+                
+                    for source_file in type_occurrences.source_files_that_use:
+                        print("                  {}".format(source_file.filepath))
     
     def print_duplicate_names(self, swift_duplicate_lists, objc_duplicate_lists, swift_objc_common_classes):
         # Swift duplicates
