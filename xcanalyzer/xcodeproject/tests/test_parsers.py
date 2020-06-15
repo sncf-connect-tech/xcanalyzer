@@ -19,13 +19,13 @@ class XcProjectParserTests(TestCase):
 
     def test_instantiate_xc_project(self):
         path = SampleXcodeProjectFixture().project_folder_path
-        XcProjectParser(path)
+        XcProjectParser(path, verbose=False)
     
     # load
     
     def test_xc_project_parser_load(self):
         path = SampleXcodeProjectFixture().project_folder_path
-        project_parser = XcProjectParser(path)
+        project_parser = XcProjectParser(path, verbose=False)
 
         project_parser.load()
 
@@ -414,7 +414,7 @@ class SwiftCodeParserTests(TestCase):
         self.assertEqual(len(types), 4)
         self.assertTrue(SwiftType('class', 'MyClass', 'internal') in types)
         self.assertTrue(SwiftType('struct', 'MyStruct', 'internal') in types)
-        self.assertTrue(SwiftType('extension', 'MyClass', 'internal') in types)
+        self.assertTrue(SwiftType('extension', 'MyClass', 'internal', discriminant='_3') in types)
         self.assertTrue(SwiftType('enum', 'MyEnum', 'internal') in types)
     
     # swift_types - super type
@@ -542,6 +542,48 @@ class SwiftCodeParserTests(TestCase):
         self.assertTrue(SwiftType('class', 'OuterStruct.MyClass', 'public') in inner_types)
         self.assertTrue(SwiftType('struct', 'OuterStruct.MyStruct', 'public') in inner_types)
         self.assertTrue(SwiftType('enum', 'OuterStruct.MyEnum', 'public') in inner_types)
+    
+    # swift_types
+
+    def test__swift_types__gives_discriminant(self):
+        # Given
+        swift_code = """
+            public struct MyStruct {
+
+            }
+        """
+        parser = self.fixture.any_swift_code_parser(swift_code, base_discriminant='my_discriminant', type_counter=0)
+
+        # When
+        types = parser.swift_types
+
+        # Then
+        self.assertEqual(len(types), 1)
+        self.assertTrue(SwiftType('struct', 'MyStruct', 'public', discriminant='my_discriminant_1') in types, types)
+        self.assertEqual(types[0].discriminant, 'my_discriminant_1')
+
+    def test__swift_types__gives_different_discriminant__for_different_types(self):
+        # Given
+        swift_code = """
+            public struct MyStruct1 {
+
+            }
+
+            public struct MyStruct2 {
+
+            }
+        """
+        parser = self.fixture.any_swift_code_parser(swift_code, base_discriminant='my_discriminant', type_counter=0)
+
+        # When
+        types = parser.swift_types
+
+        # Then
+        self.assertEqual(len(types), 2)
+        self.assertTrue(SwiftType('struct', 'MyStruct1', 'public', discriminant='my_discriminant_1') in types, types)
+        self.assertTrue(SwiftType('struct', 'MyStruct2', 'public', discriminant='my_discriminant_2') in types, types)
+        self.assertEqual(types[0].discriminant, 'my_discriminant_1')
+        self.assertEqual(types[1].discriminant, 'my_discriminant_2')
 
     # used_types - member types
 

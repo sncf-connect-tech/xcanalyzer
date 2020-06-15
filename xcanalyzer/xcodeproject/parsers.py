@@ -817,7 +817,10 @@ class SwiftFileParser():
         # debug = bool('MyTypes' in filepath)
 
         root_substructures = swift_file_structure.get('key.substructure', []).copy()
-        swift_parser = SwiftCodeParser(substructures=root_substructures, debug=False)
+        swift_parser = SwiftCodeParser(substructures=root_substructures,
+                                       base_discriminant=self.xc_file.filepath,
+                                       type_counter=0,
+                                       debug=False)
         swift_parser.parse()
 
         if debug:
@@ -834,8 +837,14 @@ class SwiftFileParser():
 
 class SwiftCodeParser():
 
-    def __init__(self, substructures, debug=False):
+    def __init__(self,
+                 substructures,
+                 base_discriminant,
+                 type_counter,
+                 debug=False):
         self.substructures = substructures
+        self.base_discriminant = base_discriminant
+        self.type_counter = type_counter
         self.debug = debug
     
     def parse(self):
@@ -923,11 +932,18 @@ class SwiftCodeParser():
         inherited_types_refs = substructure.get('key.inheritedtypes', [])
         inherited_types = {t['key.name'] for t in inherited_types_refs}
 
+        # Type counter
+        self.type_counter += 1
+
+        # Discriminant
+        discriminant = '{}_{}'.format(self.base_discriminant, self.type_counter)
+
         # Create Swift type
         return SwiftType(type_identifier=type_identifier,
                          name=substructure.get('key.name'),
                          accessibility=accessibility,
-                         raw_inherited_types=inherited_types)
+                         raw_inherited_types=inherited_types,
+                         discriminant=discriminant)
 
     def parse_body_substructure(self, substructure):
         used_types = set()

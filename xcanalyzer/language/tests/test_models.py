@@ -42,3 +42,63 @@ class SwiftTypeTests(TestCase):
         my_class = SwiftType('class', 'MyClass', 'internal', raw_inherited_types={'UIViewController<Bool>'})
 
         self.assertEqual(my_class.inherits_from_view_controller, True)
+    
+    # __eq__
+
+    def test__eq__returns_false__when_different_type_identifiers(self):
+        type_1 = SwiftType('class', 'MyType', 'internal')
+        type_2 = SwiftType('struct', 'MyType', 'internal')
+
+        self.assertEqual(type_1 == type_2, False)
+
+    def test__eq__returns_false__when_different_names(self):
+        type_1 = SwiftType('class', 'MyType1', 'internal')
+        type_2 = SwiftType('class', 'MyType2', 'internal')
+
+        self.assertEqual(type_1 == type_2, False)
+
+    def test__eq__returns_false__when_different_fullnames(self):
+        type_0 = SwiftType('class', 'MyParentType', 'internal')
+        type_1 = SwiftType('class', 'MyType', 'internal')
+        type_2 = SwiftType('class', 'MyType', 'internal')
+        type_1.parent_type = type_0
+
+        self.assertEqual(type_1 == type_2, False)
+
+    def test__eq__returns_false__when_different_accessibility(self):
+        type_1 = SwiftType('class', 'MyType', 'internal')
+        type_2 = SwiftType('class', 'MyType', 'public')
+
+        self.assertEqual(type_1 == type_2, False)
+
+    def test__eq__returns_true__when_same_type_identifier__and_same_fullname__and_same_accessibility(self):
+        type_1 = SwiftType('class', 'MyType', 'internal')
+        type_2 = SwiftType('class', 'MyType', 'internal')
+
+        self.assertEqual(type_1 == type_2, True)
+
+    # __eq__ - discriminant
+
+    def test__eq__returns_false__for_extensions__with_different_discriminant(self):
+        type_1 = SwiftType('extension', 'MyType', 'internal',
+                           discriminant='extension_1')
+        type_2 = SwiftType('extension', 'MyType', 'internal', 
+                           discriminant='extension_2')
+        
+        self.assertEqual(type_1 == type_2, False)
+
+    def test__eq__returns_true__for_extensions__with_same_discriminant(self):
+        type_1 = SwiftType('extension', 'MyType', 'internal',
+                           discriminant='extension_disc')
+        type_2 = SwiftType('extension', 'MyType', 'internal', 
+                           discriminant='extension_disc')
+        
+        self.assertEqual(type_1 == type_2, True)
+
+    def test__eq__returns_true__for_non_extensions__with_different_discriminant(self):
+        type_1 = SwiftType('class', 'MyType', 'internal',
+                           discriminant='extension_1')
+        type_2 = SwiftType('class', 'MyType', 'internal', 
+                           discriminant='extension_2')
+        
+        self.assertEqual(type_1 == type_2, True)

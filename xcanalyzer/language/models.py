@@ -56,7 +56,7 @@ class SwiftTypeType():
 
 class SwiftType():
 
-    def __init__(self, type_identifier, name, accessibility, raw_inherited_types=set()):
+    def __init__(self, type_identifier, name, accessibility, raw_inherited_types=set(), discriminant=None):
         assert type_identifier in SwiftTypeType.ALL
         assert accessibility in SwiftAccessibility.ALL
 
@@ -64,6 +64,7 @@ class SwiftType():
         self.name = name
         self.accessibility = accessibility
         self.raw_inherited_types = raw_inherited_types
+        self.discriminant = discriminant
 
         self.parent_type = None
         self.inner_types = list()
@@ -78,7 +79,8 @@ class SwiftType():
     def __eq__(self, other):
         return self.type_identifier == other.type_identifier and \
             self.fullname == other.fullname and \
-            self.accessibility == other.accessibility
+            self.accessibility == other.accessibility and \
+            (self.type_identifier != SwiftTypeType.EXTENSION or self.discriminant == other.discriminant)
     
     def __hash__(self):
         return hash((self.type_identifier, self.name, self.accessibility))

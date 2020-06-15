@@ -50,7 +50,7 @@ class XcProjectParserFixture():
     @property
     def sample_xc_project_parser(self):
         path = SampleXcodeProjectFixture().project_folder_path
-        project_parser = XcProjectParser(path)
+        project_parser = XcProjectParser(path, verbose=False)
         project_parser.load()
 
         return project_parser
@@ -58,15 +58,13 @@ class XcProjectParserFixture():
 
 class SwiftCodeParserFixture():
 
-    def any_swift_code_parser(self, swift_code):
+    def any_swift_code_parser(self, swift_code, base_discriminant='', type_counter=0):
         command = ['sourcekitten', 'structure', '--text', swift_code]
         result = subprocess.run(command, capture_output=True)
         swift_structure = json.loads(result.stdout)
 
         root_substructures = swift_structure.get('key.substructure', []).copy()
-        parser = SwiftCodeParser(substructures=root_substructures)
-
-        # import pprint; pprint.pprint(root_substructures)
+        parser = SwiftCodeParser(substructures=root_substructures, base_discriminant=base_discriminant, type_counter=type_counter)
 
         parser.parse()
 
