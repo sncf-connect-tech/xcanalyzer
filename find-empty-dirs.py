@@ -32,8 +32,8 @@ while path and path[-1] == os.path.sep:
 
 # Parse ignored folders
 ignored_folders = set(args.ignored_folders or []) | {
-    'DerivedData',
-    '.git',
+    'DerivedData/',
+    '.git/',
 }
 ignored_dirpaths, ignored_dirs = parse_ignored_folders(ignored_folders)
 

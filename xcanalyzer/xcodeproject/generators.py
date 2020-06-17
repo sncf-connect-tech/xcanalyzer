@@ -125,7 +125,7 @@ class FolderReporter():
             # Filter folder to ignore by path
             continue_to_next_dirpath = False
             for ignored_dirpath in self.ignored_dirpaths:
-                if relative_dirpath.startswith(ignored_dirpath):
+                if '{}/'.format(relative_dirpath).startswith('/{}/'.format(ignored_dirpath)):
                     continue_to_next_dirpath = True
                     break
             if continue_to_next_dirpath:
@@ -384,6 +384,11 @@ class XcProjReporter():
         if 'objc' in languages:
             self._print_objc_types_summary()
 
+    @property
+    def swift_extension_counters(self):
+        extensions_by_scope = self.xcode_project.target_swift_extensions_grouped_by_scope
+        return {scope: len(extensions) for scope, extensions in extensions_by_scope.items()}
+
     def _print_extension_summary(self, left_padding):
         # Display - extensions counts
         descriptions = {
@@ -394,8 +399,7 @@ class XcProjReporter():
         }
 
         # Counters
-        extensions_by_scope = self.xcode_project.target_swift_extensions_grouped_by_scope
-        counters = {scope: len(extensions) for scope, extensions in extensions_by_scope.items()}
+        counters = self.swift_extension_counters
 
         ext_max_count = max([v for v in counters.values()])
         ext_width = len(str(ext_max_count)) + left_padding + 1
@@ -413,6 +417,23 @@ class XcProjReporter():
                                                          descriptions[SwiftExtensionScope.OUTER],
                                                          ext_width=ext_width))
 
+    @property
+    def swift_types_counters(self):
+        counters = dict()
+
+        # Objc types
+        objc_classes = self.xcode_project.target_objc_types_filtered(type_in={ObjcTypeType.CLASS})[ObjcTypeType.CLASS]
+        objc_class_names = [c.name for c in objc_classes]
+
+        # Swift types
+        for swift_type_type, swift_types in self.xcode_project.target_swift_types_filtered().items():
+            counters[swift_type_type] = len(swift_types)
+
+        # Total
+        total_types_count = len(self.xcode_project.target_swift_types)
+
+        return counters, total_types_count
+
     def _print_swift_types_summary(self):
         cprint('=> Swift types', attrs=['bold'])
 
@@ -428,18 +449,7 @@ class XcProjReporter():
         assert len(wordings) == len(SwiftTypeType.ALL)
 
         # Counters
-        counters = dict()
-
-        # Objc types
-        objc_classes = self.xcode_project.target_objc_types_filtered(type_in={ObjcTypeType.CLASS})[ObjcTypeType.CLASS]
-        objc_class_names = [c.name for c in objc_classes]
-
-        # Swift types
-        for swift_type_type, swift_types in self.xcode_project.target_swift_types_filtered().items():
-            counters[swift_type_type] = len(swift_types)
-
-        # Total
-        total_types_count = len(self.xcode_project.target_swift_types)
+        counters, total_types_count = self.swift_types_counters
 
         # Display
         width = len(str(total_types_count))
@@ -453,21 +463,8 @@ class XcProjReporter():
 
         cprint('{:>{width}} swift types in total'.format(total_types_count, width=width), attrs=['bold'])
 
-    def _print_objc_types_summary(self):
-        cprint('=> Objective-C types', attrs=['bold'])
-
-        # Wordings
-        wordings = [
-            (ObjcTypeType.CLASS, 'classes'),
-            (ObjcTypeType.CATEGORY, 'categories'),
-            (ObjcTypeType.ENUM, 'enums'),
-            (ObjcTypeType.CONSTANT, 'constants'),
-            (ObjcTypeType.MACRO_CONSTANT, 'macro constants'),
-            (ObjcTypeType.PROTOCOL, 'protocols'),
-        ]
-
-        assert len(wordings) == len(ObjcTypeType.ALL)
-
+    @property
+    def objc_types_counters(self):
         # Counters
         counters = dict()
 
@@ -487,8 +484,27 @@ class XcProjReporter():
         
         counters[ObjcTypeType.CLASS] += len(objc_interfaces)
 
-        # Total
         total_types_count = len(self.xcode_project.target_objc_types) + len(objc_interfaces)
+
+        return counters, total_types_count
+   
+    def _print_objc_types_summary(self):
+        cprint('=> Objective-C types', attrs=['bold'])
+
+        # Wordings
+        wordings = [
+            (ObjcTypeType.CLASS, 'classes'),
+            (ObjcTypeType.CATEGORY, 'categories'),
+            (ObjcTypeType.ENUM, 'enums'),
+            (ObjcTypeType.CONSTANT, 'constants'),
+            (ObjcTypeType.MACRO_CONSTANT, 'macro constants'),
+            (ObjcTypeType.PROTOCOL, 'protocols'),
+        ]
+
+        assert len(wordings) == len(ObjcTypeType.ALL)
+
+        # Counters and total
+        counters, total_types_count = self.objc_types_counters
 
         # Display
         width = len(str(total_types_count))
@@ -621,13 +637,13 @@ class XcProjReporter():
         folder_filepaths = set()
 
         for (dirpath, dirnames, filenames) in os.walk(self.xcode_project.dirpath):
-            relative_dirpath = dirpath[len(self.xcode_project.dirpath) - 1:]  # -1 to ignore ending slash from self.xcode_project.dirpath
+            relative_dirpath = dirpath[len(self.xcode_project.dirpath):]
             folder_parts = relative_dirpath.split(os.path.sep)
 
             # Filter folder to ignore by path
             continue_to_next_dirpath = False
             for ignored_dirpath in ignored_dirpaths:
-                if relative_dirpath.startswith(ignored_dirpath):
+                if '{}/'.format(relative_dirpath).startswith('/{}/'.format(ignored_dirpath)):
                     continue_to_next_dirpath = True
                     break
             if continue_to_next_dirpath:
@@ -691,10 +707,7 @@ class XcProjReporter():
 
         return filepaths
     
-    def find_orphan_project_missing_files(self, ignored_dirpaths, ignored_dirs):
-        # Folder's filepaths
-        folder_filepaths = self._find_folder_filepaths(ignored_dirpaths, ignored_dirs)
-
+    def find_orphan_project_missing_files(self, folder_filepaths):
         project_filepaths = {f.filepath for f in self.xcode_project.files}
 
         filepaths = list(folder_filepaths - project_filepaths)
@@ -717,7 +730,7 @@ class XcProjReporter():
             # Filter ignored dirpaths
             ignore_current_file = False
             for ignored_dirpath in ignored_dirpaths:
-                if target_file.filepath.startswith(ignored_dirpath):
+                if target_file.filepath.startswith('/{}/'.format(ignored_dirpath)):
                     ignore_current_file = True
                     break
             if ignore_current_file:
@@ -744,7 +757,7 @@ class XcProjReporter():
             filepaths = list(folder_filepaths - target_filepaths)
         
         elif mode == 'project':
-            filepaths = self.find_orphan_project_missing_files(ignored_dirpaths, ignored_dirs)
+            filepaths = self.find_orphan_project_missing_files(folder_filepaths)
         
         elif mode == 'target':
             filepaths = self.find_orphan_target_missing_files(ignored_dirpaths, ignored_dirs)
