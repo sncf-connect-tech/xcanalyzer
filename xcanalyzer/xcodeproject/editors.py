@@ -43,7 +43,7 @@ class XcodeProjectEditor():
     def save(self):
         self.xcode_project.save()
 
-    def set_project_build_setting(self, build_setting_key, build_setting_value):
+    def set_build_setting_for_project(self, build_setting_key, build_setting_value):
         project = self.xcode_project.get_object(self.xcode_project.rootObject)
 
         build_configurations_list = self.xcode_project.get_object(project.buildConfigurationList)
@@ -51,5 +51,17 @@ class XcodeProjectEditor():
             build_configuration = self.xcode_project.get_object(build_configuration_key)  # .buildSettings
             build_configuration.set_flags(build_setting_key, build_setting_value)
     
-    def delete_target_build_setting(self, build_setting_key, target_name):
+    def delete_build_setting_for_project(self, build_setting_key):
+        project = self.xcode_project.get_object(self.xcode_project.rootObject)
+        
+        build_configurations_list = self.xcode_project.get_object(project.buildConfigurationList)
+        for build_configuration_key in build_configurations_list.buildConfigurations:
+            build_configuration = self.xcode_project.get_object(build_configuration_key)  # .buildSettings
+            build_configuration.remove_flags(build_setting_key, None)
+    
+    def delete_build_setting_for_target(self, build_setting_key, target_name):
         self.xcode_project.remove_flags(build_setting_key, None, target_name=target_name)
+
+    def delete_build_setting_for_each_target(self, build_setting_key):
+        for target in self.xcode_project.objects.get_targets():
+            self.delete_build_setting_for_target(build_setting_key, target.name)

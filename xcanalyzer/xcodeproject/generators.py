@@ -118,6 +118,9 @@ class FolderReporter():
         for (dirpath, dirnames, filenames) in os.walk(self.folder_path):
             relative_dirpath = dirpath[len(self.folder_path):]
 
+            if relative_dirpath:
+                assert relative_dirpath[0] == '/'  # safety check
+
             # Filter root folder
             if not relative_dirpath:
                 continue
