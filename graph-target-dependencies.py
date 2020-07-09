@@ -4,7 +4,7 @@ import argparse
 
 from xcanalyzer.xcodeproject.parsers import XcProjectParser
 from xcanalyzer.xcodeproject.exceptions import XcodeProjectReadException
-from xcanalyzer.xcodeproject.generators import XcProjectGraphGenerator
+from xcanalyzer.xcodeproject.graphs import XcProjectGraphGenerator
 from xcanalyzer.xcodeproject.models import XcTarget
 
 

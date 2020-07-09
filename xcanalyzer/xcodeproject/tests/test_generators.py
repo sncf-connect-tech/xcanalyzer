@@ -5,7 +5,7 @@ import shutil
 
 from .fixtures import XcModelsFixture, XcProjectGraphGeneratorFixture
 
-from ..generators import XcProjectGraphGenerator
+from ..graphs import XcProjectGraphGenerator
 from ..models import XcTarget
 
 
