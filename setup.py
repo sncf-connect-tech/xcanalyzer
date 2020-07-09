@@ -21,6 +21,6 @@ setuptools.setup(
     python_requires='>=3.7',
     install_requires=[
         'termcolor==1.1.0',
-        'pbxproj==2.5.1',
+        'pbxproj==2.11.0',
     ],
 )
