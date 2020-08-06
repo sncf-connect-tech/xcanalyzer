@@ -448,9 +448,8 @@ class XcProjReporter():
             targets_display = ', '.join([t.name for t in targets])
             print('{} [{}]'.format(filepath, targets_display))
 
-    def print_files_summary(self):
-        self._print_horizontal_line()
-
+    @property
+    def files_counters(self):
         source_files = set()
         resource_files = set()
         header_files = set()
@@ -461,7 +460,7 @@ class XcProjReporter():
             resource_files |= target.resource_files
             header_files |= target.header_files
             linked_files |= target.linked_files
-
+        
         # Add target less h files
         header_files |= self.xcode_project.target_less_h_files
 
@@ -478,35 +477,38 @@ class XcProjReporter():
             else:
                 other_source_files.add(source_file)
 
+        return {
+            'source': len(source_files),
+            'swift': len(swift_source_files),
+            'm': len(objc_source_files),
+            'other_source': len(other_source_files),
+            'resource': len(resource_files),
+            'header': len(header_files),
+            'linked': len(linked_files),
+            'total': len(source_files) + len(resource_files) + len(header_files) + len(linked_files),
+        }        
+
+    def print_files_summary(self):
+        self._print_horizontal_line()
+
         # Counters
-        source_files_count = len(source_files)
-
-        # Counters - source files
-        swift_source_files_count = len(swift_source_files)
-        objc_source_files_count = len(objc_source_files)
-        other_source_files_count = len(other_source_files)
-
-        resource_files_count = len(resource_files)
-        header_files_count = len(header_files)
-        linked_files_count = len(linked_files)
-
-        total_files_count = source_files_count + resource_files_count + header_files_count + linked_files_count
+        counters = self.files_counters
 
         # Display
-        width = len(str(total_files_count))
-        max_source_file_count = max([swift_source_files_count, objc_source_files_count, other_source_files_count])
+        width = len(str(counters['total']))
+        max_source_file_count = max([counters['swift'], counters['m'], counters['other_source']])
         src_width = len(str(max_source_file_count)) + width + 1
 
-        print('{:>{width}} source files whose:'.format(source_files_count, width=width))
+        print('{:>{width}} source files whose:'.format(counters['source'], width=width))
         
-        print('{:>{src_width}} swift files (.swift)'.format(swift_source_files_count, src_width=src_width))
-        print('{:>{src_width}} objective-C files (.m)'.format(objc_source_files_count, src_width=src_width))
-        print('{:>{src_width}} other source files (.strings, .intentdefinition)'.format(other_source_files_count, src_width=src_width))
+        print('{:>{src_width}} swift files (.swift)'.format(counters['swift'], src_width=src_width))
+        print('{:>{src_width}} objective-C files (.m)'.format(counters['m'], src_width=src_width))
+        print('{:>{src_width}} other source files (.strings, .intentdefinition)'.format(counters['other_source'], src_width=src_width))
         
-        print('{:>{width}} resource files'.format(resource_files_count, width=width))
-        print('{:>{width}} header files (.h)'.format(header_files_count, width=width))
-        print('{:>{width}} linked files (.a, .framework)'.format(linked_files_count, width=width))
-        cprint('{:>{width}} files in total'.format(total_files_count, width=width), attrs=['bold'])
+        print('{:>{width}} resource files'.format(counters['resource'], width=width))
+        print('{:>{width}} header files (.h)'.format(counters['header'], width=width))
+        print('{:>{width}} linked files (.a, .framework)'.format(counters['linked'], width=width))
+        cprint('{:>{width}} files in total'.format(counters['total'], width=width), attrs=['bold'])
     
     def find_groups(self, filter_mode=False):
         results = []
