@@ -177,7 +177,7 @@ class XcProjReporter():
             filepaths.sort()
             for filepath in filepaths:
                 print(filepath)
-            
+
             print()
 
     def _print_swift_inner_types(self, inner_types, level):
@@ -454,11 +454,16 @@ class XcProjReporter():
         source_files = set()
         resource_files = set()
         header_files = set()
+        linked_files = set()
 
         for target in self.xcode_project.targets:
             source_files |= target.source_files
             resource_files |= target.resource_files
             header_files |= target.header_files
+            linked_files |= target.linked_files
+
+        # Add target less h files
+        header_files |= self.xcode_project.target_less_h_files
 
         # Source files
         swift_source_files = set()
@@ -483,8 +488,9 @@ class XcProjReporter():
 
         resource_files_count = len(resource_files)
         header_files_count = len(header_files)
+        linked_files_count = len(linked_files)
 
-        total_files_count = source_files_count + resource_files_count + header_files_count
+        total_files_count = source_files_count + resource_files_count + header_files_count + linked_files_count
 
         # Display
         width = len(str(total_files_count))
@@ -495,10 +501,11 @@ class XcProjReporter():
         
         print('{:>{src_width}} swift files (.swift)'.format(swift_source_files_count, src_width=src_width))
         print('{:>{src_width}} objective-C files (.m)'.format(objc_source_files_count, src_width=src_width))
-        print('{:>{src_width}} other source files'.format(other_source_files_count, src_width=src_width))
+        print('{:>{src_width}} other source files (.strings, .intentdefinition)'.format(other_source_files_count, src_width=src_width))
         
         print('{:>{width}} resource files'.format(resource_files_count, width=width))
-        print('{:>{width}} header files'.format(header_files_count, width=width))
+        print('{:>{width}} header files (.h)'.format(header_files_count, width=width))
+        print('{:>{width}} linked files (.a, .framework)'.format(linked_files_count, width=width))
         cprint('{:>{width}} files in total'.format(total_files_count, width=width), attrs=['bold'])
     
     def find_groups(self, filter_mode=False):
