@@ -193,7 +193,8 @@ class XcProjectParser():
         raise XcodeProjectReadException("No '.xcodeproj' folder found in folder: {}".format(self.project_folder_path))
 
     def _map_target_type(self, target):
-        if target.productType.startswith('com.apple.product-type.app-extension'):
+        productType = getattr(target, 'productType', 'legacy')
+        if productType.startswith('com.apple.product-type.app-extension'):
             return XcTarget.Type.APP_EXTENSION
         
         return {
@@ -388,7 +389,7 @@ class XcProjectParser():
 
             # Product name
             # We don't use target.productName because its seems to not be used by Xcode
-            product_name = self.xcode_project.get_object(target.productReference).path
+            product_name = self.xcode_project.get_object(target.productReference).path if hasattr(target, 'productReference') else target.productName
 
             # Build configuration list
             build_configurations = self._map_target_build_configurations(target.buildConfigurationList)
@@ -403,7 +404,8 @@ class XcProjectParser():
             xcode_targets.add(xcode_target)
 
             # Product reference
-            product_references[target.productReference] = xcode_target
+            if hasattr(target, 'productReference'):
+                product_references[target.productReference] = xcode_target
 
             # Find target's dependencies
             dependencies_names = set()
